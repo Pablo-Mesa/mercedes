@@ -1,0 +1,10 @@
+RewriteEngine On
+RewriteBase /mercedes/
+
+# Servir directamente los archivos y carpetas físicas existentes (assets de /public/, favicon, etc.)
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Todo lo demás se despacha a través del Front Controller (index.php)
+RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]

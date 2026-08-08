@@ -1,0 +1,172 @@
+Resumen del proyecto mercedes
+
+1. Propósito general
+Este proyecto es un panel administrativo en PHP nativo orientado a la gestión de:
+
+usuarios
+riders
+tarifas y sus detalles
+registros de producción
+Parece diseñado para un sistema logístico / de delivery donde se administra el personal(riders),
+se configuran tarifas, y se registra producción diaria o de servicios con filtros por fecha, turno, rider y acción.
+
+2. Arquitectura principal
+index.php
+
+Front controller central
+Hace session_start()
+Carga setup automático si no existe installed.txt
+Enrutamiento básico con switch sobre $_GET['url']
+Redirige a controladores según la ruta
+Database.php
+
+Conexión PDO a MySQL
+Soporta conexión a servidor sin BD para instalación inicial
+getConnection(), getServerConnection(), resetConnection()
+setup.php
+
+Instalador automático
+Crea tablas:
+roles
+cargos
+usuarios
+settings
+Inserta datos semilla:
+rol admin
+cargo admin-general
+usuario admin@correo.com / admin123
+main.php
+
+Layout maestro
+Renderiza las sub-vistas dinámicamente
+Incluye menú lateral, topbar, alertas flash y scripts JS
+
+3. Funcionalidades implementadas
+Autenticación
+Login con email y password (AuthController)
+Verificación de contraseña con password_verify
+Solo usuarios activos pueden iniciar sesión
+Logout destruye sesión
+
+Dashboard
+DashboardController::index()
+Muestra conteo de usuarios y datos básicos del usuario actual
+
+Usuarios
+CRUD de usuarios desde UserController
+Solo accesible para rol admin
+Permite:
+listar usuarios
+crear usuario
+editar usuario
+activar / desactivar usuario
+Modelo User.php
+manejo de roles, cargos, creación, actualización y estado
+
+Riders
+CRUD de riders desde RidersController
+Solo admin
+Soporta:
+listado
+creación / edición
+upload de foto de perfil
+activación / desactivación
+eliminación
+Modelo RiderModel.php
+
+Tarifas
+Gestión de encabezados de tarifa desde TarifasController
+Controla:
+listar encabezados
+crear encabezado
+activar / desactivar un encabezado
+ver detalles de tarifas
+Modelo EncabezadoTarifaModel.php
+
+Detalles de Tarifas
+DetallesController
+Permite:
+crear detalle de tarifa
+editar detalle
+habilitar/deshabilitar detalle
+eliminar detalle
+Modelo DetalleTarifaModel.php
+
+Producción
+ProduccionController
+Registro de producción con:
+rider
+tarifa
+turno
+acción del rider
+total factura / vuelto cuando la acción lo requiere
+Filtros de visualización por fecha, turno, rider y acción
+Dos vistas:
+tarjetas (cards.php)
+tabla (index.php)
+JS en main.js controla modales, filtros y peticiones AJAX
+
+4. Componentes clave
+style.css: estilo de la interfaz
+main.js: interacciones del frontend
+UploadHelper.php: sube fotos de riders
+EncabezadoTarifaModel.php, DetalleTarifaModel.php, ProduccionModel.php, RiderModel.php, User.php: capa de datos
+
+usuarios, riders, tarifas, produccion: vistas específicas
+
+5. Qué no hace / limitaciones detectadas
+Install / base de datos incompleta
+setup.php crea solo roles, cargos, usuarios, settings
+No crea tablas usadas en la aplicación como:
+riders
+encabezado_tarifa
+detalles_tarifas
+produccion
+turnos
+acciones_rider
+Esto indica que el instalador está incompleto respecto al dominio real de la app
+
+Rutas / lógica inconsistentes
+TarifasController::delete() llama a $this->encabezadoModel->delete() sin pasar el ID
+TarifasController::update($id) espera un ID, pero la ruta tarifas/editar no lo provee
+DetalleTarifaModel::getActivosByEncabezadoActivo() referencia columnas/tabla diferentes a las usadas en el resto del proyecto
+El JS usa /mercedes/produccion/byRider en una función, pero esa ruta no existe en index.php
+Hay rutas que posiblemente están incompletas o duplicadas (tarifas/detalles vs detalles/crear, tarifas/nuevo_detalle)
+
+Roles y permisos
+Solo existe admin como permiso relevante en controladores
+No hay manejo de otros roles en rutas ni en control de acceso más allá de admin
+Dependencias
+package.json solo contiene tu-ruc-js-client
+No hay evidencia de uso efectivo de esa librería en el código actual
+No hay build pipeline de Node, es PHP + frontend estático
+
+6. Hacia dónde apunta el objetivo
+El proyecto apunta a ser un:
+
+dashboard administrativo para una operación de riders/delivery
+sistema de gestión de servicios y cobros por tarifa
+aplicación interna con control de usuarios y reporting básico
+Su objetivo parece ser:
+
+controlar quién puede login y acceder
+mantener catálogos de riders y tarifas
+registrar servicios/productos entregados en “producción”
+ofrecer filtros y vistas de resumen para toma de decisiones
+
+7. Recomendaciones rápidas
+Completar la instalación de base de datos con todas las tablas faltantes
+Revisar y corregir rutas de actualización y eliminación en TarifasController
+Arreglar DetalleTarifaModel y el uso de columnas correctas
+Revisar rutas AJAX faltantes (produccion/byRider)
+Consolidar los nombres de tablas y columnas entre modelo, controlador y setup
+
+8. Conclusión
+El proyecto es un panel administrativo PHP/MVC básico con:
+
+login y sesión
+gestión de usuarios y riders
+administración de tarifas
+registro de producción
+Está bien estructurado en controladores, modelos y vistas, pero tiene partes incompletas y discrepancias en la base de datos que deben resolverse para funcionar plenamente.
+
