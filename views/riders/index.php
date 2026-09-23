@@ -7,7 +7,6 @@
 ?>
 <div class="page-header page-header-actions">
     <div>
-        <h2>Riders</h2>
         <p>Administra los riders del sistema. Los cambios en su estado son reversibles.</p>
     </div>
     <a href="/mercedes/riders/crear" class="btn btn-primary btn-nuevo">+ Nuevo rider</a>

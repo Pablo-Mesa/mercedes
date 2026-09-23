@@ -1,167 +1,223 @@
 <?php
-/**
- * controllers/ProduccionController.php
- * CRUD de producción, exclusivo para rol 'admin'.
- */
+
 require_once __DIR__ . '/../models/ProduccionModel.php';
 require_once __DIR__ . '/../models/RiderModel.php';
 require_once __DIR__ . '/../models/DetalleTarifaModel.php';
+require_once __DIR__ . '/../models/GruposModel.php';
 require_once __DIR__ . '/BaseController.php';
 require_once __DIR__ . '/../helpers/TurnoHelper.php';
+require_once __DIR__ . '/../app/services/ProduccionService.php';
 
-class ProduccionController extends BaseController {
-
-    private $db;
+class ProduccionController extends BaseController
+{
     private ProduccionModel $produccionModel;
+    private ProduccionService $produccionService;
     private RiderModel $riderModel;
     private DetalleTarifaModel $detalleTarifaModel;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->startSession();
+
         if (!isset($_SESSION['user_id'])) {
             $this->redirect('/mercedes/login');
         }
-        
-        // Si ya tienes una clase Database, úsala aquí
-        $this->db = Database::getConnection();
 
         $this->produccionModel = new ProduccionModel();
+        $this->produccionService = new ProduccionService($this->produccionModel);
+
         $this->riderModel = new RiderModel();
         $this->detalleTarifaModel = new DetalleTarifaModel();
-        
-        $this->ensureIsAdmin();
+
+        $this->requireRole(['admin', 'operaciones']);
+        $this->requireToolEnabled('tool_cuaderno_enabled', 'El Cuaderno está desactivado.');
     }
 
-    private function ensureIsAdmin(): void {
-        if (($_SESSION['user_role'] ?? null) !== 'admin') {
-            http_response_code(403);
-            echo 'Acceso prohibido';
-            exit;
-        }
-    }
-
-    /** 
-     * Listado de producciones con filtro por fecha.
-     */    
-    public function index(): void {
-        $fecha  = $_GET['fecha'] ?? null;
-        $turno  = isset($_GET['turno']) && $_GET['turno'] !== '' ? (int)$_GET['turno'] : null;
-        $rider  = isset($_GET['rider']) && $_GET['rider'] !== '' ? (int)$_GET['rider'] : null;
-        $accion = isset($_GET['accion']) && $_GET['accion'] !== '' ? (int)$_GET['accion'] : null;
-
-        $vista = $_GET['vista'] ?? 'tarjetas';
-
-        if ($vista === 'tarjetas') {
-            $produccionesResumen = $this->produccionModel->getProduccionesResumen($fecha, $turno, $rider, $accion);
-            $view = 'produccion/cards';
-        } else {            
-            $producciones = $this->produccionModel->getProduccionesFiltradas($fecha, $turno, $rider, $accion);
-            $view = 'produccion/index';
-        }
-
-        // Datos para el formulario
-        $riders   = $this->produccionModel->getAllRiders();
-        $tarifas  = $this->produccionModel->getTarifasActivas();
-        $acciones = $this->produccionModel->getAccionesRider();
-        $turnos   = $this->produccionModel->getTurnos();
-
-        // Determinar turno actual
-        $turnoActualId = TurnoHelper::getTurnoActual($turnos);
-
-        require __DIR__ . '/../views/layouts/main.php';
-    }
-
-    /**
-     * Guarda nueva producción.
-     */
-    public function store()
+    public function index(): void
     {
-        $idUsuario = $_SESSION['user_id'];
-        $idRider = $_POST['id_rider'] ?? null;
-        $idTarifa = $_POST['id_detalle_tarifa'] ?? null;
-        $idTurno = $_POST['id_turno'] ?? 1;
-        $idAccion = $_POST['id_accion'] ?? null;
-        $totalFactura = $_POST['total_factura'] ?? null;
-        $vuelto = $_POST['vuelto'] ?? null;
-        $fecha = $_POST['fecha_creacion'] ?? date('Y-m-d H:i:s');
+        $data = $this->buildIndexData();
+        $this->renderLayout($data['view'], $data);
+    }
 
-        // Validación: si la acción requiere factura, obligar a completar
-        $accionData = $this->produccionModel->getAccionById((int)$idAccion);
-        if ($accionData && (int)$accionData['requiere_factura'] === 1) {
-            if (empty($totalFactura) || empty($vuelto)) {
-                $_SESSION['error'] = "Debe ingresar total factura y vuelto para cobro en efectivo.";
-                header("Location: /mercedes/produccion");
-                exit;
-            }
-        }
-
-        $data = [
-            'id_usuario' => $idUsuario,
-            'id_rider' => $idRider,
-            'id_detalle_tarifa' => $idTarifa,
-            'id_turno' => $idTurno,
-            'id_accion' => $idAccion,
-            'total_factura' => $totalFactura,
-            'vuelto' => $vuelto,
-            'fecha_creacion' => $fecha
+    public function store(): void
+    {
+        $payload = [
+            'id_usuario' => $_SESSION['user_id'] ?? null,
+            'id_rider' => $_POST['id_rider'] ?? null,
+            'id_detalle_tarifa' => $_POST['id_detalle_tarifa'] ?? null,
+            'id_turno' => $_POST['id_turno'] ?? 1,
+            'id_grupo' => $_POST['id_grupo'] ?? ($_SESSION['grupo_id'] ?? 0),
+            'id_accion' => $_POST['id_accion'] ?? null,
+            'total_factura' => trim($_POST['total_factura'] ?? ''),
+            'vuelto' => trim($_POST['vuelto'] ?? ''),
+            'fecha_creacion' => $_POST['fecha_creacion'] ?? date('Y-m-d H:i:s'),
         ];
 
-        $this->produccionModel->insert($data);        
-        header('Content-Type: application/json');
-        echo json_encode(['success' => true, 'message' => 'Producción registrada correctamente.']);       
-        exit;
-    }
+        $errors = $this->produccionService->validarRegistro($payload);
 
-    public function detalle(): void {
-        $riderId = (int)($_GET['rider'] ?? $_GET['id'] ?? 0);
-        $fecha = DATE($_GET['fecha']) ?? null;
-
-        if ($riderId > 0) {
-            $producciones = $this->produccionModel->getProduccionesByRider($riderId, $fecha);
-            header('Content-Type: application/json');
-            echo json_encode($producciones);
-        } else {
-            http_response_code(400);
-            echo json_encode(['error' => 'Rider inválido']);
+        if (!empty($errors)) {
+            $this->json([
+                'success' => false,
+                'message' => implode(' ', $errors),
+            ], 400);
         }
+
+        $success = $this->produccionService->registrar($payload);
+
+        $this->json([
+            'success' => $success,
+            'message' => $success
+                ? 'Producción registrada correctamente.'
+                : 'No se pudo guardar la producción.',
+        ]);
     }
 
-    public function rendicionUpdate(): void {
-        header('Content-Type: application/json');
-        $id = (int)($_GET['id'] ?? 0);
-        $estado = (int)($_GET['estado'] ?? 0);
+    public function detalle(): void
+    {
+        $riderId = (int) ($_GET['rider'] ?? $_GET['id'] ?? 0);
+        $fecha = $_GET['fecha'] ?? null;
+
+        if ($riderId <= 0) {
+            $this->json(['error' => 'Rider inválido'], 400);
+        }
+
+        $this->json($this->produccionModel->getProduccionesByRider($riderId, $fecha));
+    }
+
+    public function rendicionUpdate(): void
+    {
+        $id = (int) ($_GET['id'] ?? 0);
+        $estado = (int) ($_GET['estado'] ?? 0);
+
+        if ($id <= 0) {
+            $this->json(['success' => false, 'error' => 'ID inválido'], 400);
+        }
+
+        $this->json($this->produccionService->actualizarRendicion($id, $estado));
+    }
+
+    public function delete(): void
+    {
+        $id = (int) ($_GET['id'] ?? 0);
 
         if ($id > 0) {
-            $sql = "UPDATE produccion SET rendicion = ? WHERE id = ?";
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute([$estado, $id]);
-
-            // obtener el rider_id para actualizar el badge en la tarjeta
-            $stmt2 = $this->db->prepare("SELECT id_rider FROM produccion WHERE id = ?");
-            $stmt2->execute([$id]);
-            $riderId = $stmt2->fetchColumn();
-
-            echo json_encode([
-                'success' => true,
-                'id' => $id,
-                'estado' => $estado,
-                'id_rider' => $riderId
-            ]);
-        } else {
-            echo json_encode(['success' => false, 'error' => 'ID inválido']);
-        }
-        exit;
-    }
-
-
-    public function delete(): void {
-        $id = (int)($_GET['id'] ?? 0);
-        if ($id) {
             $this->produccionModel->delete($id);
             $_SESSION['success'] = 'Producción eliminada.';
         }
-        header('Location: /mercedes/produccion?vista=tarjetas');
-        exit;
+
+        $this->redirect('/mercedes/produccion?vista=tarjetas');
     }
 
+    public function getRidersByGrupoAjax(): void
+    {
+        $grupoId = $_GET['grupo'] ?? null;
+
+        $this->json($grupoId
+            ? $this->produccionModel->getRidersByGrupo((int) $grupoId)
+            : []);
+    }
+
+    public function getTarifasByGrupoAjax(): void
+    {
+        $grupoId = $_GET['grupo'] ?? null;
+
+        $this->json($grupoId
+            ? $this->detalleTarifaModel->getByGrupo((int) $grupoId)
+            : []);
+    }
+
+    public function getTurnosByGrupoAjax(): void
+    {
+        $grupoId = $_GET['grupo'] ?? null;
+
+        $this->json($grupoId
+            ? $this->produccionModel->getTurnosByGrupo((int) $grupoId)
+            : []);
+    }
+
+    public function byRider(): void
+    {
+        $riderId = (int) ($_GET['id'] ?? 0);
+        $fecha = $_GET['fecha'] ?? null;
+
+        if ($riderId <= 0) {
+            $this->json(['error' => 'Rider inválido'], 400);
+        }
+
+        $grupoId = $_SESSION['user_role'] === 'operaciones' ? ($_SESSION['grupo_id'] ?? null) : null;
+
+        $this->json($this->produccionModel->getProduccionesByRider($riderId, $fecha, $grupoId));
+    }
+
+    private function buildIndexData(): array
+    {
+        $fecha  = $_GET['fecha'] ?? date('Y-m-d');
+        $turno  = isset($_GET['turno']) && $_GET['turno'] !== '' ? (int) $_GET['turno'] : null;
+        $rider  = isset($_GET['rider']) && $_GET['rider'] !== '' ? (int) $_GET['rider'] : null;
+        $accion = isset($_GET['accion']) && $_GET['accion'] !== '' ? (int) $_GET['accion'] : null;
+        $vista  = $_GET['vista'] ?? 'tarjetas';
+
+        $view = $vista === 'tarjetas' ? 'produccion/cards' : 'produccion/index';
+
+        $data = [
+            'fecha'  => $fecha,
+            'turno'  => $turno,
+            'rider'  => $rider,
+            'accion' => $accion,
+            'vista'  => $vista,
+            'view'   => $view,
+        ];
+
+        if ($vista === 'tarjetas') {
+            $data['produccionesResumen'] = $this->produccionModel->getProduccionesConDetalle($fecha, $turno, $rider, $accion);
+        } else {
+            $data['producciones'] = $this->produccionModel->getProduccionesFiltradas($fecha, $turno, $rider, $accion);
+        }
+
+        $grupoId = $_SESSION['grupo_id'] ?? null;
+
+        if ($_SESSION['user_role'] === 'admin') {
+            $grupos  = (new GruposModel())->getAll();
+            $grupoId = $_POST['id_grupo'] ?? $_GET['grupo'] ?? null;
+
+            if ($grupoId) {
+                $data['riders']        = $this->produccionModel->getRidersByGrupo((int)$grupoId);
+                $data['tarifas']       = $this->produccionModel->getTarifasByGrupo((int)$grupoId);
+                $data['turnos']        = $this->produccionModel->getTurnosByGrupo((int)$grupoId); // ✅ turnos filtrados
+                $data['resumenGlobal'] = $this->produccionModel->getProduccionResumenPorGrupo($fecha, (int)$grupoId);
+            } else {
+                $data['riders']        = [];
+                $data['tarifas']       = [];
+                $data['turnos']        = []; // vacío hasta que elija grupo
+                $data['resumenGlobal'] = $this->produccionModel->getProduccionResumenGlobal($fecha);
+            }
+        } else {
+            $grupos = [];
+            $data['riders']        = $grupoId ? $this->produccionModel->getRidersByGrupo((int)$grupoId) : [];
+            $data['tarifas']       = $grupoId ? $this->produccionModel->getTarifasByGrupo((int)$grupoId) : [];
+            $data['turnos']        = $grupoId ? $this->produccionModel->getTurnosByGrupo((int)$grupoId) : [];
+            $data['resumenGlobal'] = $this->produccionModel->getProduccionResumenPorGrupo($fecha, (int)$grupoId);
+        }
+
+        if ($_SESSION['user_role'] === 'operaciones' && $grupoId) {
+            $grupoModel = new GruposModel();
+            $grupo      = $grupoModel->getById($grupoId);
+
+            if (!empty($grupo['icono'])) {
+                $data['grupoIcono'] = '/mercedes/public/uploads/grupos/' . $grupo['icono'];
+            }
+        }
+
+        $data['grupos']        = $grupos ?? [];
+        $data['acciones']      = $this->produccionModel->getAccionesRider();
+        $data['turnoActualId'] = TurnoHelper::getTurnoActual($data['turnos']);
+
+        return $data;
+    }
+
+    private function renderLayout(string $view, array $data): void
+    {
+        $data['view'] = $view;
+        require __DIR__ . '/../views/layouts/main.php';
+    }
 }

@@ -8,7 +8,6 @@
 
 <div class="page-header page-header-actions">
     <div>
-        <h2>Usuarios</h2>
         <p>Administra las cuentas del sistema. Los cambios de estado son reversibles.</p>
     </div>
     <a href="/mercedes/usuarios/crear" class="btn btn-primary btn-nuevo">+ Nuevo usuario</a>

@@ -74,7 +74,7 @@ class EncabezadoTarifaModel
             return $stmt->execute(['id' => $id]);
         } else {
             // Desactivar todos
-            $this->db->exec("UPDATE encabezado_tarifa SET is_active = 0");
+            //$this->db->exec("UPDATE encabezado_tarifa SET is_active = 0");
 
             // Activar solo el seleccionado
             $sql = "UPDATE encabezado_tarifa SET is_active = 1 WHERE id_encabezado_tarifa = :id";

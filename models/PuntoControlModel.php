@@ -36,6 +36,12 @@ class PuntoControlModel {
         return $result;
     }
 
+    public function getAll(): array {
+        $sql = "SELECT id, titulo FROM punto_control ORDER BY titulo ASC";
+        $stmt = $this->db->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     /**
      * Actualiza el registro de punto de control.
      */

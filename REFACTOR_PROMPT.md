@@ -1,81 +1,151 @@
-# Refactorización: Vistas y Estilos (prompt para AI / desarrollador)
+1) Estado de referencia actual
+Checklist:
 
-Objetivo
-- Revisar las vistas (`views/**/*.php`) y la hoja de estilos principal (`public/css/style.css`).
-- Eliminar estilos inline y redundancias, corregir typos, y extraer reglas repetidas a utilidades CSS centralizadas.
-- Mantener compatibilidad visual y accesibilidad.
+ Módulo de producción funcionando con servicio y validación
+ Permisos por rol funcionando: admin, operaciones, rider
+ Flujo de registro y actualización funcional
+ BaseController centraliza sesión, permisos y JSON
+ README actualizado con estado actual del proyecto
+ Legacy scripts y archivos de prueba fuera del flujo principal
 
-Instrucciones generales
-1. Buscar y reemplazar todos los atributos `style="..."` en `views/` por clases utilitarias. Evitar cambios funcionales en PHP, solo reemplazos HTML/CSS.
-2. Corregir typos en estilos inline (ej. `align-item` → `align-items`) si se conservan temporalmente.
-3. Añadir utilidades en `public/css/style.css` (ejemplos más abajo) y agrupar reglas duplicadas en secciones: botones, badges, layout, formularios, utilidades.
-4. Reemplazar uso directo de `width:100%` y `display:none` por clases `.w-full` y `.hidden` respectivamente.
-5. Añadir clases semánticas para componentes reutilizados: `.panel`, `.form-panel`, `.grid-form`, `.img-preview`, `.toast-modal`, `.cards-grid`.
-6. Mantener comentarios claros en cada archivo modificado y crear un commit por conjunto lógico de cambios.
+2) Fase de seguridad y estabilidad
+Checklist:
 
-Archivos a tocar (sugeridos)
-- `views/layouts/main.php`
-- `views/produccion/*.php`
-- `views/riders/*.php`
-- `views/tarifas/*.php`
-- `views/usuarios/*.php`
-- `views/configuraciones/puntodecontrol.php`
-- `public/css/style.css`
+ Revisar el flujo real de cada módulo antes de tocarlo
+ Mantener rutas actuales y nombres de sesión sin cambios
+ No cambiar payloads ni respuestas JSON si ya funcionan
+ Probar cada módulo después de cambios menores
+ Separar cambios de refactor de cambios de negocio
 
-Cambios concretos (ejemplos antes → después)
+3) Módulo 1: Producción
+Referencia:
 
-- Caso 1: `views/tarifas/form.php`
-  - Antes:
-    <div style="display:flex; flex-direction: column; justify-content: center, align-item: center">
-  - Después:
-    <div class="d-flex flex-column justify-center align-center">
+ProduccionController.php
+ProduccionService.php
+ProduccionModel.php
+Checklist:
 
-- Caso 2: `views/riders/form.php` (imagen preview)
-  - Antes:
-    <img id="preview" src="..." style="max-width:120px; margin-top:10px; display:block;" />
-  - Después:
-    <img id="preview" src="..." class="img-preview" />
+ Validación de payload centralizada en servicio
+ Registro y actualización delegados al servicio
+ Refactor mantenido sin romper comportamiento
+ Revisar reportes y resúmenes para mover lógica compleja fuera del model
+ Validar caso edge: payload con strings vacíos, id inválido, estado fuera de rango
+ Revisar si getProduccionesConDetalle y getProduccionesFiltradas pueden separarse por responsabilidad
+ Revisar getProduccionResumenPorGrupo para mantener contratos estables
+ Dejar el controller más fino y solo de orquestación
 
-Utilidades CSS sugeridas (añadir a `public/css/style.css`)
-.d-flex { display:flex; }
-.flex-column { flex-direction:column; }
-.justify-center { justify-content:center; }
-.align-center { align-items:center; }
-.w-full { width:100%; }
-.hidden { display:none !important; }
-.text-center { text-align:center; }
-.img-preview { max-width:120px; margin-top:10px; display:block; border-radius:6px; }
-.btn-warning { background:#f6c24b; color:#1c1c1c; }
-.badge { display:inline-block; padding:4px 8px; border-radius:999px; font-size:12px; }
-.badge-success { background: #e8f8f0; color: var(--color-success); }
-.badge-muted { background: #f4f6fa; color: #9aa3bf; }
-.badge-role { background:#eef3ff; color:var(--color-primary-dark); }
-.cards-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap:16px; }
-.toast-modal-overlay { position:fixed; inset:0; display:flex; align-items:flex-end; justify-content:center; pointer-events:none; }
-.toast-modal { pointer-events:auto; background:#111827; color:#fff; padding:10px 14px; border-radius:8px; margin:24px; }
+4) Módulo 2: Auth y usuarios
+Referencia:
 
-Notas y verificación
-- Ejecutar una revisión manual por página clave (Dashboard, Riders, Tarifas, Usuarios, Punto de control).
-- Abrir la app localmente y revisar visualmente: validar formularios, tablas, botones y toasts.
-- Si usas un sistema de control de versiones: crear ramas por área (`refactor/styles`, `refactor/views`) y PR con cambios.
+AuthController.php
+UserController.php
+User.php
+Checklist:
 
-Comandos útiles (Windows / PowerShell)
-```powershell
-# Buscar estilos inline (para revisar antes de aplicar)
-Select-String -Path .\views\**\*.php -Pattern 'style="' -SimpleMatch
+ Revisar flujo de login y logout
+ Verificar validación de email/password
+ Validar estado activo/inactivo del usuario
+ Extraer validaciones de usuario a servicio si crecen
+ Mantener sesión y roles como están
+ Probar login como admin, operaciones y rider
+ Asegurar que no haya cambios en rutas /login, /dashboard, /logout
 
-# Reemplazo rápido (ejemplo, usar con precaución y revisar cambios)
-(Get-Content views\tarifas\form.php) -replace 'style="[^"]+"', 'class="d-flex"' | Set-Content views\tarifas\form.php
-```
+5) Módulo 3: Dashboard y reportes
+Referencia:
 
-Checklist rápida antes de cerrar
-- [ ] No quedan `style="` en `views/` (o quedan solo casos justificables).
-- [ ] `public/css/style.css` contiene las utilidades añadidas.
-- [ ] Correcciones tipográficas aplicadas (`align-items`, etc.).
-- [ ] Pruebas visuales realizadas en páginas clave.
+DashboardController.php
+DashboardModel.php
+Checklist:
 
-Si quieres, puedo ejecutar los cambios automáticamente: dime si prefieres que
+ Revisar que los resúmenes actuales sigan funcionando
+ Separar agregaciones y reportes del CRUD
+ Mantener el esquema de respuesta del dashboard
+ Verificar roles y permisos del dashboard
+ Probar carga de datos para admin y operaciones
 
-- A) Aplique solo las utilidades CSS y genere un diff para revisar.
-- B) Aplique cambios automáticos en todas las vistas (reemplazos safe), luego revisas.
-- C) Solo genere los commits sugeridos y el README con instrucciones para aplicar manualmente.
+6) Módulo 4: Grupos y riders
+Referencia:
+
+GruposController.php
+RidersController.php
+GruposModel.php
+RiderModel.php
+Checklist:
+
+ Revisar alta/edición de grupos
+ Revisar alta/edición de riders
+ Validar asignación de grupos y permisos
+ Revisar upload de fotos con UploadHelper.php
+ Extraer validaciones de payload si crecen
+ Mantener relaciones rider-grupo
+ Probar flujo admin y operaciones
+
+7) Módulo 5: Tarifas y detalles
+Referencia:
+
+TarifasController.php
+DetallesController.php
+TarifaModel.php
+DetalleTarifaModel.php
+EncabezadoTarifaModel.php
+GrupoEncabezadoTarifaModel.php
+Checklist:
+
+ Validar creación/edición de encabezados de tarifa
+ Validar creación/edición de detalle de tarifa
+ Revisar estados activos/inactivos
+ Revisar asociación con grupos
+ Extraer validaciones de detalle a servicio
+ Probar flujo admin y operaciones
+ Mantener rutas y nombres actuales sin romper UI
+
+8) Módulo 6: Turnos y configuración
+Referencia:
+
+TurnosController.php
+ConfiguracionesController.php
+TurnoModel.php
+PuntoControlModel.php
+TurnoHelper.php
+Checklist:
+
+ Revisar carga de turnos
+ Revisar cálculo del turno actual
+ Revisar configuración de puntos de control
+ Mantener estado actual de roles y permisos
+ Extraer validación de turnos si se vuelve compleja
+ Probar operaciones manuales en UI
+
+9) Limpieza y hardening no bloqueante
+Checklist:
+
+ Mover scripts legacy fuera del flujo principal
+ Dejar setup.ps1 fuera del ciclo live
+ Dejar pruebaapituruc.php como archivo histórico o de pruebas aisladas
+ No tocar scripts legacy si aun se usan en algún entorno puntual
+ Mantener README como documento de estado y arquitectura
+ Usar REFACTOR_PROMPT.md solo para estilos/vistas si se decide hacer refactor de UI más adelante
+ Crear una carpeta legacy/ o archive/ si se va a mover contenido antiguo
+
+10) Criterio de aceptación para cada módulo
+Checklist:
+
+ Flujo principal sigue funcionando
+ El controller sigue siendo una entrada HTTP simple
+ La lógica de negocio se mantiene en servicio o helper
+ El model no tiene responsabilidades mezcladas
+ No se cambian rutas ni session keys sin pruebas
+ El rol actual sigue funcionando sin restricciones nuevas
+ La UI mantiene el comportamiento actual
+
+11) Recomendación de ejecución
+Ejecutar en este orden:
+
+Producción
+Auth / usuarios
+Dashboard
+Grupos / riders
+Tarifas
+Turnos / configuración
+Legacy cleanup
+No iniciar con estilos ni scripts viejos. Primero asegurar la base funcional, luego hacer limpieza y mejora.

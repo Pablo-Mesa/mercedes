@@ -1,0 +1,72 @@
+#contenedorCuboLogin {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.container-cube {
+    margin: auto;
+    perspective: 1000px;
+    perspective-origin: 0px -105px;
+    transform-style: preserve-3d;
+    /*animation: aparecer_03 0.6s ease-in-out;*/
+    transition: all 0.4s;
+}
+
+.cube {
+    width: var(--ancho);
+    height: var(--alto);
+    position: relative;
+    transform-style: preserve-3d;
+    animation: girar 20s infinite linear;    
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25); /* sombra externa más suave */
+}
+
+.cube:hover {
+    filter: brightness(1.1);
+    transform: scale(1.05);
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.cube:active {
+    transform: scale(1.1);
+    transition: transform 0.2s ease;
+}
+
+.cara {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-size: cover;
+    background-position: center;
+    border: 1px solid rgba(0,0,0,0.05); /* borde muy sutil */
+    box-shadow: inset 0 0 6px rgba(0,0,0,0.15); /* sombra interna ligera */
+    opacity: 0.98;
+}
+
+/* Posicionamiento de cada cara */
+#uno    { transform: translateZ(12px); }
+#dos    { transform: translateX(12px) rotateY(90deg); }
+#tres   { transform: translateZ(-12px) rotateY(180deg); }
+#cuatro { transform: translateX(-12px) rotateY(270deg); }
+#cinco  { transform: translateY(-12px) rotateX(90deg); }
+#seis   { transform: translateY(12px) rotateX(90deg); }
+
+/* Imagen aplicada a todas las caras */
+#uno, #dos, #tres, #cuatro, #cinco, #seis {
+    background-image: url(/mercedes/public/images/icono_solver_nobg.png);
+    background-color: whitesmoke;
+}
+
+@keyframes girar {
+    from { transform: rotateY(0deg); }
+    to   { transform: rotateY(-360deg); }
+}
+
+@-webkit-keyframes aparecer_03 {
+    0%   { transform: translateX(-100px); }
+    100% { transform: translateX(0px); }
+}

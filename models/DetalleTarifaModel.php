@@ -101,4 +101,20 @@ class DetalleTarifaModel
         return $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getByGrupo(int $grupoId): array {
+        $sql = "SELECT dt.id, dt.costo
+                FROM detalles_tarifas dt
+                JOIN encabezado_tarifa et 
+                ON dt.id_encabezado_tarifa = et.id_encabezado_tarifa
+                JOIN grupo_encabezado_tarifa ge 
+                ON et.id_encabezado_tarifa = ge.id_encabezado_tarifa
+                WHERE ge.id_grupo = :grupoId
+                AND et.is_active = 1
+                ORDER BY dt.costo ASC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['grupoId' => $grupoId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
 }

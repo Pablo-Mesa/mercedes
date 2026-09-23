@@ -11,13 +11,16 @@ if (session_status() === PHP_SESSION_NONE) {
     <title>Iniciar sesión · SOLVER-APP</title>
     <link rel="icon" type="image/svg+xml" href="/mercedes/public/images/icono_solver_nobg.png">
     <link rel="stylesheet" href="/mercedes/public/css/style.css">
+    <link rel="stylesheet" href="/mercedes/public/css/css_cubo.css">
+    <script src="/mercedes/public/js/tool-kit-v002.js"></script>
 </head>
 <body class="login-body">
 
-    <div class="login-wrapper">
+    <div class="login-wrapper">        
         <div class="login-card">
             <div class="login-brand">
-                <img src="/mercedes/public/images/icono_solver_nobg.png" alt="Logo" class="login-logo">
+                <!-- <img src="/mercedes/public/images/icono_solver_nobg.png" alt="Logo" class="login-logo"> -->
+                <div id="contenedorCuboLogin"></div>
                 <h1>SOLVER-APP</h1>
                 <p>Ingresa con tus credenciales para continuar</p>
             </div>
@@ -49,5 +52,11 @@ if (session_status() === PHP_SESSION_NONE) {
     </div>
 
     <script src="/mercedes/public/js/main.js"></script>
+    <script src="/mercedes/public/js/loader.js"></script>
+
+    <script>
+        // Dibujar cubo en el login
+        drawCube("contenedorCuboLogin", false, "28px");
+    </script>
 </body>
 </html>

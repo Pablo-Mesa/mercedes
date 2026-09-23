@@ -67,11 +67,12 @@ class User
      */
     public function create(array $data): string
     {
+
         $stmt = $this->db->prepare("
             INSERT INTO usuarios
-                (name, email, password, phone, address, role_id, cargo_id, is_active, documento_tipo, documento_numero)
+                (name, email, password, phone, address, role_id, grupo_id, cargo_id, is_active, documento_tipo, documento_numero)
             VALUES
-                (:name, :email, :password, :phone, :address, :role_id, :cargo_id, :is_active, :documento_tipo, :documento_numero)
+                (:name, :email, :password, :phone, :address, :role_id, :grupo_id, :cargo_id, :is_active, :documento_tipo, :documento_numero)
         ");
         $stmt->execute([
             'name' => $data['name'],
@@ -80,11 +81,13 @@ class User
             'phone' => $data['phone'] ?? null,
             'address' => $data['address'] ?? null,
             'role_id' => $data['role_id'],
+            'grupo_id' => $data['grupo_id'] ?? null, // 👈 nuevo
             'cargo_id' => $data['cargo_id'] ?? null,
             'is_active' => $data['is_active'] ?? 1,
             'documento_tipo' => $data['documento_tipo'] ?? 'DNI',
             'documento_numero' => $data['documento_numero'] ?? null,
         ]);
+
         return $this->db->lastInsertId();
     }
 
@@ -97,7 +100,7 @@ class User
             $stmt = $this->db->prepare("
                 UPDATE usuarios SET
                     name = :name, email = :email, password = :password, phone = :phone,
-                    address = :address, role_id = :role_id, cargo_id = :cargo_id,
+                    address = :address, role_id = :role_id, grupo_id = :grupo_id, cargo_id = :cargo_id,
                     documento_tipo = :documento_tipo, documento_numero = :documento_numero
                 WHERE id = :id
             ");
@@ -108,6 +111,7 @@ class User
                 'phone' => $data['phone'] ?? null,
                 'address' => $data['address'] ?? null,
                 'role_id' => $data['role_id'],
+                'grupo_id' => $data['grupo_id'] ?? null,
                 'cargo_id' => $data['cargo_id'] ?? null,
                 'documento_tipo' => $data['documento_tipo'] ?? 'DNI',
                 'documento_numero' => $data['documento_numero'] ?? null,
@@ -159,4 +163,20 @@ class User
     {
         return $this->db->query("SELECT id, cargo, slug FROM cargos ORDER BY cargo ASC")->fetchAll();
     }
+
+    /**
+     * Devuelve el rider vinculado a un usuario, si existe.
+     */
+    public function findRiderByUsuario(int $usuarioId): array|false
+    {
+        $stmt = $this->db->prepare("
+            SELECT r.id, r.name, r.contacto, r.is_active, r.foto_perfil
+            FROM riders r
+            WHERE r.id_usuario = :usuarioId
+            LIMIT 1
+        ");
+        $stmt->execute(['usuarioId' => $usuarioId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
 }

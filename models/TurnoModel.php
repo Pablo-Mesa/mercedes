@@ -14,59 +14,70 @@ class TurnoModel
         $this->db = Database::getConnection();
     }
 
-    public function getAll()
+    public function getAll(): array
     {
         $sql = "SELECT * FROM turnos ORDER BY hora_inicio ASC";
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
-
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getById($id)
+    public function getById(int $id): ?array
     {
         $sql = "SELECT * FROM turnos WHERE id = :id LIMIT 1";
         $stmt = $this->db->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
-
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
 
-    public function insert($data)
+    /**
+     * Devuelve todos los turnos asociados a un grupo.
+     */
+    public function getByGrupo(int $id_grupo): array
     {
-        $sql = "INSERT INTO turnos (turno, hora_inicio, hora_fin, url_icono) 
-                VALUES (:turno, :hora_inicio, :hora_fin, :url_icono)";
+        $sql = "SELECT * FROM turnos WHERE id_grupo = :id_grupo ORDER BY hora_inicio ASC";
         $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':turno', $data['turno']);
-        $stmt->bindParam(':hora_inicio', $data['hora_inicio']);
-        $stmt->bindParam(':hora_fin', $data['hora_fin']);
-        $stmt->bindParam(':url_icono', $data['url_icono']);
-
-        return $stmt->execute();
+        $stmt->bindParam(':id_grupo', $id_grupo, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function update($id, $data)
+    public function insert(array $data): bool
+    {
+        $sql = "INSERT INTO turnos (turno, hora_inicio, hora_fin, url_icono, id_grupo) 
+                VALUES (:turno, :hora_inicio, :hora_fin, :url_icono, :id_grupo)";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            ':turno' => $data['turno'],
+            ':hora_inicio' => $data['hora_inicio'],
+            ':hora_fin' => $data['hora_fin'],
+            ':url_icono' => $data['url_icono'],
+            ':id_grupo' => $data['id_grupo']
+        ]);
+    }
+
+    public function update(int $id, array $data): bool
     {
         $sql = "UPDATE turnos 
-                SET turno = :turno, hora_inicio = :hora_inicio, hora_fin = :hora_fin, url_icono = :url_icono 
+                SET turno = :turno, hora_inicio = :hora_inicio, hora_fin = :hora_fin, 
+                    url_icono = :url_icono, id_grupo = :id_grupo
                 WHERE id = :id";
         $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':turno', $data['turno']);
-        $stmt->bindParam(':hora_inicio', $data['hora_inicio']);
-        $stmt->bindParam(':hora_fin', $data['hora_fin']);
-        $stmt->bindParam(':url_icono', $data['url_icono']);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-
-        return $stmt->execute();
+        return $stmt->execute([
+            ':turno' => $data['turno'],
+            ':hora_inicio' => $data['hora_inicio'],
+            ':hora_fin' => $data['hora_fin'],
+            ':url_icono' => $data['url_icono'],
+            ':id_grupo' => $data['id_grupo'],
+            ':id' => $id
+        ]);
     }
 
-    public function delete($id)
+    public function delete(int $id): bool
     {
         $sql = "DELETE FROM turnos WHERE id = :id";
         $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-
-        return $stmt->execute();
+        return $stmt->execute([':id' => $id]);
     }
 }

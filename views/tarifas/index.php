@@ -7,7 +7,6 @@
 ?>
 <div class="page-header page-header-actions">
     <div>
-        <h2>Encabezados de Tarifas</h2>
         <p>Administra los tarifas del sistema. Los cambios en su estado son reversibles.</p>
     </div>
     <a href="/mercedes/tarifas/crear" class="btn btn-primary btn-nuevo">+ Nuevo Tarifa</a>

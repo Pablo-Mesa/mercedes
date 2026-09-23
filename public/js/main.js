@@ -2,6 +2,8 @@
  * public/js/main.js
  * Interacciones ligeras del frontend (sin dependencias externas).
  */
+
+let contador = 0;
 document.addEventListener('DOMContentLoaded', function () {
 
     const input_foto_perfil = document.getElementById('foto_perfil');
@@ -26,14 +28,26 @@ document.addEventListener('DOMContentLoaded', function () {
     const diasSemana = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
 
     const diasContainer = document.getElementById("diasContainer");
-
     const hoy = new Date();
     const anioActual = hoy.getFullYear();
-
     const formProduccion = document.getElementById('formProduccion');
-
     const turnoSelect = document.getElementById('turno');
     const turnoIconPreview = document.getElementById('turnoIconPreview');
+    const toggleBtn = document.getElementById('toggleVista');    
+    const btnGrupo = document.getElementById('grupo');
+    const selectRole = document.getElementById('role_id');
+    const btnToggleTabla = document.getElementById('btnToggleTabla');
+    const btnToggleTheme = document.getElementById('btnToggleTheme');
+    const btnToggleEdit = document.getElementById('toggleEdit');
+
+    const configBtn = document.getElementById("configBtn");
+    const configDropdown = document.getElementById("configDropdown");
+
+    const toggleCuaderno = document.getElementById('toggleCuaderno');
+    const toggleAsistencias = document.getElementById('toggleAsistencias');
+
+    const herramientasSelector = document.querySelector('.herramientas-selector');
+    
     
     //obtener fecha de paraguay    
     function getDatePy(){
@@ -73,6 +87,11 @@ document.addEventListener('DOMContentLoaded', function () {
             if (btn) {
                 btn.disabled = true;
                 btn.textContent = 'Ingresando...';
+            }
+            // Encendemos el loader global para cubrir toda la pantalla 
+            // mientras el controlador de backend procesa las credenciales
+            if (typeof Loader !== 'undefined') {
+                Loader.show();
             }
         });
     }
@@ -136,9 +155,16 @@ document.addEventListener('DOMContentLoaded', function () {
         const btnAbrir = document.getElementById("btnAbrirModal");
         const btnCerrar = document.getElementById("btnCerrarModal");
 
+        const selectRider = document.getElementById("rider");
+        const fechaModal = document.getElementById("fechaHoraViaje");
+        
         btnAbrir.addEventListener("click", () => modal.style.display = "flex");
         btnCerrar.addEventListener("click", () => modal.style.display = "none");
 
+        // Resetear campos
+        selectRider.value = "";
+        fechaModal.value = "";
+        
         // Cerrar si se hace clic fuera del contenido
         window.addEventListener("click", (e) => {
             if (e.target === modal) modal.style.display = "none";
@@ -146,7 +172,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     if(turno_label){
-
         const hidden = document.getElementById('turnoHidden'); 
         const turnoSwitch = document.getElementById('turnoSwitch');
         const turnoIcon = document.getElementById('turnoIcon');
@@ -167,46 +192,104 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Detectar teclas globales
     document.addEventListener('keydown', function(event) {
+        
         // F2 abre modal de nuevo registro
         if (event.key === "F2") {
             event.preventDefault(); // evita que el navegador use F2
             const btnNuevo = document.querySelector('.btn-nuevo'); 
-            if (btnNuevo) {
-            btnNuevo.click(); // simula click en el botón "Nuevo"
+            if (btnNuevo) {                
+                //reiniciar parcialmente el formulario
+                reinicioParcialFormulario('*');
+                btnNuevo.click(); // simula click en el botón "Nuevo"
             }
         }
 
         // Escape cierra modal de producción
         if (event.key === "Escape") {
             //cierra modal produccion
-            const modal = document.getElementById('modalProduccion');
+            const modal = document.getElementById('modalProduccion');            
             if (modal && modal.style.display === "flex") {
-                modal.style.display = "none";
+                modal.style.display = "none";                
             }
-            //cierra modal detalle 
+            //cierra modal  
             const detalleModal = document.getElementById('detalleModal');
-            if (detalleModal && detalleModal.style.display === "flex") {
+            if (detalleModal && detalleModal.style.display === "flex") {                
                 detalleModal.style.display = "none";
             }            
+            // refrescar vista produccion con la fecha actual del formulario
+            location.reload();
         }
 
     });
 
     // agregar listener al select Acciones de Riders "onchange"
-    if(accion){        
+    if (accion) {
         accion.addEventListener('change', function() {
             const selected = this.options[this.selectedIndex];
-            const requiereFactura = selected.getAttribute('data-requiere-factura');
-            const efectivoFields = document.getElementById('efectivoFields');
-            console.log('value: '+requiereFactura);
-            if (requiereFactura === "1") {
-                efectivoFields.style.display = 'block';
+            const codigo = selected.getAttribute('data-codigo');
+            const efectivoFields = document.getElementById('efectivoFields'); 
+
+            // 0. obtener referencia al campo total de factura
+            const totalFacturaFields = document.getElementById('totalFactura');
+            // 1. Obtenemos el valor actual del input
+            const valorInput = totalFacturaFields.value.trim();
+            // 2. Convertimos a número entero base 10
+            const montoEntero = parseInt(valorInput, 10);
+
+            const vueltoInput = document.getElementById('vuelto');
+            //calcularVueltoMaximaDenominacion(totalFactura)
+            if (codigo === 'efectivo') {
+                efectivoFields.classList.remove('hidden');
+                efectivoFields.classList.add('view');
+                //efectivoFields.style.display = 'flex';
+                vueltoInput.required = true;
+
+                // 3. Validación estricta
+                if (valorInput !== '' && !isNaN(montoEntero) && Number.isInteger(montoEntero) && montoEntero > 0) {
+                    // 1. Obtenemos el entero puro desde la función (Ej: 13000)
+                    const vueltoEntero = calcularVueltoMaximaDenominacion(montoEntero);                    
+                    // 2. Lo guardamos en el input como un string numérico limpio ("13000")
+                    vueltoInput.value = vueltoEntero.toString(); 
+                }
+
+
             } else {
-                efectivoFields.style.display = 'none';
+                efectivoFields.classList.remove('view');
+                efectivoFields.classList.add('hidden');
+                //efectivoFields.style.display = 'none';
+                vueltoInput.required = false;
+                vueltoInput.value = '';
             }
         });
+
+        accion.dispatchEvent(new Event('change'));
     }
-    
+
+    function validarFormularioProduccion() {
+        const totalFacturaInput = document.getElementById('totalFactura');
+        const vueltoInput = document.getElementById('vuelto');
+        const selected = accion.options[accion.selectedIndex];
+        const codigo = selected?.getAttribute('data-codigo');
+
+        const totalFactura = totalFacturaInput.value.trim();
+        if (totalFactura === '' || isNaN(totalFactura) || Number(totalFactura) < 0) {
+            showToast('Total factura es obligatorio y debe ser mayor o igual a 0.', 'error');
+            totalFacturaInput.focus();
+            return false;
+        }
+
+        if (codigo === 'efectivo') {
+            const vuelto = vueltoInput.value.trim();
+            if (vuelto === '' || isNaN(vuelto) || Number(vuelto) < 0) {
+                showToast('Vuelto es obligatorio para cobro en efectivo y debe ser mayor o igual a 0.', 'error');
+                vueltoInput.focus();
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     // function mostrar mensaje tipo toast
     window.showToast = function(message, type = 'success') {
         const overlay = document.getElementById('toast-modal');
@@ -230,88 +313,113 @@ document.addEventListener('DOMContentLoaded', function () {
 
         setTimeout(() => {
             overlay.style.display = 'none';
-        }, 3000);
+        }, 5000);
     };
 
     //abre y carga el modal con los detalles de produccion del rider seleccionado
     function openDetalleModal(riderId, fecha) {
-        fetch('/mercedes/produccion/detalle?rider=' + riderId + '&fecha=' + fecha)
+
+        Loader.show();
+        fetch('/mercedes/produccion/byRider?id=' + riderId + '&fecha=' + fecha)
         .then(res => res.json())
         .then(data => {
-            const tbody = document.querySelector('#detalleTable tbody');
+            const tablaDetalle = document.getElementById('detalleTable');
+            const tbody = tablaDetalle.querySelector('tbody');
             tbody.innerHTML = '';
 
             if (data.length === 0) {
-                // No hay registros: mostrar mensaje y no abrir modal
                 showToast("No se encontraron registros para esa fecha.");
                 return;
             }
 
-            let totalTarifas = 0; // acumulador
+            let totalTarifas = 0;
 
             data.forEach(p => {
-                const fecha = new Date(p.fecha_creacion);
-                const horaStr = fecha.toLocaleTimeString('es-PY', {hour:'2-digit', minute:'2-digit'});
+                const fechaObj = new Date(p.fecha_creacion);
+                const horaStr = fechaObj.toLocaleTimeString('es-PY', {hour:'2-digit', minute:'2-digit'});
                 const suma = Number(p.total_factura || 0) + Number(p.vuelto || 0);
-
-                // acumular tarifa
                 totalTarifas += Number(p.tarifa_detalle || 0);
 
-                const turnoBadge = p.turno === 'Diurno'
-                    ? `<span class="badge-turno badge-diurno"><img src="/mercedes/public/images/sun.png" alt="diurno"> ${p.turno}</span>`
-                    : `<span class="badge-turno badge-nocturno"><img src="/mercedes/public/images/moon.png" alt="nocturno"> ${p.turno}</span>`;
+                const turnoBadge = `<span class="badge-turno"><img src="${p.url_icono}" alt="turno"> ${p.turno}</span>`;
 
                 const rendicionCell = (p.accion_nombre === 'Solo entrega')
                     ? `<td><span class="badge-check">✔️</span></td>`
                     : `<td>
                         <label class="switch">
-                            <input type="checkbox" 
-                                class="toggle-rendicion" 
-                                data-id="${p.id}" 
-                                ${p.rendicion ? 'checked' : ''}>
+                            <input type="checkbox" class="toggle-rendicion" data-id="${p.id}" ${p.rendicion ? 'checked' : ''}>
                             <span class="slider"></span>
                         </label>
-                    </td>`;    
+                    </td>`;
+
+                const vuelto = Number.isFinite(parseInt(p.vuelto, 10)) 
+                    ? Math.trunc(parseInt(p.vuelto, 10)).toLocaleString('es-PY') 
+                    : '0';
 
                 tbody.innerHTML += `
-                <tr>                    
+                <tr>
+                    <td>
+                        <img src="/mercedes/public/uploads/grupos/${p.icono}" alt="icono grupo" style="height:20px;vertical-align:middle;margin-right:5px;">
+                        <span>${p.grupo_nombre}</span>
+                    </td>
+                    <td>${turnoBadge}</td>
                     <td>
                         <span class="badge-hora">
-                        <img src="/mercedes/public/images/hora_envio.png" alt="hora de envio">
-                        ${horaStr}</span>
-                    </td>                    
-                    <td>${turnoBadge}</td>
+                            <img src="/mercedes/public/images/hora_envio.png" alt="hora de envio">
+                            ${horaStr}
+                        </span>
+                    </td>
+                    
                     <td>Gs. ${parseInt(p.tarifa_detalle).toLocaleString('es-PY')}</td>
+                    
                     <td>
                         ${p.accion_nombre}
-                        ${suma > 0 ? `<br><span class="badge-pendiente">Gs. ${suma.toLocaleString('es-PY')}</span>` : ''}
+                        ${suma > 0 ? `<br><span class="badge-pendiente" title="Total Gs.: ${Math.trunc(parseInt(p.total_factura, 10)).toLocaleString('es-PY')} # Vuelto Gs.: ${vuelto}">
+                        Gs. ${suma.toLocaleString('es-PY')}</span>` : ''}
                     </td>
-                    ${rendicionCell}                            
-                    <td>
+                    ${rendicionCell}
+                    <td class="acciones-col hidden">
                         <a href="/mercedes/produccion/delete?id=${p.id}" class="btn btn-danger">&#128465; Eliminar</a>
                     </td>
                 </tr>`;
             });
 
-            // fila de total al final
-            const trTotal = document.createElement('tr');
-            trTotal.innerHTML = `
-                <td colspan="2" style="text-align:right; font-weight:bold;">TOTAL TARIFAS</td>
-                <td colspan="0">
-                    <span class="badge-total">Gs. ${totalTarifas.toLocaleString('es-PY')}</span>
-                </td>
-            `;
-            tbody.appendChild(trTotal);
-
-
+            // Pie con total
+            let tfoot = tablaDetalle.querySelector('tfoot');
+            if (!tfoot) {
+                tfoot = document.createElement('tfoot');                
+                tablaDetalle.appendChild(tfoot);
+            }
+            /*<td colspan="${window.userRole === 'admin' ? 2 : 1}"></td>*/
+            tfoot.innerHTML = `
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td style="text-align:center; font-weight:bold;">TOTAL</td>
+                    <td style="text-align:center;">
+                        <span class="badge-total">Gs. ${totalTarifas.toLocaleString('es-PY')}</span>
+                    </td>
+                    <td></td>
+                </tr>`;            
             document.getElementById('detalleModal').style.display = 'flex';
-        });
+        }).catch(error => {
+            // 2. Opcional: Manejo básico si hay una caída del backend
+            console.error("Error al traer el detalle:", error);
+            showToast("Ocurrió un error al procesar la solicitud.");
+        })
+        .finally(() => {
+            // 3. SE OCULTA SIEMPRE: Tanto si terminó el código del modal con éxito,
+            // o si entró en el bloque .catch por un error de red.
+            Loader.hide();
+        }); 
     }
-
+    
     // Botón de cerrar modal
     if(closeModal){
-        document.getElementById('closeModal').addEventListener('click', () => {
+        closeModal.addEventListener('click', () => {
             document.getElementById('detalleModal').style.display = 'none';
+            // refrescar vista produccion con la fecha actual del formulario
+            location.reload();
         });
     }    
 
@@ -323,7 +431,8 @@ document.addEventListener('DOMContentLoaded', function () {
             const riderId = this.dataset.rider;
             const riderName = this.dataset.riderName;
             // Mostrar nombre en el modal
-            document.getElementById('rider_name').textContent = riderName + ' # ' + girarFecha(fechaInput);            
+            document.getElementById('rider_name').textContent = riderName;
+            document.getElementById('rider_production_date').textContent = girarFecha(fechaInput);            
             openDetalleModal(riderId, fechaInput);
         });
     });
@@ -333,13 +442,25 @@ document.addEventListener('DOMContentLoaded', function () {
         btn.addEventListener('click', function() {
             const riderId = this.dataset.rider;
             const select = document.getElementById('rider');
-            const slctTarifa = document.getElementById('tarifa');
+            
+            const fechaVista = document.getElementById("fecha"); // input en la vista
+            const fechaModal = document.getElementById("fechaHoraViaje"); 
 
             // Buscar y seleccionar la opción correcta
             Array.from(select.options).forEach(opt => {
-                opt.selected = (opt.value === riderId);
-                slctTarifa.focus();
+                opt.selected = (opt.value === riderId);                
             });
+            
+            // Tomar fecha de la vista y pasarla al modal
+            if (fechaVista.value) {
+                // Convertir la fecha YYYY-MM-DD a formato datetime-local (YYYY-MM-DDTHH:MM)
+                // Usamos medianoche como hora por defecto
+                fechaModal.value = fechaVista.value + "T00:00";
+            }
+
+            //reiniciar parcialmente el formulario
+            reinicioParcialFormulario('');
+
             // Mostrar el modal
             document.getElementById('modalProduccion').style.display = 'flex';
         });
@@ -439,12 +560,13 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-
     // agregar listener a los elementos que contiene la clase toggle-rencion "onchange" 
     document.addEventListener('change', function(e) {
+        
         if (e.target.classList.contains('toggle-rendicion')) {
             const idProduccion = e.target.dataset.id;
             const estado = e.target.checked ? 1 : 0;
+            Loader.show();
             fetch('/mercedes/produccion/rendicion_update?id=' + idProduccion + '&estado=' + estado)
             .then(res => {
                 if (!res.ok) {
@@ -453,7 +575,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 return res.text(); // siempre lo tratamos como texto primero
             })
             .then(txt => {
-                console.log('Respuesta cruda:', txt); // útil para depuración
                 const data = JSON.parse(txt.trim()); // parse seguro
 
                 if (!data.success) {
@@ -467,11 +588,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     badge.className = 'badge-rendicion ' + (estado ? 'rendido' : 'pendiente');
                 }
                 }
-            })
-            .catch(err => {
+            }).catch(err => {
                 console.error('Error en fetch:', err);
                 alert('Error de conexión');
                 e.target.checked = !estado;
+            }).finally(() => {
+                // 3. SE OCULTA SIEMPRE: Tanto si terminó el código del modal con éxito,
+                // o si entró en el bloque .catch por un error de red.
+                Loader.hide();
             });
         }
     });
@@ -530,6 +654,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function guardarProduccion(form) {
+        Loader.show();
         fetch('/mercedes/produccion/store', {
             method: 'POST',
             body: new FormData(document.getElementById('formProduccion'))
@@ -546,9 +671,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 const riderId = document.querySelector('[name="id_rider"]').value;
                 const fecha = document.querySelector('[name="fecha_creacion"]').value;
                 const soloFecha = fecha.split("T")[0]; 
-                console.log(soloFecha); // "2026-08-05"
-
-
                 // refrescar vista produccion con la fecha actual del formulario
                 window.location.href = '/mercedes/produccion?fecha=' + soloFecha;
             }
@@ -559,15 +681,22 @@ document.addEventListener('DOMContentLoaded', function () {
         .catch(err => {
             console.error("Error en fetch:", err);
             showToast("Error de conexión con el servidor");
+        })
+        .finally(() => {
+            // 3. SE OCULTA SIEMPRE: Tanto si terminó el código del modal con éxito,
+            // o si entró en el bloque .catch por un error de red.
+            Loader.hide();
         });
 
     }
 
-    if(formProduccion){
+    if (formProduccion) {
         document.getElementById('formProduccion').addEventListener('submit', function(e) {
             e.preventDefault(); // evita el envío clásico
+            if (!validarFormularioProduccion()) {
+                return;
+            }
             guardarProduccion(this); // pasa el formulario a la función
-            document.getElementById('modalProduccion').style.display = 'none';
         });
     }
 
@@ -583,6 +712,357 @@ document.addEventListener('DOMContentLoaded', function () {
     if (turnoSelect) {
         turnoSelect.addEventListener('change', actualizarIcono);
         actualizarIcono(); // inicializar al cargar
+    }
+
+    /**
+     * Calcula el vuelto asumiendo que el cliente siempre paga con billetes de 100.000 Gs.
+     * @param {number} totalFactura - El monto total de la factura.
+     * @returns {number} El vuelto/cambio estimado para el peor de los casos.
+     */
+    function calcularVueltoMaximaDenominacion(totalFactura) {
+        if (!totalFactura || totalFactura <= 0) return 0;
+
+        const BILLETE_MAXIMO = 100000;
+
+        // Calcula cuántos billetes de 100.000 se necesitan (redondeando hacia arriba)
+        const cantidadBilletes = Math.ceil(totalFactura / BILLETE_MAXIMO);
+        
+        // Monto total con el que pagaría el cliente
+        const pagoPresumible = cantidadBilletes * BILLETE_MAXIMO;
+
+        // Retorna el vuelto
+        return pagoPresumible - totalFactura;
+    }
+
+    // JS para alternar scroll interno ↔ expandido
+    /*si toggleBtn existe*/
+    if(toggleBtn){
+
+        const gridCards = document.querySelector('.cards-grid');
+        const tablaProduccion = document.getElementById('tablaProduccion');
+
+        toggleBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const isGridVisible = gridCards.style.display !== 'none';
+
+            if (isGridVisible) {
+                gridCards.style.display = 'none';
+                tablaProduccion.style.display = 'flex';
+                toggleBtn.textContent = '🗂️ Ver en cards';
+            } else {
+                gridCards.style.display = 'flex';
+                tablaProduccion.style.display = 'none';
+                toggleBtn.textContent = '📊 Ver en tabla';
+            }
+        });
+
+    }
+
+    function reinicioParcialFormulario(cuanto){
+        const slctRider = document.getElementById('rider');
+        const slctTarifa = document.getElementById('tarifa');
+        const slctAccion = document.getElementById('frmProduccion_accion');
+        const txtTotalFactura = document.getElementById('totalFactura');
+        const txtVuelto = document.getElementById('vuelto');
+        const efeFields = document.getElementById('efectivoFields');
+
+        //reiniciar valores del
+        slctTarifa.focus();
+        slctTarifa.selectedIndex = 0;
+        slctAccion.selectedIndex = 2;
+        txtVuelto.value = "";
+        txtTotalFactura.value = "";
+        efeFields.classList.remove('view');
+        efeFields.classList.add('hidden');
+        if(cuanto === 'all' || cuanto === '*'){
+            slctRider.selectedIndex = 0;
+        }
+    }
+   
+    /*si boton grupo exite, entonces*/
+    if(btnGrupo){
+        btnGrupo.addEventListener('change', function() {
+            const grupoId = this.value;
+            const tarifaSelect = document.getElementById('tarifa');
+            if (!grupoId) return;            
+            Loader.show();
+            /* promesa ejecuta 3 fetch */
+            Promise.all([
+
+                /*fetch riders*/
+                fetch('/mercedes/produccion/getRidersByGrupoAjax?grupo=' + grupoId)
+                    .then(res => res.json())
+                    .then(data => {
+                    const riderSelect = document.getElementById('rider');
+                    riderSelect.innerHTML = '<option value="">-- Seleccionar Rider --</option>';
+                    data.forEach(r => {
+                        riderSelect.innerHTML += `<option value="${r.id}">${r.name}</option>`;
+                    });
+                    }),
+
+                /*fetch tarifas*/    
+                fetch('/mercedes/produccion/getTarifasByGrupoAjax?grupo=' + grupoId)
+                    .then(res => res.json())
+                    .then(data => {
+                    tarifaSelect.innerHTML = '<option value="">-- Seleccionar Tarifa --</option>';
+                    data.forEach(t => {
+                            tarifaSelect.innerHTML += `<option value="${t.id}">${parseInt(t.costo).toLocaleString()}</option>`;
+                        });
+                    }),
+
+                /*fetch turnos*/    
+                fetch('/mercedes/produccion/getTurnosByGrupoAjax?grupo=' + grupoId)
+                .then(res => res.json())
+                .then(data => {
+                    const turnoSelect = document.getElementById('turno');
+                    turnoSelect.innerHTML = '<option value="">-- Seleccionar Turno --</option>';
+
+                    // hora actual local (Asunción)
+                    const now = new Date();
+                    const formatter = new Intl.DateTimeFormat('es-PY', {
+                        timeZone: 'America/Asuncion',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false
+                    });
+                    const parts = formatter.formatToParts(now);
+                    const hour = parseInt(parts.find(p => p.type === 'hour').value, 10);
+                    const minute = parseInt(parts.find(p => p.type === 'minute').value, 10);
+                    const currentMinutes = hour * 60 + minute;
+
+                    let autoSelectedId = null;
+
+                    data.forEach(t => {
+                        const inicio = timeToMinutes(t.hora_inicio);
+                        const fin    = timeToMinutes(t.hora_fin);
+
+                        const opt = document.createElement('option');
+                        opt.value = t.id;
+                        opt.textContent = `${t.turno} (${t.hora_inicio} - ${t.hora_fin})`;
+
+                        // usar función que soporta rangos cruzando medianoche
+                        if (isWithinRange(currentMinutes, inicio, fin)) {
+                            autoSelectedId = t.id;
+                        }
+
+                        turnoSelect.appendChild(opt);
+                    });
+
+                    // seleccionar automáticamente
+                    if (autoSelectedId) {
+                        turnoSelect.value = autoSelectedId;
+                    }
+
+                }).catch(err => {
+                    console.error('Error cargando turnos:', err);
+                    const turnoSelect = document.getElementById('turno');
+                    turnoSelect.innerHTML = '<option value="">Error al cargar turnos</option>';
+                }) 
+
+            ])
+            .catch(err => console.error('Error cargando datos:', err))
+            .finally(() => Loader.hide());                
+        });
+    }
+
+    // helpers
+    function timeToMinutes(timeStr) {
+        const [h, m] = timeStr.split(':').map(Number);
+        return h * 60 + m;
+    }
+
+    function isWithinRange(currentMinutes, inicio, fin) {
+        if (inicio <= fin) {
+            return currentMinutes >= inicio && currentMinutes <= fin;
+        } else {
+            // rango que cruza medianoche
+            return currentMinutes >= inicio || currentMinutes <= fin;
+        }
+    }
+
+    /*si select roles existe*/
+    if(selectRole){
+        selectRole.addEventListener('change', function() {
+            const grupoField = document.getElementById('grupoField');
+            const selectedRole = this.options[this.selectedIndex].text.toLowerCase();
+            if (selectedRole.includes('operaciones')) {
+                grupoField.style.display = 'flex';
+            } else {
+                grupoField.style.display = 'none';
+            }
+        });
+    }
+
+    /*si btnToggleTabla*/
+    if(btnToggleTabla){
+        btnToggleTabla.addEventListener('click', function() {
+            const completa = document.getElementById('tablaCompleta');
+            const compacta = document.getElementById('tablaCompacta');
+
+            if (completa.style.display === 'none') {
+                completa.style.display = 'block';
+                compacta.style.display = 'none';
+            } else {
+                completa.style.display = 'none';
+                compacta.style.display = 'block';
+            }
+        });
+    }
+
+    /*si btnToggleTheme*/
+    if(btnToggleTheme){
+        btnToggleTheme.addEventListener('click', function() {
+        const resumen = document.querySelector('.resumen-grupos');
+        const tabla = document.querySelector('.tabla-resumen');
+        const iconos = document.querySelectorAll('.icono-grupo');
+
+        if (resumen.classList.contains('resumen-grupos-dark')) {
+            // volver a claro
+            resumen.classList.remove('resumen-grupos-dark');
+            tabla.classList.remove('tabla-resumen-dark');
+            iconos.forEach(i => i.classList.remove('icono-grupo-dark'));
+        } else {
+            // activar oscuro
+            resumen.classList.add('resumen-grupos-dark');
+            tabla.classList.add('tabla-resumen-dark');
+            iconos.forEach(i => i.classList.add('icono-grupo-dark'));
+        }
+        });
+    }
+
+    /*si btnToggleEdit edita tabla detalles produccion*/
+    if(btnToggleEdit){
+        btnToggleEdit.addEventListener('click', function() {
+            const accionesCols = document.querySelectorAll('.acciones-col');
+            const isHidden = accionesCols[0].classList.contains('hidden');
+
+            accionesCols.forEach(col => {
+                if (isHidden) {//si columna oculta, entonces
+                    col.classList.remove('hidden');//visualizar
+                }
+                else {//sino, entonces
+                    col.classList.add('hidden');//ocultar
+                }
+            });
+
+            // Cambiar estado del botón
+            this.classList.toggle('active');
+            this.textContent = isHidden ? '❌ Cerrar edición' : '✏️ Editar tabla';
+        });
+    }
+
+    /*toggleMenu abre menu configuraciones*/
+    function toggleMenu() {
+        const isOpen = configDropdown.classList.contains("open");
+        configDropdown.classList.toggle("open", !isOpen);
+        if(configBtn) {configBtn.setAttribute("aria-expanded", !isOpen);} 
+    }
+
+    /*si configBtn*/
+    if(configBtn){
+        // Click con mouse
+        configBtn.addEventListener("click", toggleMenu);
+
+        // Teclado: Enter o barra espaciadora
+        configBtn.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                toggleMenu();
+            }
+        });
+    }
+
+    // Opcional: cerrar si se hace click fuera
+    document.addEventListener("click", (e) => {
+        if (!configBtn.contains(e.target) && !configDropdown.contains(e.target)) {
+            configDropdown.classList.remove("open");
+            configBtn.setAttribute("aria-expanded", false);
+        }
+    });
+    
+    //actualizar estados en la vista herramientas    
+    function actualizarVistas() {
+        const tabla = document.querySelector('.tabla-herramientas');
+        if (!tabla) return; // si no existe, salimos sin error
+
+        const filas = tabla.querySelectorAll('tbody tr');
+        const btnGuardar = document.getElementById('btnGuardar');
+        if (!btnGuardar) return;;
+
+        // activar/desactivar columnas completas
+        const cuadernoActivo = document.getElementById('toggleCuaderno').checked;
+        const asistenciasActivo = document.getElementById('toggleAsistencias').checked;
+
+        tabla.classList.toggle('active-cuaderno', cuadernoActivo);
+        tabla.classList.toggle('active-asistencias', asistenciasActivo);
+
+        // La selección vacía también es válida: permite desactivar ambas herramientas.
+        btnGuardar.disabled = false;
+
+        filas.forEach(fila => {
+            const vista = fila.querySelector('.vista-item');
+            const cuadernoCheck = fila.querySelector('.col-cuaderno input');
+            const asistenciasCheck = fila.querySelector('.col-asistencias input');
+
+            vista.classList.remove('active-cuaderno', 'active-asistencias');
+
+            if (cuadernoActivo && cuadernoCheck.checked) {
+                vista.classList.add('active-cuaderno');
+            }
+            if (asistenciasActivo && asistenciasCheck.checked) {
+                vista.classList.add('active-asistencias');
+            }
+        });
+    }
+
+    //si toggle cuaderno, entonces
+    if(toggleCuaderno){
+        toggleCuaderno.addEventListener('change', actualizarVistas);
+    }
+
+    //si toggle asistencias, entonces
+    if(toggleAsistencias){
+        toggleAsistencias.addEventListener('change', actualizarVistas);
+    }   
+
+    // inicializar
+    actualizarVistas();
+
+    // si formulario seleccion de herramientas existe, entonces
+    if(herramientasSelector){
+        // formulario seleccion de herramientas
+        document.querySelector('.herramientas-selector').addEventListener('submit', function(e) {
+            e.preventDefault(); // Evitamos el submit clásico
+            Loader.show();
+
+            const formData = new FormData(this);
+
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-Requested-With': 'XMLHttpRequest' } // para que el backend sepa que es AJAX
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    showToast(data.message, 'success'); // tu función de toast
+                    //retardo para recarga de pagina
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1200); // 1,2 segundos para que se vea el toast
+                } else {
+                    showToast('Error al guardar', 'error');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                showToast('Error de conexión');
+            })
+            .finally(() => {
+                Loader.hide();                
+            });
+                
+        });
     }
 
 });

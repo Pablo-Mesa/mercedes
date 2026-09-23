@@ -16,6 +16,8 @@ class DetallesController extends BaseController
         }
         $this->detalleModel = new DetalleTarifaModel();
         $this->encabezadoModel = new EncabezadoTarifaModel();
+        $this->requireRole(['admin']);
+        $this->requireToolEnabled('tool_cuaderno_enabled', 'El Cuaderno está desactivado.');
     }
 
     // Mostrar detalles de un encabezado

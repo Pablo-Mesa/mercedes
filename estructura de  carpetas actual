@@ -1,0 +1,77 @@
+mercedes/
+├── app/
+│   ├── repositories/
+│   │   └── AsistenciasRepository.php
+│   └── services/
+│       ├── AsistenciasService.php
+│       └── ProduccionService.php
+├── config/
+│   ├── Database.php
+│   ├── estructura_db_al_26-08-26
+│   ├── installed.txt
+│   └── setup.php
+├── controllers/
+│   ├── AsistenciasController.php
+│   ├── AuthController.php
+│   ├── BaseController.php
+│   ├── ConfiguracionesController.php
+│   ├── DashboardController.php
+│   ├── DetallesController.php
+│   ├── GruposController.php
+│   ├── ProduccionController.php
+│   ├── RiderProduccionController.php
+│   ├── RidersController.php
+│   ├── TarifasController.php
+│   ├── TurnosController.php
+│   └── UserController.php
+├── helpers/
+│   ├── GrupoHelper.php
+│   ├── IconHelper.php
+│   ├── TurnoHelper.php
+│   └── UploadHelper.php
+├── models/
+│   ├── AsistenciaModel.php
+│   ├── DashboardModel.php
+│   ├── DetalleTarifaModel.php
+│   ├── EncabezadoTarifaModel.php
+│   ├── GrupoEncabezadoTarifaModel.php
+│   ├── GruposModel.php
+│   ├── ProduccionModel.php
+│   ├── PuntoControlModel.php
+│   ├── RiderModel.php
+│   ├── TarifaModel.php
+│   ├── TurnoModel.php
+│   └── User.php
+├── public/
+│   ├── assets/
+│   ├── css/
+│   ├── images/
+│   ├── js/
+│   └── uploads/
+├── test/
+│   ├── produccion_service_test.php
+│   ├── produccionservicetest.php
+│   ├── test_turno_helper.php
+│   └── test_turno_helper_db.php
+├── views/
+│   ├── asistencias/
+│   ├── components/
+│   ├── configuraciones/
+│   ├── grupos/
+│   ├── layouts/
+│   ├── produccion/
+│   ├── riders/
+│   ├── rider_asistencia/
+│   ├── rider_produccion/
+│   ├── tarifas/
+│   ├── turnos/
+│   └── usuarios/
+├── .htaccess
+├── index.php
+├── package.json
+├── package-lock.json
+├── README
+├── REFACTOR_PROMPT.md
+├── consulta.php
+├── pruebaapituruc.php
+└── setup.ps1

@@ -25,8 +25,14 @@ require_once __DIR__ . '/controllers/TarifasController.php';
 require_once __DIR__ . '/controllers/RidersController.php';
 require_once __DIR__ . '/controllers/DetallesController.php';
 require_once __DIR__ . '/controllers/ProduccionController.php';
+require_once __DIR__ . '/controllers/RiderProduccionController.php';
 require_once __DIR__ . '/controllers/ConfiguracionesController.php';
-
+require_once __DIR__ . '/controllers/GruposController.php';
+require_once __DIR__ . '/controllers/TurnosController.php';
+require_once __DIR__ . '/controllers/AsistenciasController.php';
+require_once __DIR__ . '/controllers/AdminAsistenciasController.php';
+require_once __DIR__ . '/controllers/InvitadosController.php';
+require_once __DIR__ . '/controllers/HerramientasController.php';
 
 // Captura y limpia la ruta solicitada (sin query string, sin slashes sobrantes)
 $url = isset($_GET['url']) ? trim($_GET['url'], '/') : '';
@@ -212,7 +218,7 @@ switch ($url) {
     case 'produccion/detalle':
     case 'produccion/byRider':
         $produccionController = new ProduccionController();
-        $produccionController->detalle();
+        $produccionController->byRider();
         break;
 
     case 'produccion/rendicion_update':
@@ -225,6 +231,7 @@ switch ($url) {
         $produccionController->delete();
         break;    
 
+    // --- Punto de control ---    
     case 'punto-control':
         $configController = new ConfiguracionesController();
         $configController->puntodecontrol();
@@ -239,8 +246,135 @@ switch ($url) {
             echo "Método no permitido";
         }
         break;
-    
 
+    // --- Grupos ---    
+    case 'grupos':
+        $gruposController = new GruposController();
+        $gruposController->index();
+        break;
+
+    case 'grupos/crear':
+        $gruposController = new GruposController();
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $gruposController->store();
+        } else {
+            $gruposController->create();
+        }
+        break;
+
+    case 'grupos/editar':
+        $gruposController = new GruposController();
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $gruposController->update();
+        } else {
+            $gruposController->edit();
+        }
+        break;
+
+    case 'grupos/eliminar':
+        $gruposController = new GruposController();
+        $gruposController->delete();
+        break;
+
+    case 'grupos/asignar_tarifas':
+        $controller = new GruposController();
+        $controller->asignarTarifas();
+        break;
+
+    case 'grupos/guardar_tarifas':
+        $controller = new GruposController();
+        $controller->guardarTarifas();
+        break;
+    
+    // --- Turnos ---
+    case 'turnos':
+        $turnosController = new TurnosController();
+        $turnosController->index();
+        break;
+
+    case 'turnos/create':
+        $turnosController = new TurnosController();
+        $turnosController->create();
+        break;
+
+    case 'turnos/store':
+        $turnosController = new TurnosController();
+        $turnosController->store();
+        break;
+
+    case 'turnos/edit':
+        $turnosController = new TurnosController();
+        $turnosController->edit();
+        break;
+
+    case 'turnos/update':
+        $turnosController = new TurnosController();
+        $turnosController->update();
+        break;
+
+    case 'turnos/delete':
+        $turnosController = new TurnosController();
+        $turnosController->delete();
+        break;
+    
+    case 'produccion/getRidersByGrupoAjax':
+        $produccionController = new ProduccionController();
+        $produccionController->getRidersByGrupoAjax();
+        break;
+
+    case 'produccion/getTarifasByGrupoAjax':
+        $produccionController = new ProduccionController();
+        $produccionController->getTarifasByGrupoAjax();
+        break;
+
+    case 'produccion/getTurnosByGrupoAjax':
+        $produccionController = new ProduccionController();
+        $produccionController->getTurnosByGrupoAjax();
+        break;
+
+    case 'rider_produccion':
+        $riderProduccion = new RiderProduccionController();
+        $riderProduccion->index();
+        break;
+
+    case 'rider_produccion/detalle':
+        $riderProduccion = new RiderProduccionController();
+        $riderProduccion->detalle();
+        break;
+
+    case 'rider_asistencia':
+        $asistenciasController = new AsistenciasController();
+        $asistenciasController->index();
+        break;
+
+    case 'rider_asistencia/form':
+        $asistenciasController = new AsistenciasController();
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $asistenciasController->store();
+        } else {
+            $asistenciasController->form(); // nuevo método que carga la vista
+        }
+        break;
+
+    case 'asistencias':
+        $adminAsistenciasController = new AdminAsistenciasController();
+        $adminAsistenciasController->index();
+        break;
+
+    case 'invitados':
+        $invitadosController = new InvitadosController();
+        $invitadosController->index();
+        break;
+
+    case 'herramientas':
+        $herramientasController = new HerramientasController();
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $herramientasController->save();
+        } else {
+            $herramientasController->index();
+        }
+        break;    
+    
     default:
         http_response_code(404);
         echo '<h1 style="font-family: sans-serif; text-align:center; margin-top: 80px;">404 - Página no encontrada</h1>';

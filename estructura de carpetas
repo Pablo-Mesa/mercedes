@@ -1,0 +1,54 @@
+mercedes/
+├── app/
+│   ├── Core/
+│   │   ├── Router.php
+│   │   ├── Request.php
+│   │   ├── Response.php
+│   │   └── Session.php
+│   ├── Http/
+│   │   └── Controllers/
+│   │       ├── AuthController.php
+│   │       ├── ProduccionController.php
+│   │       ├── UserController.php
+│   │       └── ...
+│   ├── Services/
+│   │   ├── ProduccionService.php
+│   │   ├── UserService.php
+│   │   ├── TarifasService.php
+│   │   └── ...
+│   ├── Repositories/
+│   │   ├── ProduccionRepository.php
+│   │   ├── UserRepository.php
+│   │   └── ...
+│   ├── Models/
+│   │   ├── User.php
+│   │   ├── Produccion.php
+│   │   └── ...
+│   ├── Validators/
+│   │   ├── ProduccionValidator.php
+│   │   └── UserValidator.php
+│   └── Helpers/
+│       ├── AuthHelper.php
+│       ├── RoleHelper.php
+│       └── ...
+├── config/
+│   ├── Database.php
+│   ├── app.php
+│   └── setup.php
+├── public/
+│   ├── css/
+│   ├── js/
+│   ├── images/
+│   └── uploads/
+├── resources/
+│   └── views/
+│       ├── layouts/
+│       ├── produccion/
+│       ├── usuarios/
+│       └── ...
+├── tests/
+│   ├── unit/
+│   └── integration/
+├── index.php
+├── composer.json
+└── README.md

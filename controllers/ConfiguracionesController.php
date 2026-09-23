@@ -16,18 +16,8 @@ class ConfiguracionesController extends BaseController {
             $this->redirect('/mercedes/login');
         }
         $this->puntoModel = new PuntoControlModel();
-        $this->ensureIsAdmin();
-    }
-
-    /** 
-     * Solo rol admin puede acceder.
-     */
-    private function ensureIsAdmin(): void {
-        if (($_SESSION['user_role'] ?? null) !== 'admin') {
-            http_response_code(403);
-            echo 'Acceso prohibido';
-            exit;
-        }
+        $this->requireRole(['admin']);
+        $this->requireToolEnabled('tool_asistencias_enabled', 'El Control de Asistencias está desactivado.');
     }
 
     /**

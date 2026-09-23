@@ -19,40 +19,8 @@ class TarifasController extends BaseController
         }
         $this->encabezadoModel = new EncabezadoTarifaModel();
         $this->detalleModel = new DetalleTarifaModel();
-        $this->ensureIsAdmin();
-    }
-
-    /**
-     * Corta la petición con 403 si el rol de la sesión no es 'admin'.
-     */
-    private function ensureIsAdmin(): void
-    {
-        if (($_SESSION['user_role'] ?? null) !== 'admin') {
-            http_response_code(403);
-            echo '<!DOCTYPE html>
-            <html lang="es">
-            <head>
-                <meta charset="UTF-8">
-                <title>Acceso Prohibido</title>
-                <link rel="icon" type="image/svg+xml" href="/mercedes/public/images/favicon.svg">
-                <style>
-                    body { font-family: "Segoe UI", Arial, sans-serif; background:#0f1524; color:#fff; display:flex; align-items:center; justify-content:center; height:100vh; margin:0; }
-                    .box { text-align:center; padding: 40px 60px; background:#171f36; border-radius:16px; border:1px solid #2a3358; }
-                    .box h1 { font-size: 56px; margin: 0 0 10px; color:#ff5c7a; }
-                    .box p { color:#a9b1d1; margin-bottom: 24px; }
-                    .box a { color:#7f9cff; text-decoration:none; font-weight:600; }
-                </style>
-            </head>
-            <body>
-                <div class="box">
-                    <h1>403</h1>
-                    <p>Acceso Prohibido. No cuentas con permisos para gestionar usuarios.</p>
-                    <a href="/mercedes/dashboard">Volver al Dashboard</a>
-                </div>
-            </body>
-            </html>';
-            exit;
-        }
+        $this->requireRole(['admin']);
+        $this->requireToolEnabled('tool_cuaderno_enabled', 'El Cuaderno está desactivado.');
     }
 
     // Listar encabezados

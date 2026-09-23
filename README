@@ -1,172 +1,418 @@
-Resumen del proyecto mercedes
+Mercedes
+Sistema PHP MVC para la gestión operativa de riders, producción, empresas, turnos, tarifas, usuarios y control de asistencias.
 
-1. Propósito general
-Este proyecto es un panel administrativo en PHP nativo orientado a la gestión de:
+Estado Actual
+Mercedes utiliza un front controller PHP con arquitectura MVC en transición.
 
-usuarios
-riders
-tarifas y sus detalles
-registros de producción
-Parece diseñado para un sistema logístico / de delivery donde se administra el personal(riders),
-se configuran tarifas, y se registra producción diaria o de servicios con filtros por fecha, turno, rider y acción.
+El flujo principal de autenticación, permisos, producción, selección persistente de herramientas y navegación dinámica está implementado.
 
-2. Arquitectura principal
+La estructura ejecutable actual no coincide completamente con la arquitectura propuesta en estructura de carpetas. Actualmente se utilizan:
+
+index.php como router principal.
+controllers para controladores HTTP.
+models para acceso y lógica de datos.
+views para las vistas PHP.
+services para servicios de negocio.
+repositories para repositorios.
+helpers para utilidades compartidas.
+config para conexión e instalación.
+public para CSS, JavaScript, imágenes y archivos subidos.
+
+Estructura Del Proyecto
+
+mercedes/
+├── app/
+│   ├── repositories/
+│   └── services/
+├── config/
+│   ├── Database.php
+│   ├── setup.php
+│   └── estructura_db_al_16-09-26
+├── controllers/
+├── helpers/
+├── models/
+├── public/
+│   ├── assets/
+│   ├── css/
+│   ├── images/
+│   ├── js/
+│   └── uploads/
+├── test/
+├── views/
+│   ├── asistencias/
+│   ├── configuraciones/
+│   ├── grupos/
+│   ├── herramientas/
+│   ├── layouts/
+│   ├── produccion/
+│   ├── rider_asistencia/
+│   ├── rider_produccion/
+│   ├── riders/
+│   ├── tarifas/
+│   ├── turnos/
+│   └── usuarios/
+├── index.php
+├── package.json
+└── README.md
+
+Arquitectura
+Capa	Ubicación	Responsabilidad
+Router	index.php	Recibe la ruta y delega al controlador correspondiente
+Controllers	controllers	Orquestan solicitudes HTTP, permisos y respuestas
+Models	models	Consultas y acceso a entidades de la base de datos
+Services	services	Reglas de negocio y validaciones complejas
+Repositories	repositories	Acceso especializado a datos
+Helpers	helpers	Funciones y utilidades reutilizables
+Views	views	Renderizado de la interfaz
+Layout	main.php	Plantilla general y navbar dinámico
+Public	public	Recursos estáticos y archivos subidos
+Módulos
+Módulo	Descripción
+Autenticación	Login, logout, sesiones y validación de usuarios
+Dashboard	Resumen administrativo de producción
+Producción	Registro, edición, consulta y rendición de producción
+Riders	Gestión de riders o empleados
+Empresas	Gestión de grupos y asociaciones
+Turnos	Gestión de turnos asociados a empresas
+Tarifas	Encabezados y detalles de tarifas
+Usuarios	Administración de usuarios y roles
+Herramientas	Activación de Cuaderno y Control de Asistencias
+Punto de Control	Configuración del punto donde se registran llegadas
+Asistencias	Registro de llegada/salida y consulta de asistencias
+Roles
+Los usuarios tienen un role_id relacionado con la tabla roles. Durante la sesión, el sistema utiliza principalmente el role_slug.
+
+Rol	Permisos principales
+admin	Acceso administrativo, configuración, usuarios y herramientas
+operaciones	Producción, riders y consulta operativa de asistencias
+rider	Producción propia y registro de llegadas
+invitado	Consulta de producción cuando Cuaderno está activo
+Herramientas
+La activación de módulos se controla desde la tabla settings.
+
+Clave	Herramienta
+tool_cuaderno_enabled	Cuaderno
+tool_asistencias_enabled	Control de Asistencias
+Los valores se almacenan normalmente como 1 o 0.
+
+La gestión se realiza mediante:
+
+HerramientasController.php
+SettingsModel.php
 index.php
+Las herramientas son complementarias y pueden activarse simultáneamente.
 
-Front controller central
-Hace session_start()
-Carga setup automático si no existe installed.txt
-Enrutamiento básico con switch sobre $_GET['url']
-Redirige a controladores según la ruta
-Database.php
+Prioridad De Cuaderno
+Cuando ambas herramientas están activas, Cuaderno tiene prioridad como módulo principal para la redirección inicial:
 
-Conexión PDO a MySQL
-Soporta conexión a servidor sin BD para instalación inicial
-getConnection(), getServerConnection(), resetConnection()
-setup.php
+Rol	Vista inicial
+Admin	Dashboard
+Operaciones	Producción
+Rider	Producción propia
+Invitado	Producción de invitados
+Cuando Cuaderno está desactivado y Control de Asistencias está activo:
 
-Instalador automático
-Crea tablas:
-roles
-cargos
-usuarios
-settings
-Inserta datos semilla:
-rol admin
-cargo admin-general
-usuario admin@correo.com / admin123
-main.php
+Rol	Vista inicial
+Admin	index.php
+Operaciones	index.php
+Rider	index.php
+Invitado	Acceso prohibido porque no tiene vista de asistencias
+Loader De Herramientas
+La vista index.php utiliza el Loader global para informar al usuario mientras se guarda la configuración.
 
-Layout maestro
-Renderiza las sub-vistas dinámicamente
-Incluye menú lateral, topbar, alertas flash y scripts JS
+Al enviar el formulario se ejecuta:
 
-3. Funcionalidades implementadas
-Autenticación
-Login con email y password (AuthController)
-Verificación de contraseña con password_verify
-Solo usuarios activos pueden iniciar sesión
-Logout destruye sesión
 
-Dashboard
-DashboardController::index()
-Muestra conteo de usuarios y datos básicos del usuario actual
+Después del envío, el servidor guarda la configuración en settings y redirige nuevamente a la vista de herramientas.
 
-Usuarios
-CRUD de usuarios desde UserController
-Solo accesible para rol admin
-Permite:
-listar usuarios
-crear usuario
-editar usuario
-activar / desactivar usuario
-Modelo User.php
-manejo de roles, cargos, creación, actualización y estado
+El Loader se oculta automáticamente al recargarse la página, de forma que no queda visible después de completar la operación.
 
+Navbar Dinámico
+El navbar principal se encuentra en:
+
+
+El layout consulta las configuraciones persistidas:
+
+
+Los ítems se renderizan según:
+
+La herramienta activa.
+El rol del usuario.
+La vista actual.
+Los permisos del controlador correspondiente.
+Cuaderno
+Cuando está activo, puede mostrar:
+
+Dashboard.
+Producción.
+Riders.
+Empresas.
+Turnos.
+Tarifas.
+Usuarios.
+Herramientas.
+About Dev.
+Control De Asistencias
+Cuando está activo, puede mostrar:
+
+Llegadas.
+Riders.
+Punto de Control.
+Usuarios.
+Herramientas.
+About Dev.
+Si ambas herramientas están activas, los elementos compartidos deben aparecer una sola vez.
+
+El navbar solo controla la visibilidad. La autorización real debe permanecer en los controladores para impedir el acceso manual mediante URL.
+
+Diagrama De Relaciones
+
+usuarios (role_id, grupo_id)
+   │
+   └── riders (id_usuario)
+          │
+          ├── asistencias (rider_id, punto_control_id)
+          │
+          └── produccion (id_rider, id_grupo, id_turno, id_detalle_tarifa)
+                          │
+                          └── detalles_tarifas (id_encabezado_tarifa)
+                                   │
+                                   └── encabezado_tarifa
+                                          │
+                                          └── grupo_encabezado_tarifa (id_grupo)
+
+Flujo De Producción
+El módulo de producción está organizado principalmente en:
+
+ProduccionController.php
+ProduccionService.php
+ProduccionModel.php
+El servicio concentra:
+
+Validación de payloads.
+Reglas de negocio.
+Registro y actualización.
+Validación de datos obligatorios.
+Operaciones relacionadas con producción.
+El controlador mantiene la responsabilidad de recibir la solicitud, invocar el servicio y devolver la respuesta correspondiente.
+
+Flujo De Asistencias
 Riders
-CRUD de riders desde RidersController
-Solo admin
-Soporta:
-listado
-creación / edición
-upload de foto de perfil
-activación / desactivación
-eliminación
-Modelo RiderModel.php
+El flujo de riders se encuentra en:
 
-Tarifas
-Gestión de encabezados de tarifa desde TarifasController
-Controla:
-listar encabezados
-crear encabezado
-activar / desactivar un encabezado
-ver detalles de tarifas
-Modelo EncabezadoTarifaModel.php
+AsistenciasController.php
+index.php
+form.php
+rider_asistencia.js
+Permite consultar asistencias propias y registrar llegada o salida.
 
-Detalles de Tarifas
-DetallesController
-Permite:
-crear detalle de tarifa
-editar detalle
-habilitar/deshabilitar detalle
-eliminar detalle
-Modelo DetalleTarifaModel.php
+Admin Y Operaciones
+El flujo administrativo está preparado mediante:
 
-Producción
-ProduccionController
-Registro de producción con:
-rider
-tarifa
-turno
-acción del rider
-total factura / vuelto cuando la acción lo requiere
-Filtros de visualización por fecha, turno, rider y acción
-Dos vistas:
-tarjetas (cards.php)
-tabla (index.php)
-JS en main.js controla modales, filtros y peticiones AJAX
+AdminAsistenciasController.php
+index.php
+La vista index.php está reservada para mostrar una lista de riders que ya registraron su llegada al local. El listado administrativo todavía está pendiente de desarrollo.
 
-4. Componentes clave
-style.css: estilo de la interfaz
-main.js: interacciones del frontend
-UploadHelper.php: sube fotos de riders
-EncabezadoTarifaModel.php, DetalleTarifaModel.php, ProduccionModel.php, RiderModel.php, User.php: capa de datos
+Rutas Principales
+Ruta	Función
+/mercedes/login	Inicio de sesión
+/mercedes/logout	Cierre de sesión
+/mercedes/dashboard	Dashboard administrativo
+/mercedes/produccion	Gestión de producción
+/mercedes/riders	Gestión de riders
+/mercedes/grupos	Gestión de empresas o grupos
+/mercedes/turnos	Gestión de turnos
+/mercedes/tarifas	Gestión de tarifas
+/mercedes/usuarios	Gestión de usuarios
+/mercedes/punto-control	Configuración del punto de control
+/mercedes/asistencias	Consulta administrativa de asistencias
+/mercedes/rider_asistencia	Historial de asistencias del rider
+/mercedes/rider_asistencia/form	Formulario de registro de llegada
+/mercedes/rider_produccion	Producción del rider
+/mercedes/herramientas	Activación de herramientas
+Seguridad Y Permisos
+Los permisos se centralizan parcialmente en:
 
-usuarios, riders, tarifas, produccion: vistas específicas
 
-5. Qué no hace / limitaciones detectadas
-Install / base de datos incompleta
-setup.php crea solo roles, cargos, usuarios, settings
-No crea tablas usadas en la aplicación como:
-riders
-encabezado_tarifa
-detalles_tarifas
-produccion
-turnos
-acciones_rider
-Esto indica que el instalador está incompleto respecto al dominio real de la app
+Métodos principales:
 
-Rutas / lógica inconsistentes
-TarifasController::delete() llama a $this->encabezadoModel->delete() sin pasar el ID
-TarifasController::update($id) espera un ID, pero la ruta tarifas/editar no lo provee
-DetalleTarifaModel::getActivosByEncabezadoActivo() referencia columnas/tabla diferentes a las usadas en el resto del proyecto
-El JS usa /mercedes/produccion/byRider en una función, pero esa ruta no existe en index.php
-Hay rutas que posiblemente están incompletas o duplicadas (tarifas/detalles vs detalles/crear, tarifas/nuevo_detalle)
+requireAuth()
+requireRole()
+requireAdmin()
+requireToolEnabled()
+requireAnyToolEnabled()
+forbidden()
+Cada controlador debe validar:
 
-Roles y permisos
-Solo existe admin como permiso relevante en controladores
-No hay manejo de otros roles en rutas ni en control de acceso más allá de admin
-Dependencias
-package.json solo contiene tu-ruc-js-client
-No hay evidencia de uso efectivo de esa librería en el código actual
-No hay build pipeline de Node, es PHP + frontend estático
+Que exista una sesión activa.
+Que el usuario tenga el rol permitido.
+Que la herramienta necesaria esté activa.
+Esto evita que un usuario acceda manualmente mediante URL a una sección cuya herramienta está deshabilitada.
 
-6. Hacia dónde apunta el objetivo
-El proyecto apunta a ser un:
+Ejemplos:
 
-dashboard administrativo para una operación de riders/delivery
-sistema de gestión de servicios y cobros por tarifa
-aplicación interna con control de usuarios y reporting básico
-Su objetivo parece ser:
+Dashboard requiere Cuaderno.
+Producción requiere Cuaderno.
+Punto de Control requiere Control de Asistencias.
+Asistencias requiere Control de Asistencias.
+Riders requiere al menos una herramienta activa.
+Usuarios y Herramientas permanecen disponibles para admin.
+Base De Datos
+La conexión se centraliza en:
 
-controlar quién puede login y acceder
-mantener catálogos de riders y tarifas
-registrar servicios/productos entregados en “producción”
-ofrecer filtros y vistas de resumen para toma de decisiones
 
-7. Recomendaciones rápidas
-Completar la instalación de base de datos con todas las tablas faltantes
-Revisar y corregir rutas de actualización y eliminación en TarifasController
-Arreglar DetalleTarifaModel y el uso de columnas correctas
-Revisar rutas AJAX faltantes (produccion/byRider)
-Consolidar los nombres de tablas y columnas entre modelo, controlador y setup
+Configuración local actual:
 
-8. Conclusión
-El proyecto es un panel administrativo PHP/MVC básico con:
+Parámetro	Valor
+Host	127.0.0.1
+Base de datos	mercedes
+Usuario	root
+Contraseña	Vacía en el entorno local
+Charset	utf8mb4
+El instalador automático se encuentra en:
 
-login y sesión
-gestión de usuarios y riders
-administración de tarifas
-registro de producción
-Está bien estructurado en controladores, modelos y vistas, pero tiene partes incompletas y discrepancias en la base de datos que deben resolverse para funcionar plenamente.
 
+Si no existe:
+
+
+index.php ejecuta el instalador automáticamente.
+
+El esquema SQL de referencia se encuentra en:
+
+
+Este archivo debe mantenerse alineado con setup.php, ya que ambos contienen definiciones de estructura de base de datos.
+
+Instalación Local
+Requisitos:
+
+PHP con PDO MySQL.
+MySQL o MariaDB.
+Apache o servidor PHP local.
+WAMP recomendado para el entorno actual.
+Pasos generales:
+
+Colocar el proyecto dentro del directorio público del servidor.
+Crear o iniciar la base de datos MySQL.
+Verificar las credenciales en Database.php.
+Acceder al proyecto mediante:
+
+Permitir que setup.php cree las tablas iniciales si la instalación aún no existe.
+Iniciar sesión con un usuario activo.
+Las credenciales iniciales definidas por el instalador deben utilizarse únicamente en desarrollo local y cambiarse antes de cualquier uso real.
+
+Refactor Incremental
+El refactor debe realizarse de forma gradual para proteger los módulos que ya funcionan.
+
+Validators
+Las validaciones reutilizables deberían extraerse progresivamente a una capa como:
+
+
+Responsabilidades recomendadas:
+
+Validar campos obligatorios.
+Validar formatos.
+Validar rangos.
+Validar identificadores.
+Devolver errores consistentes.
+Services
+Las reglas de negocio deben permanecer en servicios:
+
+
+Los servicios deben encargarse de:
+
+Coordinar operaciones complejas.
+Aplicar reglas de negocio.
+Validar operaciones antes de persistir.
+Evitar que los controladores acumulen lógica.
+Repositories
+El acceso especializado a datos debe mantenerse en:
+
+
+Los repositorios deben encapsular:
+
+Consultas SQL complejas.
+Filtros y búsquedas.
+Consultas de reportes.
+Acceso específico a una entidad o caso de uso.
+Reglas De Seguridad Para Refactor
+Mantener las rutas actuales.
+Mantener las claves de sesión existentes.
+No modificar payloads funcionales sin pruebas.
+No mezclar refactor técnico con cambios de negocio.
+Realizar cambios pequeños y verificables.
+Ejecutar validación de sintaxis PHP después de modificar archivos.
+Probar el módulo afectado antes de continuar con otro.
+No eliminar archivos legacy sin confirmar que no se utilizan.
+Pruebas De Flujo
+Login Por Rol
+Probar el inicio de sesión con:
+
+Admin.
+Operaciones.
+Rider.
+Invitado.
+Verificar que cada usuario sea enviado a la vista correspondiente según su rol y las herramientas activas.
+
+Combinaciones De Herramientas
+Estado	Resultado esperado
+Solo Cuaderno	Se habilitan Dashboard, Producción y módulos del Cuaderno
+Solo Asistencias	Se habilitan Llegadas, Punto de Control y módulos de Asistencias
+Ambas activas	Cuaderno tiene prioridad como vista inicial y se muestran ambos módulos
+Ninguna activa	Admin conserva Herramientas; los demás no pueden acceder a módulos desactivados
+Persistencia
+Iniciar sesión como admin.
+Activar o desactivar herramientas.
+Guardar la configuración.
+Cerrar sesión.
+Volver a iniciar sesión.
+Confirmar que la selección se mantiene.
+Verificar que la redirección inicial coincide con la configuración almacenada.
+Acceso Manual Por URL
+Con solo Cuaderno activo, intentar acceder a:
+
+/mercedes/asistencias
+/mercedes/punto-control
+/mercedes/rider_asistencia
+Con solo Asistencias activa, intentar acceder a:
+
+/mercedes/dashboard
+/mercedes/produccion
+/mercedes/grupos
+/mercedes/turnos
+/mercedes/tarifas
+El resultado esperado es una respuesta 403 o un bloqueo equivalente.
+
+Flujo Rider
+Verificar:
+
+Acceso al historial propio.
+Registro de llegada.
+Registro de salida.
+Bloqueo cuando Asistencias está desactivada.
+Acceso a producción cuando Cuaderno está activa.
+Funcionamiento correcto cuando ambas herramientas están activas.
+Flujo Invitado
+Verificar:
+
+Acceso a producción cuando Cuaderno está activa.
+Respuesta 403 cuando Cuaderno está desactivada.
+Ausencia de acceso a módulos administrativos.
+Archivos Históricos Y Legacy
+Los siguientes archivos no forman parte del flujo principal y deben mantenerse aislados:
+
+consulta.php
+pruebaapituruc.php
+Scripts de pruebas históricos.
+Archivos de instalación o comprobación que no se utilicen en producción.
+Como mejora de organización, se recomienda moverlos a:
+
+
+Antes de mover cualquier archivo se debe confirmar que no sea utilizado por una ruta activa, un script externo o un entorno existente.
+
+Estado Pendiente
+Desarrollar el listado administrativo de index.php.
+Completar pruebas automatizadas de autenticación y herramientas.
+Alinear completamente setup.php con el volcado SQL de referencia.
+Crear una capa formal de Validators/.
+Revisar y clasificar los scripts legacy.
+Continuar la separación progresiva entre controllers, services, repositories y models.

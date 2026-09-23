@@ -45,6 +45,17 @@ $isEdit = !empty($rider);
         </div>
 
         <div class="form-group">
+            <label>Asignar a grupos:</label><br>
+            <?php foreach ($grupos as $grupo): ?>
+                <label>
+                    <input type="checkbox" name="grupos[]" value="<?= $grupo['id_grupo'] ?>"
+                        <?= in_array($grupo['id_grupo'], $gruposAsignados ?? []) ? 'checked' : '' ?>>
+                    <?= htmlspecialchars($grupo['nombre']) ?>
+                </label><br>
+            <?php endforeach; ?>
+        </div>
+
+        <div class="form-group">
             <label for="is_active">Activo</label>
             <select name="is_active" id="is_active" class="form-control">
                 <option value="1" <?php echo (isset($rider) && $rider && (int) $rider['is_active'] === 1) ? 'selected' : ''; ?>>Sí</option>

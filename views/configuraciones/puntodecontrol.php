@@ -7,7 +7,6 @@
 ?>
 <div class="page-header page-header-actions">
     <div>
-        <h2>Punto de Control</h2>
         <p>Define el lugar físico desde donde parte la flota de deliverys.</p>
     </div>
 
@@ -16,11 +15,11 @@
     <?php endif; ?>
 </div>
 
-<div class="panel">
+<div class="panel form-panel-medium">
     <div class="panel-body">
 
         <?php if ($punto): ?>
-            <form id="formPuntoControl">
+            <form id="formPuntoControl" class="form-panel-medium">
 
                 <div class="form-group">
                     <label for="titulo">Título</label>

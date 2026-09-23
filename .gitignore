@@ -1,0 +1,137 @@
+# ============================================================
+# Mercedes - PHP / WAMP
+# ============================================================
+# Este archivo evita subir archivos locales, temporales, secretos
+# y artefactos generados por el entorno de desarrollo.
+# Mantener en la raíz del proyecto.
+# ============================================================
+
+# ------------------------------------------------------------
+# 1) Configuración local de WAMP / Apache / PHP
+# ------------------------------------------------------------
+# Carpetas y archivos generados localmente por WAMP/Apache
+logs/
+tmp/
+*.log
+error_log
+php_errorlog
+
+# Archivos de caché locales de PHP
+cache/
+session/
+sessions/
+
+# ------------------------------------------------------------
+# 2) Variables de entorno y credenciales
+# ------------------------------------------------------------
+# Nunca versionar secretos ni configuraciones de entorno local
+.env
+.env.*
+*.ini
+*.local
+*.conf
+config/local.php
+config/*.local.php
+
+# ------------------------------------------------------------
+# 3) Dependencias externas
+# ------------------------------------------------------------
+# Composer
+vendor/
+
+# Node.js (si se usa en el futuro)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ------------------------------------------------------------
+# 4) Archivos generados automáticamente
+# ------------------------------------------------------------
+# Temporales, respaldo y caché
+*.cache
+*.bak
+*.swp
+*.tmp
+*.temp
+*.orig
+*.rej
+*.old
+*.pid
+*.sqlite
+*.sqlite3
+
+# ------------------------------------------------------------
+# 5) Archivos del sistema operativo
+# ------------------------------------------------------------
+# Windows
+Thumbs.db
+Desktop.ini
+ehthumbs.db
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Linux / Unix
+*~
+.fuse_hidden*
+.nfs*
+
+# ------------------------------------------------------------
+# 6) IDE / Editor / entorno de desarrollo
+# ------------------------------------------------------------
+# VS Code
+.vscode/
+*.code-workspace
+
+# JetBrains / PhpStorm
+.idea/
+*.iml
+
+# NetBeans
+nbproject/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# ------------------------------------------------------------
+# 7) Carpetas de subida / almacenamiento temporal
+# ------------------------------------------------------------
+# No versionar archivos subidos ni datos de usuario
+uploads/
+storage/
+sessions/
+public/uploads/
+public/storage/
+tmp_uploads/
+
+# ------------------------------------------------------------
+# 8) Archivos de compilación / artefactos
+# ------------------------------------------------------------
+dist/
+build/
+coverage/
+*.map
+
+# ------------------------------------------------------------
+# 9) Archivos de backup y útiles locales
+# ------------------------------------------------------------
+.git-backup/
+*.patch
+
+# ------------------------------------------------------------
+# 10) Excepciones opcionales
+# ------------------------------------------------------------
+# Si necesitas forzar que un archivo concreto sí se suba,
+# descomenta la línea y ajusta la ruta.
+# Ejemplo:
+# !config/example.php
+# !uploads/.gitkeep
+
+# Fin del archivo .gitignore
+# ============================================================
