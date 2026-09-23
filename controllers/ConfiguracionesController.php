@@ -40,6 +40,7 @@ class ConfiguracionesController extends BaseController {
             'contacto'  => trim($_POST['contacto'] ?? ''),
             'latitud'   => (float)($_POST['latitud'] ?? 0),
             'longitud'  => (float)($_POST['longitud'] ?? 0),
+            'radio'     => (int)($_POST['radio'] ?? 0), // nuevo campo
         ];
 
         $success = $this->puntoModel->update($data);
@@ -51,4 +52,5 @@ class ConfiguracionesController extends BaseController {
         ]);
         exit;
     }
+
 }

@@ -1,33 +1,46 @@
-let map, marker;
+let map, marker, circle;
 
 function initMap() {
-    // Valores iniciales desde los inputs ocultos
     const lat = parseFloat(document.getElementById("latitud").value) || -25.2637;
     const lng = parseFloat(document.getElementById("longitud").value) || -57.5759;
-
-    const position = { lat: lat, lng: lng };
+    const radio = parseInt(document.getElementById("radio").value) || 300;
 
     // Inicializar mapa
-    map = new google.maps.Map(document.getElementById("map"), {
-        center: position,
-        zoom: 15
-    });
+    map = L.map('map').setView([lat, lng], 15);
 
-    // Crear marcador
-    marker = new google.maps.Marker({
-        position: position,
-        map: map,
-        draggable: false // por defecto no se puede mover
-    });
+    // Tiles de OpenStreetMap
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Crear marcador (no arrastrable por defecto)
+    marker = L.marker([lat, lng], { draggable: false }).addTo(map);
+
+    // Crear círculo alrededor del marcador
+    circle = L.circle([lat, lng], {
+        color: 'blue',
+        fillColor: '#3f83f8',
+        fillOpacity: 0.2,
+        radius: radio
+    }).addTo(map);
 
     // Evento: actualizar lat/long al mover el marcador
-    marker.addListener("dragend", function (event) {
-        document.getElementById("latitud").value = event.latLng.lat();
-        document.getElementById("longitud").value = event.latLng.lng();
+    marker.on("dragend", function () {
+        const pos = marker.getLatLng();
+        document.getElementById("latitud").value = pos.lat;
+        document.getElementById("longitud").value = pos.lng;
+        circle.setLatLng(pos); // mover círculo junto al marcador
     });
+
+    // Evento: actualizar radio dinámicamente
+    const radioSelect = document.getElementById("radio");
+    if (radioSelect) {
+        radioSelect.addEventListener("change", function () {
+            circle.setRadius(parseInt(this.value));
+        });
+    }
 }
 
-// Botón Editar → habilita campos y marcador
 document.addEventListener("DOMContentLoaded", function () {
     const btnEditar = document.getElementById("btnEditar");
     const btnGuardar = document.getElementById("btnGuardar");
@@ -35,11 +48,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (btnEditar) {
         btnEditar.addEventListener("click", function () {
-            // Habilitar inputs
-            form.querySelectorAll("input[type=text]").forEach(el => el.disabled = false);
-            // Habilitar marcador arrastrable
-            marker.setDraggable(true);
-            // Habilitar botón Guardar
+            form.querySelectorAll("input[type=text], select").forEach(el => el.disabled = false);
+            marker.dragging.enable(); // habilitar arrastre
             btnGuardar.disabled = false;
         });
     }
@@ -47,8 +57,6 @@ document.addEventListener("DOMContentLoaded", function () {
     if (form) {
         form.addEventListener("submit", function (e) {
             e.preventDefault();
-
-            // Aquí puedes hacer el fetch POST al backend
             const data = new FormData(form);
 
             fetch("/mercedes/configuraciones/guardar_punto_control", {
@@ -59,9 +67,8 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(response => {
                 if (response.success) {
                     showToast("Punto de control actualizado correctamente.", "success");
-                    // Volver a modo lectura
-                    form.querySelectorAll("input[type=text]").forEach(el => el.disabled = true);
-                    marker.setDraggable(false);
+                    form.querySelectorAll("input[type=text], select").forEach(el => el.disabled = true);
+                    marker.dragging.disable(); // volver a modo lectura
                     btnGuardar.disabled = true;
                 } else {
                     alert("Error al guardar: " + response.message);
@@ -74,6 +81,5 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Inicializar mapa
     initMap();
 });

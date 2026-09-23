@@ -53,9 +53,11 @@ class PuntoControlModel {
                     contacto = :contacto, 
                     latitud = :latitud, 
                     longitud = :longitud,
+                    radio_metros = :radio,
                     fecha_actualizacion = NOW()
                 LIMIT 1";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute($data);
     }
+
 }

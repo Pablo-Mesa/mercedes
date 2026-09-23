@@ -286,8 +286,9 @@ $adminOrOperaciones = in_array($currentRole, ['admin', 'operaciones'], true);
         </script>        
         <!-- si vista = punto de control utilizamos maps.googleapis -->
         <?php if ($view === 'configuraciones/puntodecontrol'): ?>
-            <!-- Google Maps API -->
-            <script src="https://maps.googleapis.com/maps/api/js?key="></script>
+            <!-- Leaflet CSS y JS -->
+            <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+            <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
             <!-- JS específico de Punto de Control -->
             <script src="/mercedes/public/js/puntodecontrol.js"></script>
         <?php endif; ?>

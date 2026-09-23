@@ -50,6 +50,16 @@
                 <input type="hidden" id="latitud" name="latitud" value="<?= $punto['latitud'] ?>">
                 <input type="hidden" id="longitud" name="longitud" value="<?= $punto['longitud'] ?>">
 
+                <div class="form-group">
+                    <label for="radio">Radio de cobertura</label>
+                    <select id="radio" name="radio" disabled>
+                        <option value="50"  <?= ($punto['radio_metros']==50 ? 'selected' : '') ?>>50 m</option>
+                        <option value="100" <?= ($punto['radio_metros']==100 ? 'selected' : '') ?>>100 m</option>
+                        <option value="200" <?= ($punto['radio_metros']==200 ? 'selected' : '') ?>>200 m</option>
+                        <option value="500" <?= ($punto['radio_metros']==500 ? 'selected' : '') ?>>500 m</option>
+                    </select>
+                </div>
+
                 <!-- Botones -->
                 <div class="d-flex flex-row justify-between align-center">
                     <button type="submit" id="btnGuardar" class="btn btn-success" disabled>Guardar</button>
