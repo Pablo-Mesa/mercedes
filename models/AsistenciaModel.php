@@ -91,4 +91,22 @@ class AsistenciaModel
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result ?: null;
     }
+
+    /**
+     * Obtener todas las asistencias por fecha (para admin/operaciones)
+     */
+    public function getByDate(string $fecha): array
+    {
+        $sql = "SELECT a.*, r.name AS rider_name, r.contacto AS rider_contacto
+                FROM asistencias a
+                JOIN riders r ON a.rider_id = r.id
+                WHERE a.fecha = :fecha
+                ORDER BY a.hora ASC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':fecha' => $fecha]);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
 }

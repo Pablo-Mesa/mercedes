@@ -18,7 +18,7 @@
 </div>
 <!-- lista de llegadas -->
 <div class="panel table-panel">
-    <table class="data-table">
+    <table class="data-table w-full">
         <thead>
             <tr>
                 <th>Hora</th>

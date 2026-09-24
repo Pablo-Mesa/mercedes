@@ -1237,6 +1237,10 @@ td .hora-badge {
     width: 50%;
 }
 
+.three-quarter-sleeves{
+  width: 75%;
+}
+
 .content-filter {
     display: flex;
     flex-direction: row;
@@ -2796,6 +2800,25 @@ facturas-table[type="date"]::-webkit-calendar-picker-indicator {
 
 
 
+
+.form-grid .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.form-grid .col {
+    flex: 1;
+    min-width: 250px; /* asegura que en desktop se dividan */
+}
+
+.text-right {
+    text-align: right;
+}
+
+
+
+
 /* Adaptación móvil */
 @media (max-width: 768px) {
   .hamburger {
@@ -2937,6 +2960,14 @@ facturas-table[type="date"]::-webkit-calendar-picker-indicator {
 
   .config-dropdown {
     left: 50px;
+  }
+
+  .form-grid .row {
+      flex-direction: column;
+  }
+  .text-right {
+      text-align: left;
+      margin-top: 10px;
   }
 
 }
