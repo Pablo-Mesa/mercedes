@@ -15,9 +15,12 @@ let riderMarker = null; // referencia al marker dinámico del rider
 document.addEventListener("DOMContentLoaded", () => {
     // Inicializar mapa con punto de control
     if (window.puntoControl && window.puntoControl.latitud && window.puntoControl.longitud && typeof L !== "undefined") {
-        map = L.map('map').setView([window.puntoControl.latitud, window.puntoControl.longitud], 15);
+        map = L.map('map', {
+            dragging: false,
+            zoomControl: false
+        }).setView([window.puntoControl.latitud, window.puntoControl.longitud], 16);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap', dragging: false
+            attribution: '© OpenStreetMap'            
         }).addTo(map);
 
         // Marker fijo del punto de control
@@ -29,90 +32,10 @@ document.addEventListener("DOMContentLoaded", () => {
             color: 'blue',
             fillColor: '#3f83f8',
             fillOpacity: 0.2,
-            radius: 300 // radio en metros
+            radius: window.puntoControl.radio_metros // radio en metros
         }).addTo(map);
     }
 
-    const btnComprobar = document.getElementById("btnComprobar");
-    const accionesUbicacion = document.getElementById("accionesUbicacion");
-    const radioPermitido = 300; // metros
-
-    // Comprobar ubicación
-    btnComprobar.addEventListener("click", () => {
-        if (!navigator.geolocation) {
-            showToast("Tu navegador no soporta geolocalización.", "error");
-            return;
-        }
-
-        Loader.show();
-
-        navigator.geolocation.getCurrentPosition(
-            (pos) => {
-                Loader.hide();
-                const lat = pos.coords.latitude;
-                const lon = pos.coords.longitude;
-
-                // Guardar en campos ocultos
-                document.getElementById("lat").value = lat;
-                document.getElementById("lon").value = lon;
-
-                const distancia = calcularDistancia(lat, lon, window.puntoControl.latitud, window.puntoControl.longitud);
-
-                if (distancia <= radioPermitido) {
-                    accionesUbicacion.style.display = "block";
-                    btnComprobar.style.display = "none";
-
-                    // 🚀 Nuevo marker con la ubicación del rider
-                    if (riderMarker) {
-                        riderMarker.setLatLng([lat, lon]); // actualizar si ya existe
-                    } else {
-                        riderMarker = L.marker([lat, lon]).addTo(map)
-                            .bindPopup("Tu ubicación actual").openPopup();
-                    }
-
-                    map.setView([lat, lon], 15); // centrar en el rider
-                } else {
-                    showToast('Acércate más a la ubicación deseada.', 'warning');
-                }
-            },
-            (err) => {
-                Loader.hide();
-                showToast("No se pudo obtener tu ubicación. Activa el GPS.", 'warning');
-                console.error(err);
-            }
-        );
-    });
-
-    // Enviar llegada y procesar respuesta JSON
-    document.getElementById("asistenciaForm").addEventListener("submit", async (e) => {
-        e.preventDefault(); // evitar submit clásico
-        Loader.show();
-
-        try {
-            const form = e.target;
-            const formData = new FormData(form);
-
-            const response = await fetch(form.action, {
-                method: "POST",
-                body: formData,
-                headers: { "X-Requested-With": "XMLHttpRequest" }
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                showToast(data.message, "success");
-                setTimeout(() => location.reload(), 2000);
-            } else {
-                showToast(data.message || "Error al registrar llegada", "error");
-            }
-        } catch (err) {
-            console.error(err);
-            showToast("Error de conexión", "error");
-        } finally {
-            Loader.hide();
-        }
-    });
 });
 
 // Función de distancia (Haversine)
@@ -127,3 +50,52 @@ function calcularDistancia(lat1, lon1, lat2, lon2) {
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     return R * c;
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    const now = new Date();
+    const currentTime = now.toTimeString().slice(0,5); // HH:MM
+
+    document.querySelectorAll(".turno-card").forEach(card => {
+        const horario = card.querySelector("div:nth-child(2) span").textContent;
+        const [horaInicio, horaFin] = horario.split(" - ");
+
+        if (currentTime < horaInicio || currentTime > horaFin) {
+            card.style.opacity = "0.5";
+            card.querySelector("button[type=submit]").disabled = true;
+        }
+    });
+
+    // Manejo de envío AJAX
+    document.querySelectorAll(".inline-form").forEach(form => {
+        form.addEventListener("submit", async e => {
+            e.preventDefault();
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch(form.action, {
+                    method: "POST",
+                    body: formData,
+                    headers: { "X-Requested-With": "XMLHttpRequest" }
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    showToast(data.message, "success");
+                    const tbody = document.querySelector('#tablaMarcaciones tbody');
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${data.data.hora}</td>
+                        <td>${data.data.tipo}</td>
+                        <td>${data.data.dispositivo}</td>
+                    `;
+                    tbody.appendChild(row);
+                } else {
+                    showToast(data.message, "error");
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("Error de conexión", "error");
+            }
+        });
+    });
+});

@@ -19,50 +19,25 @@ class AsistenciasService
     {
         $errors = [];
 
-        // Validar rider
         if (empty($payload['rider_id'])) {
             $errors[] = 'Rider inválido.';
         }
-
-        // Validar tipo de marcación
-        if (!in_array($payload['tipo'], ['entrada', 'salida'])) {
+        if (empty($payload['grupo_id']) || empty($payload['turno_id'])) {
+            $errors[] = 'Grupo o turno inválido.';
+        }
+        if (!in_array($payload['tipo'], ['entrada','salida'])) {
             $errors[] = 'Tipo de marcación inválido.';
         }
 
-        // Validar ubicación (lat/lon)
-        if (empty($payload['lat']) || empty($payload['lon'])) {
-            $errors[] = 'Ubicación no disponible. Activa tu GPS.';
-        } else {
-            // Validar contra punto de control
-            if (!empty($payload['punto_control_id'])) {
-                $puntoControl = $this->repository->getPuntoControlById($payload['punto_control_id']);
-                if ($puntoControl) {
-                    $distancia = $this->calcularDistancia(
-                        $payload['lat'],
-                        $payload['lon'],
-                        $puntoControl['latitud'],
-                        $puntoControl['longitud']
-                    );
-
-                    if ($distancia > 100) { // radio permitido en metros
-                        $errors[] = 'Debes estar en el punto de control para marcar llegada.';
-                    }
-                }
-            }
-        }
-
-        // Validar turno activo
-        $turnos = $this->repository->getAllTurnos(); // devuelve todos los turnos
-        $turnoId = TurnoHelper::getTurnoActual($turnos, date('H:i:s'));
-
-        if ($turnoId === null) {
-            return ['success' => false, 'message' => 'No hay turno activo en este momento'];
-        }
-
-
-        // Validar duplicados (ej. dos entradas seguidas)
-        if ($this->repository->existeMarcacionDuplicada($payload['rider_id'], $payload['tipo'], $payload['fecha'])) {
-            $errors[] = 'Ya existe una marcación de este tipo para hoy.';
+        // Validar duplicados por grupo + turno + tipo
+        if ($this->repository->existeMarcacionDuplicada(
+            $payload['rider_id'],
+            $payload['grupo_id'],
+            $payload['turno_id'],
+            $payload['tipo'],
+            $payload['fecha']
+        )) {
+            $errors[] = "Ya existe una marcación de tipo {$payload['tipo']} en este turno.";
         }
 
         return $errors;

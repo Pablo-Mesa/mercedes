@@ -58,17 +58,23 @@ class AsistenciasRepository
     /**
      * Validar si existe marcación duplicada (ej. dos entradas seguidas)
      */
-    public function existeMarcacionDuplicada(int $riderId, string $tipo, string $fecha): bool
+    public function existeMarcacionDuplicada(int $riderId, int $grupoId, int $turnoId, string $tipo, string $fecha): bool
     {
-        $sql = "SELECT COUNT(*) as total 
-                FROM asistencias 
-                WHERE rider_id = :rider_id AND tipo = :tipo AND fecha = :fecha";
+        $sql = "SELECT COUNT(*) as total
+                FROM asistencias
+                WHERE rider_id = :rider_id
+                AND grupo_id = :grupo_id
+                AND turno_id = :turno_id
+                AND tipo = :tipo
+                AND fecha = :fecha";
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
             ':rider_id' => $riderId,
-            ':tipo' => $tipo,
-            ':fecha' => $fecha,
+            ':grupo_id' => $grupoId,
+            ':turno_id' => $turnoId,
+            ':tipo'     => $tipo,
+            ':fecha'    => $fecha,
         ]);
 
         $result = $stmt->fetch(PDO::FETCH_ASSOC);

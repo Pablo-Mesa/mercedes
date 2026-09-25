@@ -9,6 +9,7 @@ require_once __DIR__ . '/../models/GruposModel.php';
 require_once __DIR__ . '/BaseController.php';
 require_once __DIR__ . '/../app/services/AsistenciasService.php';
 
+
 class AsistenciasController extends BaseController
 {
     private AsistenciaModel $asistenciaModel;
@@ -16,6 +17,7 @@ class AsistenciasController extends BaseController
     private RiderModel $riderModel;
     private PuntoControlModel $puntoControlModel;
     private $grupoModel;
+    private TurnoModel $turnoModel; 
 
     public function __construct()
     {
@@ -25,14 +27,12 @@ class AsistenciasController extends BaseController
             $this->redirect('/mercedes/login');
         }
 
-        $this->asistenciaModel = new AsistenciaModel();
-        //$this->asistenciasService = new AsistenciasService($this->asistenciaModel);
+        $this->asistenciaModel    = new AsistenciaModel();
         $this->asistenciasService = new AsistenciasService(new AsistenciasRepository());
-        $this->grupoModel = new GruposModel();
-
-
-        $this->riderModel = new RiderModel();
-        $this->puntoControlModel = new PuntoControlModel();
+        $this->grupoModel         = new GruposModel();
+        $this->riderModel         = new RiderModel();
+        $this->puntoControlModel  = new PuntoControlModel();
+        $this->turnoModel         = new TurnoModel();   // 👈 inicialización faltante
 
         // Solo riders pueden acceder a esta vista
         $this->requireRole(['rider']);
@@ -63,19 +63,21 @@ class AsistenciasController extends BaseController
     /**
      * POST → Marcar llegada/salida
      */
-    public function store(): void
+        public function store(): void
     {
         $payload = [
-            'rider_id' => $_SESSION['rider_id'] ?? null,
-            'fecha' => date('Y-m-d'),
-            'hora' => date('H:i:s'),
-            'tipo' => $_POST['tipo'] ?? 'entrada',
-            'lat' => $_POST['lat'] ?? null,
-            'lon' => $_POST['lon'] ?? null,
-            'dispositivo' => $_POST['dispositivo'] ?? 'web',
-            'ip_registro' => $_SERVER['REMOTE_ADDR'] ?? null,
+            'rider_id'       => $_SESSION['rider_id'] ?? null,
+            'grupo_id'       => $_POST['grupo_id'] ?? null,
+            'turno_id'       => $_POST['turno_id'] ?? null,
+            'fecha'          => date('Y-m-d'),
+            'hora'           => date('H:i:s'),
+            'tipo'           => $_POST['tipo'] ?? 'entrada',
+            'lat'            => $_POST['lat'] ?? null,
+            'lon'            => $_POST['lon'] ?? null,
+            'dispositivo'    => $_POST['dispositivo'] ?? 'web',
+            'ip_registro'    => $_SERVER['REMOTE_ADDR'] ?? null,
             'punto_control_id' => $_POST['punto_control_id'] ?? null,
-            'observaciones' => $_POST['observaciones'] ?? null,
+            'observaciones'  => $_POST['observaciones'] ?? null,
         ];
 
         $errors = $this->asistenciasService->validarMarcacion($payload);
@@ -85,7 +87,7 @@ class AsistenciasController extends BaseController
                 'success' => false,
                 'message' => implode(' ', $errors),
             ], 400);
-            return; // 👈 return vacío, no devuelve nada
+            return;
         }
 
         $success = $this->asistenciasService->registrar($payload);
@@ -93,8 +95,9 @@ class AsistenciasController extends BaseController
         $this->json([
             'success' => $success,
             'message' => $success
-                ? 'Llegada registrada correctamente.'
-                : 'No se pudo registrar la llegada.',
+                ? 'Marcación registrada correctamente.'
+                : 'No se pudo registrar la marcación.',
+            'data' => $success ? $payload : null
         ]);
     }
 
@@ -104,18 +107,27 @@ class AsistenciasController extends BaseController
         require __DIR__ . '/../views/layouts/main.php';
     }
 
-    public function form(): void{
-        $formAction = BASE_PATH . '/rider_asistencia/form';
+    public function form(): void
+    {
+        $riderId = $_SESSION['rider_id'] ?? null;
+        $fecha = date('Y-m-d');
 
-        // Consultar el punto de control desde el modelo
-        $puntoControl = $this->puntoControlModel->get(); // devuelve array con lat, lon, titulo, direccion
-        $riderId = $_SESSION['rider_id'];
+        if (!$riderId) {
+            $this->redirect('/mercedes/login');
+        }
+
         $grupos = $this->grupoModel->getByRider($riderId);
+        foreach ($grupos as &$g) {
+            $g['turnos'] = $this->turnoModel->getByGrupo($g['id_grupo']);
+        }
+
+        $asistencias = $this->asistenciaModel->getByRiderAndDate($riderId, $fecha);
 
         $this->renderLayout('rider_asistencia/form', [
-            'formAction'   => $formAction,
-            'puntoControl' => $puntoControl,
-            'grupos'       => $grupos
+            'formAction'   => BASE_PATH . '/rider_asistencia/form',
+            'puntoControl' => $this->puntoControlModel->get(),
+            'grupos'       => $grupos,
+            'asistencias'  => $asistencias
         ]);
     }
 

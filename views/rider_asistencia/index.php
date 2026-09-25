@@ -21,6 +21,7 @@
     <table class="data-table w-full">
         <thead>
             <tr>
+                <th>Fecha</th>
                 <th>Hora</th>
                 <th>Tipo</th>
                 <th>Ubicación</th>
@@ -32,6 +33,7 @@
             <?php if (!empty($asistencias)): ?>
                 <?php foreach ($asistencias as $a): ?>
                     <tr>
+                        <td><?= htmlspecialchars(date("d-m-Y", strtotime($a['fecha']))); ?></td>
                         <td><?= htmlspecialchars($a['hora']); ?></td>
                         <td>
                             <?php if ($a['tipo'] === 'entrada'): ?>
