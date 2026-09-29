@@ -14,19 +14,22 @@
 ?>
 
 <!-- barra superior horizontal -->
-<div class="row-bar">
+<div class="row-bar" style="display:flex; align-items:center; justify-content:space-between;">
   <!-- titulo punto de control -->
-  <p class="p-p0">
-    <span class="font-basic">
-      <span class="img-nav-icon" ><?= render_icon('puntodecontrol', 'nav-icon') ?></span>
-      Punto de control:
-      <span class="badge-filtro">
-        <?= $puntoDeControl['titulo'] ?? 'No asignado' ?>
+  <?php if (!empty($toolAsistenciasEnabled)): ?>
+    <p class="p-p0 row-left">
+      <span class="font-basic">
+        <span class="img-nav-icon"><?= render_icon('puntodecontrol', 'nav-icon') ?></span>
+        Punto de control:
+        <span class="badge-filtro">
+          <?= $puntoDeControl['titulo'] ?? 'No asignado' ?>
+        </span>
       </span>
-    </span>
-  </p>
-  <!-- formulario (mes/empres) -->
-  <form method="get" class="mes-selector">
+    </p>
+  <?php endif; ?>
+
+  <!-- formulario (mes/empresa) -->
+  <form method="get" class="mes-selector row-right">
     <!-- lista meses -->
     <label for="mes">
       <span class="img-nav-icon" ><?= render_icon('calendario', 'nav-icon') ?></span> Seleccionar mes:

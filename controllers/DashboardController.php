@@ -53,9 +53,11 @@ class DashboardController extends BaseController
         $gruposModel = new GruposModel();
         $grupos = $gruposModel->getAll();
 
+        $settingsModel = new SettingsModel();
+        $toolAsistenciasEnabled = (int)$settingsModel->getValue('tool_asistencias_enabled') === 1;
+
         $view = 'dashboard';
         require __DIR__ . '/../views/layouts/main.php';
     }
-
 
 }

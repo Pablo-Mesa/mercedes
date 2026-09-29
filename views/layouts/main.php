@@ -20,10 +20,12 @@ $hoy = date('Y-m-d');
 require_once __DIR__ . '/../../helpers/IconHelper.php';
 require_once __DIR__ . '/../../helpers/GrupoHelper.php';
 require_once __DIR__ . '/../../models/SettingsModel.php';
+
 $grupoIcono = GrupoHelper::getGrupoIcono();
 $settingsModel = new SettingsModel();
 $cuadernoActivo = $settingsModel->getBoolean('tool_cuaderno_enabled');
 $asistenciasActivas = $settingsModel->getBoolean('tool_asistencias_enabled');
+$toolAsistenciasEnabled = (int)$settingsModel->getValue('tool_asistencias_enabled') === 1;
 $esAdmin = $currentRole === 'admin';
 $adminOrOperaciones = in_array($currentRole, ['admin', 'operaciones'], true);
 

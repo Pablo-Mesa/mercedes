@@ -16,16 +16,14 @@
     </form>
 </div>
 
-<div class="panel table-panel w">
+<div class="panel table-panel">
     <div class="panel table-panel">
         <table class="data-table">
             <thead>
                 <tr>
+                    <th>Fecha</th>
                     <th>Rider</th>
-                    <th>Contacto</th>
-                    <th>Hora</th>
-                    <th>Tipo</th>
-                    <th>Dispositivo</th>
+                    <th>Hora</th>                            
                     <th>Observaciones</th>
                 </tr>
             </thead>
@@ -33,19 +31,20 @@
                 <?php if (!empty($asistencias)): ?>
                     <?php foreach ($asistencias as $a): ?>
                         <tr>
+                            <td><?= htmlspecialchars(isset($a['fecha']) && $a['fecha'] !== '' ? date('d-m-Y', strtotime($a['fecha'])) : '') ?></td>
                             <td><?= htmlspecialchars($a['rider_name'] ?? '') ?></td>
-                            <td><?= htmlspecialchars($a['rider_contacto'] ?? '') ?></td>
-                            <td><?= htmlspecialchars($a['hora'] ?? '') ?></td>
-                            <td>
+                            <td>                                
                                 <?php if (($a['tipo'] ?? '') === 'entrada'): ?>
-                                    <span class="badge bg-success">Entrada</span>
+                                    <span class="badge badge-success">Entrada</span>
                                 <?php elseif (($a['tipo'] ?? '') === 'salida'): ?>
-                                    <span class="badge bg-info">Salida</span>
+                                    <span class="badge badge-info">Salida</span>
                                 <?php else: ?>
                                     <span class="badge bg-secondary">N/D</span>
                                 <?php endif; ?>
+                                <small># <?= htmlspecialchars($a['dispositivo'] ?? '') ?></small>
+                                <br>    
+                                <?= htmlspecialchars($a['hora'] ?? '') ?>                                
                             </td>                            
-                            <td><?= htmlspecialchars($a['dispositivo'] ?? '') ?></td>
                             <td><?= htmlspecialchars($a['observaciones'] ?? '') ?></td>
                         </tr>
                     <?php endforeach; ?>

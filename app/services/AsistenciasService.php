@@ -29,11 +29,49 @@ class AsistenciasService
             $errors[] = 'Tipo de marcación inválido.';
         }
 
-        // Validar duplicados por grupo + turno + tipo
+        // Validar ubicación contra punto de control SOLO en entradas
+        if ($payload['tipo'] === 'entrada') {
+            if (empty($payload['lat']) || empty($payload['lon'])) {
+                $errors[] = 'No se pudo obtener tu ubicación para validar la entrada.';
+            } elseif (!empty($payload['punto_control_id'])) {
+                $puntoControl = $this->repository->getPuntoControlById((int)$payload['punto_control_id']);
+                if ($puntoControl) {
+                    $distancia = $this->calcularDistancia(
+                        (float)$payload['lat'],
+                        (float)$payload['lon'],
+                        (float)$puntoControl['latitud'],
+                        (float)$puntoControl['longitud']
+                    );
+
+                    error_log("Validación entrada: lat={$payload['lat']}, lon={$payload['lon']}, distancia={$distancia}, radio={$puntoControl['radio_metros']}");
+
+                    if ($distancia > (int)$puntoControl['radio_metros']) {
+                        $errors[] = 'Debes estar dentro del radio permitido del punto de control para marcar entrada.';
+                    }
+                }
+            }
+        }
+
+        if ($payload['tipo'] === 'salida') {
+            $entrada = $this->repository->getEntradaByRiderAndTurno(
+                (int)$payload['rider_id'],
+                (int)$payload['grupo_id'],
+                (int)$payload['turno_id'],
+                $payload['fecha']
+            );
+
+            error_log("Validación salida: entrada encontrada=" . json_encode($entrada));
+
+            if (!$entrada) {
+                $errors[] = 'No puedes marcar salida sin haber registrado una entrada previa en este turno.';
+            }
+        }
+
+        // Validar duplicados: solo 1 entrada y 1 salida por turno
         if ($this->repository->existeMarcacionDuplicada(
-            $payload['rider_id'],
-            $payload['grupo_id'],
-            $payload['turno_id'],
+            (int)$payload['rider_id'],
+            (int)$payload['grupo_id'],
+            (int)$payload['turno_id'],
             $payload['tipo'],
             $payload['fecha']
         )) {

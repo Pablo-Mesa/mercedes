@@ -17,22 +17,24 @@ class AsistenciasRepository
     public function insert(array $payload): bool
     {
         $sql = "INSERT INTO asistencias 
-                (rider_id, fecha, hora, tipo, dispositivo, ip_registro, lat, lon, punto_control_id, observaciones) 
-                VALUES (:rider_id, :fecha, :hora, :tipo, :dispositivo, :ip_registro, :lat, :lon, :punto_control_id, :observaciones)";
+                (rider_id, grupo_id, turno_id, fecha, hora, tipo, dispositivo, ip_registro, lat, lon, punto_control_id, observaciones) 
+                VALUES (:rider_id, :grupo_id, :turno_id, :fecha, :hora, :tipo, :dispositivo, :ip_registro, :lat, :lon, :punto_control_id, :observaciones)";
 
         $stmt = $this->db->prepare($sql);
 
         return $stmt->execute([
-            ':rider_id' => $payload['rider_id'],
-            ':fecha' => $payload['fecha'],
-            ':hora' => $payload['hora'],
-            ':tipo' => $payload['tipo'],
-            ':dispositivo' => $payload['dispositivo'],
-            ':ip_registro' => $payload['ip_registro'],
-            ':lat' => $payload['lat'],
-            ':lon' => $payload['lon'],
-            ':punto_control_id' => $payload['punto_control_id'],
-            ':observaciones' => $payload['observaciones'],
+            ':rider_id'        => $payload['rider_id'],
+            ':grupo_id'        => $payload['grupo_id'],
+            ':turno_id'        => $payload['turno_id'],
+            ':fecha'           => $payload['fecha'],
+            ':hora'            => $payload['hora'],
+            ':tipo'            => $payload['tipo'],
+            ':dispositivo'     => $payload['dispositivo'],
+            ':ip_registro'     => $payload['ip_registro'],
+            ':lat'             => $payload['lat'],
+            ':lon'             => $payload['lon'],
+            ':punto_control_id'=> $payload['punto_control_id'],
+            ':observaciones'   => $payload['observaciones'],
         ]);
     }
 
@@ -105,6 +107,28 @@ class AsistenciasRepository
         $sql = "SELECT * FROM turnos";
         $stmt = $this->db->query($sql);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getEntradaByRiderAndTurno(int $riderId, int $grupoId, int $turnoId, string $fecha): ?array
+    {
+        $sql = "SELECT * FROM asistencias 
+                WHERE rider_id = :rider_id 
+                AND grupo_id = :grupo_id 
+                AND turno_id = :turno_id 
+                AND fecha = :fecha 
+                AND tipo = 'entrada'
+                LIMIT 1";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
+            ':rider_id' => $riderId,
+            ':grupo_id' => $grupoId,
+            ':turno_id' => $turnoId,
+            ':fecha' => $fecha,
+        ]);
+
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row ?: null;
     }
 
 }

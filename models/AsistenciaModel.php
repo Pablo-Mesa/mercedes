@@ -45,10 +45,11 @@ class AsistenciaModel
      */
     public function getByRiderAndDate(int $riderId, string $fecha): array
     {
-        $sql = "SELECT * 
-                FROM asistencias 
-                WHERE rider_id = :rider_id AND fecha = :fecha 
-                ORDER BY hora ASC";
+        $sql = "SELECT a.*, g.nombre AS empresa
+                FROM asistencias a
+                LEFT JOIN grupos g ON a.grupo_id = g.id_grupo
+                WHERE a.rider_id = :rider_id AND a.fecha = :fecha
+                ORDER BY a.hora ASC";
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute([

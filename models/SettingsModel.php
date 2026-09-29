@@ -49,4 +49,14 @@ class SettingsModel
             'description' => $description,
         ]);
     }
+
+    public function getValue(string $key): ?string
+    {
+        $sql = "SELECT setting_value FROM settings WHERE setting_key = :key LIMIT 1";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':key' => $key]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row['setting_value'] ?? null;
+    }
+    
 }

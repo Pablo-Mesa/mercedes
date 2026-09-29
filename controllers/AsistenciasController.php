@@ -63,21 +63,21 @@ class AsistenciasController extends BaseController
     /**
      * POST → Marcar llegada/salida
      */
-        public function store(): void
+    public function store(): void
     {
         $payload = [
-            'rider_id'       => $_SESSION['rider_id'] ?? null,
-            'grupo_id'       => $_POST['grupo_id'] ?? null,
-            'turno_id'       => $_POST['turno_id'] ?? null,
-            'fecha'          => date('Y-m-d'),
-            'hora'           => date('H:i:s'),
-            'tipo'           => $_POST['tipo'] ?? 'entrada',
-            'lat'            => $_POST['lat'] ?? null,
-            'lon'            => $_POST['lon'] ?? null,
-            'dispositivo'    => $_POST['dispositivo'] ?? 'web',
-            'ip_registro'    => $_SERVER['REMOTE_ADDR'] ?? null,
-            'punto_control_id' => $_POST['punto_control_id'] ?? null,
-            'observaciones'  => $_POST['observaciones'] ?? null,
+            'rider_id'        => $_SESSION['rider_id'] ?? null,
+            'grupo_id'        => $_POST['grupo_id'] ?? null,
+            'turno_id'        => $_POST['turno_id'] ?? null,
+            'fecha'           => date('Y-m-d'),
+            'hora'            => date('H:i:s'),
+            'tipo'            => $_POST['tipo'] ?? 'entrada',
+            'lat'             => $_POST['lat'] ?? null,
+            'lon'             => $_POST['lon'] ?? null,
+            'dispositivo'     => $_POST['dispositivo'] ?? 'web',
+            'ip_registro'     => $_SERVER['REMOTE_ADDR'] ?? null,
+            'punto_control_id'=> $_POST['punto_control_id'] ?? null,
+            'observaciones'   => $_POST['observaciones'] ?? null,
         ];
 
         $errors = $this->asistenciasService->validarMarcacion($payload);
@@ -85,19 +85,27 @@ class AsistenciasController extends BaseController
         if (!empty($errors)) {
             $this->json([
                 'success' => false,
+                'error_code' => 400, // 👈 campo adicional para distinguir
                 'message' => implode(' ', $errors),
-            ], 400);
+            ], 400); // mantenemos el 400 para semántica REST
             return;
         }
 
         $success = $this->asistenciasService->registrar($payload);
+
+        // 👇 obtener nombre de empresa desde grupoModel
+        $empresaNombre = null;
+        if (!empty($payload['grupo_id'])) {
+            $grupo = $this->grupoModel->getById($payload['grupo_id']);
+            $empresaNombre = $grupo['nombre'] ?? null;
+        }
 
         $this->json([
             'success' => $success,
             'message' => $success
                 ? 'Marcación registrada correctamente.'
                 : 'No se pudo registrar la marcación.',
-            'data' => $success ? $payload : null
+            'data' => $success ? array_merge($payload, ['empresa' => $empresaNombre]) : null
         ]);
     }
 

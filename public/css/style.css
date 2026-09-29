@@ -2589,10 +2589,6 @@ facturas-table[type="date"]::-webkit-calendar-picker-indicator {
   border-radius: var(--radius-lg);
 }
 
-
-
-
-
 .config-menu {
   position: relative;
   z-index: 1000;
@@ -2797,6 +2793,48 @@ facturas-table[type="date"]::-webkit-calendar-picker-indicator {
     text-align: right;
 }
 
+.content-card {
+  max-height: 200px;
+  overflow-y: auto; 
+  padding-right:4px;
+}
+
+.turno-card {
+  display:flex;
+  flex-direction:row; 
+  align-items:center;
+  justify-content:space-between;
+  border:1px solid #ccc;
+  padding:8px;
+  margin-bottom:6px;
+  border-radius:4px;
+}
+
+/* Contenedor de la tabla con scroll vertical */
+.tabla-marcaciones-container {
+    max-height: 180px;   /* ajusta según el diseño, aprox. 5–6 filas visibles */
+    overflow-y: auto;
+    
+}
+
+/* Opcional: fijar encabezado */
+.tabla-marcaciones-container thead th {
+    position: sticky;
+    top: 0;
+    background: #f9f9f9;
+    z-index: 2;
+}
+
+.row-left {
+  flex: 1;
+}
+
+.row-right {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end; /* 👈 mantiene el formulario a la derecha */
+}
+
 /* Adaptación móvil */
 @media (max-width: 768px) {
   .hamburger {
@@ -2951,6 +2989,19 @@ facturas-table[type="date"]::-webkit-calendar-picker-indicator {
     width: 100% !important;
   }
 
+  .w-75-100 {width: 100% !important;}
+
+  .row-left,
+  .row-right {
+    flex: none;
+    width: 100%;              /* cada bloque ocupa todo el ancho */
+  }
+
+  .row-right {
+    justify-content: flex-start; /* formulario alineado a la izquierda en móvil */
+    margin-top: 8px;             /* pequeño espacio entre título y formulario */
+  }
+
 }
 
 /* =========================================================
@@ -3083,6 +3134,8 @@ panel-header d-flex align-items-center
     /* =========================================================
       UTILIDADES (pequeñas clases reutilizables)
       ========================================================= */
+    .flex-0 { flex: 0;}
+    .flex-1 { flex: 1;}  
     .d-flex { display: flex !important; }
     .flex-column { flex-direction: column !important; }
     .flex-row { flex-direction: row !important; }
@@ -3096,6 +3149,7 @@ panel-header d-flex align-items-center
     .w-48{ width: 48%; }
     .w-half{ width: 50%; }
     .three-quarter-sleeves{ width: 75%; }
+    .w-75-100 {width: 75% !important;}
     .w-50-100{width: 50% !important;}
     .hidden { display: none !important; }
     .text-center { text-align: center !important; }
@@ -3112,6 +3166,7 @@ panel-header d-flex align-items-center
     .avatar-rounded { border-radius: 50%; }
     .meta-box p span { color: #fff; }
     .border-rounded-m { border-radius: var(--radius-md); }
+    .font-color { font-size:0.9em; color:#555; }
 
     /* espaciado utilitario pequeño */
     .px-2 { padding-left: 8px; padding-right: 8px; }
