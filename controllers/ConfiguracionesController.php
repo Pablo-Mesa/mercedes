@@ -17,7 +17,6 @@ class ConfiguracionesController extends BaseController {
         }
         $this->puntoModel = new PuntoControlModel();
         $this->requireRole(['admin']);
-        $this->requireToolEnabled('tool_asistencias_enabled', 'El Control de Asistencias está desactivado.');
     }
 
     /**
@@ -25,6 +24,7 @@ class ConfiguracionesController extends BaseController {
      */
     public function puntodecontrol(): void {
         $punto = $this->puntoModel->get(); // devuelve el único registro
+        $puntoConfigurado = PuntoControlModel::isConfigured($punto);
         $view = 'configuraciones/puntodecontrol';
         require __DIR__ . '/../views/layouts/main.php';
     }
@@ -38,10 +38,17 @@ class ConfiguracionesController extends BaseController {
             'barrio'    => trim($_POST['barrio'] ?? ''),
             'direccion' => trim($_POST['direccion'] ?? ''),
             'contacto'  => trim($_POST['contacto'] ?? ''),
-            'latitud'   => (float)($_POST['latitud'] ?? 0),
-            'longitud'  => (float)($_POST['longitud'] ?? 0),
-            'radio'     => (int)($_POST['radio'] ?? 0), // nuevo campo
+            'latitud'   => trim((string)($_POST['latitud'] ?? '')),
+            'longitud'  => trim((string)($_POST['longitud'] ?? '')),
+            'radio'     => trim((string)($_POST['radio'] ?? '')),
         ];
+
+        if (!PuntoControlModel::isConfigured($data)) {
+            $this->json([
+                'success' => false,
+                'message' => 'Completa todos los datos con una ubicación y un radio válidos antes de guardar.'
+            ], 422);
+        }
 
         $success = $this->puntoModel->update($data);
 

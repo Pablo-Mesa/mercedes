@@ -21,22 +21,24 @@ class AsistenciaModel
     public function insert(array $data): bool
     {
         $sql = "INSERT INTO asistencias 
-                (rider_id, fecha, hora, tipo, dispositivo, ip_registro, lat, lon, punto_control_id, observaciones) 
-                VALUES (:rider_id, :fecha, :hora, :tipo, :dispositivo, :ip_registro, :lat, :lon, :punto_control_id, :observaciones)";
+                (rider_id, grupo_id, turno_id, fecha, hora, tipo, dispositivo, ip_registro, lat, lon, punto_control_id, observaciones) 
+                VALUES (:rider_id, :grupo_id, :turno_id, :fecha, :hora, :tipo, :dispositivo, :ip_registro, :lat, :lon, :punto_control_id, :observaciones)";
 
         $stmt = $this->db->prepare($sql);
 
         return $stmt->execute([
-            ':rider_id' => $data['rider_id'],
-            ':fecha' => $data['fecha'],
-            ':hora' => $data['hora'],
-            ':tipo' => $data['tipo'],
-            ':dispositivo' => $data['dispositivo'],
-            ':ip_registro' => $data['ip_registro'],
-            ':lat' => $data['lat'],
-            ':lon' => $data['lon'],
-            ':punto_control_id' => $data['punto_control_id'],
-            ':observaciones' => $data['observaciones'],
+            ':rider_id'        => $data['rider_id'],
+            ':grupo_id'        => $data['grupo_id'],
+            ':turno_id'        => $data['turno_id'],
+            ':fecha'           => $data['fecha'],
+            ':hora'            => $data['hora'],
+            ':tipo'            => $data['tipo'],
+            ':dispositivo'     => $data['dispositivo'],
+            ':ip_registro'     => $data['ip_registro'],
+            ':lat'             => $data['lat'],
+            ':lon'             => $data['lon'],
+            ':punto_control_id'=> $data['punto_control_id'],
+            ':observaciones'   => $data['observaciones'],
         ]);
     }
 
@@ -54,7 +56,7 @@ class AsistenciaModel
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
             ':rider_id' => $riderId,
-            ':fecha' => $fecha,
+            ':fecha'    => $fecha,
         ]);
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -72,8 +74,8 @@ class AsistenciaModel
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
             ':rider_id' => $riderId,
-            ':tipo' => $tipo,
-            ':fecha' => $fecha,
+            ':tipo'     => $tipo,
+            ':fecha'    => $fecha,
         ]);
 
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -110,4 +112,55 @@ class AsistenciaModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Obtener hora de entrada registrada para un turno
+     */
+    public function getHoraEntrada(int $riderId, int $grupoId, int $turnoId, string $fecha): ?string
+    {
+        $sql = "SELECT hora 
+                FROM asistencias 
+                WHERE rider_id = :rider_id 
+                  AND grupo_id = :grupo_id 
+                  AND turno_id = :turno_id 
+                  AND fecha = :fecha 
+                  AND tipo = 'entrada'
+                ORDER BY hora ASC LIMIT 1";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
+            ':rider_id' => $riderId,
+            ':grupo_id' => $grupoId,
+            ':turno_id' => $turnoId,
+            ':fecha'    => $fecha,
+        ]);
+
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row['hora'] ?? null;
+    }
+
+    /**
+     * Obtener hora de salida registrada para un turno
+     */
+    public function getHoraSalida(int $riderId, int $grupoId, int $turnoId, string $fecha): ?string
+    {
+        $sql = "SELECT hora 
+                FROM asistencias 
+                WHERE rider_id = :rider_id 
+                  AND grupo_id = :grupo_id 
+                  AND turno_id = :turno_id 
+                  AND fecha = :fecha 
+                  AND tipo = 'salida'
+                ORDER BY hora ASC LIMIT 1";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
+            ':rider_id' => $riderId,
+            ':grupo_id' => $grupoId,
+            ':turno_id' => $turnoId,
+            ':fecha'    => $fecha,
+        ]);
+
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row['hora'] ?? null;
+    }
 }

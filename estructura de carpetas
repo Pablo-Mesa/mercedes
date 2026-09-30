@@ -1,3 +1,7 @@
+ESTRUCTURA PROPUESTA (NO IMPLEMENTADA)
+
+Este documento describe una posible evolución arquitectónica. No refleja las rutas ni carpetas usadas por la aplicación actualmente; consultar "estructura de  carpetas actual" para el árbol real.
+
 mercedes/
 ├── app/
 │   ├── Core/
@@ -5,52 +9,22 @@ mercedes/
 │   │   ├── Request.php
 │   │   ├── Response.php
 │   │   └── Session.php
-│   ├── Http/
-│   │   └── Controllers/
-│   │       ├── AuthController.php
-│   │       ├── ProduccionController.php
-│   │       ├── UserController.php
-│   │       └── ...
+│   ├── Http/Controllers/
 │   ├── Services/
-│   │   ├── ProduccionService.php
-│   │   ├── UserService.php
-│   │   ├── TarifasService.php
-│   │   └── ...
 │   ├── Repositories/
-│   │   ├── ProduccionRepository.php
-│   │   ├── UserRepository.php
-│   │   └── ...
 │   ├── Models/
-│   │   ├── User.php
-│   │   ├── Produccion.php
-│   │   └── ...
 │   ├── Validators/
-│   │   ├── ProduccionValidator.php
-│   │   └── UserValidator.php
 │   └── Helpers/
-│       ├── AuthHelper.php
-│       ├── RoleHelper.php
-│       └── ...
 ├── config/
-│   ├── Database.php
-│   ├── app.php
-│   └── setup.php
 ├── public/
 │   ├── css/
 │   ├── js/
 │   ├── images/
 │   └── uploads/
-├── resources/
-│   └── views/
-│       ├── layouts/
-│       ├── produccion/
-│       ├── usuarios/
-│       └── ...
+├── resources/views/
 ├── tests/
-│   ├── unit/
-│   └── integration/
 ├── index.php
 ├── composer.json
 └── README.md
-472B-787A
-AIzaSyA4c614NDknCkm8eRfBwOHWA1l9Vbq1hew
+
+Migrar a esta estructura requeriría un refactor separado, gradual y cubierto por pruebas; no mover carpetas como parte de una actualización documental.

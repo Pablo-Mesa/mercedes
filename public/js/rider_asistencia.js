@@ -9,10 +9,11 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-let map;               // referencia global al mapa
+let map;                // referencia global al mapa
 let riderMarker = null; // referencia al marker dinámico del rider
+let circle = null;      // referencia al círculo del punto de control
 
-// Función de distancia (Haversine) - útil si luego validamos ubicación
+// Función de distancia (Haversine)
 function calcularDistancia(lat1, lon1, lat2, lon2) {
     const R = 6371e3; // radio de la tierra en metros
     const toRad = (deg) => deg * Math.PI / 180;
@@ -40,7 +41,8 @@ document.addEventListener("DOMContentLoaded", () => {
         L.marker([window.puntoControl.latitud, window.puntoControl.longitud]).addTo(map)
             .bindPopup(window.puntoControl.titulo);
 
-        L.circle([window.puntoControl.latitud, window.puntoControl.longitud], {
+        // círculo inicial (azul)
+        circle = L.circle([window.puntoControl.latitud, window.puntoControl.longitud], {
             color: 'blue',
             fillColor: '#3f83f8',
             fillOpacity: 0.2,
@@ -72,11 +74,11 @@ document.addEventListener("DOMContentLoaded", () => {
             const radioSeleccionado = form.closest(".turno-card").querySelector('input[name="tipo"]:checked');
             if (!radioSeleccionado) {
                 showToast("Debes seleccionar Entrada o Salida antes de marcar.", "warning");
-                return; // 👈 cancelamos envío
+                return;
             }
             formData.set("tipo", radioSeleccionado.value);
 
-            Loader.show(); // 👈 mostrar loader al iniciar
+            Loader.show();
 
             // Obtener ubicación
             if (navigator.geolocation) {
@@ -86,16 +88,11 @@ document.addEventListener("DOMContentLoaded", () => {
                             formData.set("lat", pos.coords.latitude);
                             formData.set("lon", pos.coords.longitude);
 
-                            // 👇 Log en consola para verificar coordenadas
-                            console.log("Ubicación capturada:", pos.coords.latitude, pos.coords.longitude);
-
-                            // 🚀 Agregar/actualizar marcador del rider en el mapa
+                            // 🚀 Agregar/actualizar marcador del rider
                             if (map) {
                                 if (riderMarker) {
-                                    // Si ya existe, actualizamos posición
                                     riderMarker.setLatLng([pos.coords.latitude, pos.coords.longitude]);
                                 } else {
-                                    // Si no existe, lo creamos
                                     riderMarker = L.marker([pos.coords.latitude, pos.coords.longitude], {
                                         icon: L.icon({
                                             iconUrl: "https://maps.gstatic.com/mapfiles/ms2/micons/green-dot.png",
@@ -105,9 +102,23 @@ document.addEventListener("DOMContentLoaded", () => {
                                         })
                                     }).addTo(map).bindPopup("Tu ubicación actual").openPopup();
                                 }
-
-                                // Centrar el mapa en el rider
                                 map.setView([pos.coords.latitude, pos.coords.longitude], 16);
+
+                                // ✅ Cambiar color del círculo según distancia
+                                const distancia = calcularDistancia(
+                                    pos.coords.latitude,
+                                    pos.coords.longitude,
+                                    window.puntoControl.latitud,
+                                    window.puntoControl.longitud
+                                );
+
+                                if (circle) {
+                                    if (distancia <= window.puntoControl.radio_metros) {
+                                        circle.setStyle({ color: 'green', fillColor: '#4ade80' }); // dentro
+                                    } else {
+                                        circle.setStyle({ color: 'red', fillColor: '#f87171' }); // fuera
+                                    }
+                                }
                             }
 
                             resolve();
@@ -115,7 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         err => {
                             console.error(err);
                             showToast("No se pudo obtener tu ubicación. Activa el GPS.", "warning");
-                            Loader.hide(); // 👈 ocultar loader en error
+                            Loader.hide();
                             reject(err);
                         }
                     );
@@ -123,9 +134,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             try {
-                // 👇 Log en consola antes de enviar
-                console.log("Datos enviados:", Object.fromEntries(formData));
-
                 const response = await fetch(form.action, {
                     method: "POST",
                     body: formData,
@@ -144,6 +152,42 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (response.ok) {
                     if (data.success) {
                         showToast(data.message, "success");
+
+                        const card = form.closest(".turno-card");
+
+                        if (data.data.tipo === "entrada") {
+                            // Cambiar fondo a amarillo (en curso)
+                            card.classList.remove("bg-blue-50");
+                            card.classList.add("bg-yellow-100");
+
+                            // Ocultar radio de entrada
+                            card.querySelector("input[value=entrada]")?.closest("label")?.remove();
+
+                            // Mostrar hora de entrada y radio de salida
+                            const infoCol = card.querySelector(".flex-1.text-center");
+                            infoCol.innerHTML = `
+                                <div>Entrada: ${data.data.hora_entrada}</div>
+                                <label><input type="radio" name="tipo" value="salida"> Salida</label>
+                            `;
+                        }
+
+                        if (data.data.tipo === "salida") {
+                            // Cambiar fondo a verde (completado)
+                            card.classList.remove("bg-yellow-100");
+                            card.classList.add("bg-green-100");
+
+                            // Mostrar horas registradas en filas separadas
+                            const infoCol = card.querySelector(".flex-1.text-center");
+                            infoCol.innerHTML = `
+                                <div>Entrada: ${data.data.hora_entrada}</div>
+                                <div>Salida: ${data.data.hora_salida}</div>
+                            `;
+
+                            // Eliminar botón de acción
+                            card.querySelector(".flex-0").innerHTML = "";
+                        }
+
+                        // 👇 Mantener también la tabla de marcaciones
                         const tbody = document.querySelector('#tablaMarcaciones tbody');
                         const row = document.createElement('tr');
                         row.innerHTML = `
@@ -163,7 +207,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.error(err);
                 showToast("Error de conexión", "error");
             } finally {
-                Loader.hide(); // 👈 ocultar loader siempre al terminar
+                Loader.hide();
             }
         });
     });

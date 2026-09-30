@@ -9,15 +9,21 @@
     <div>
         <p>Define el lugar físico desde donde parte la flota de deliverys.</p>
     </div>
-    <?php if ($punto): ?>
+    <?php if (isset($punto) && $punto): ?>    
         <button id="btnEditar" class="btn btn-primary">Editar</button>
     <?php endif; ?>
 </div>
 
+<?php if (empty($puntoConfigurado)): ?>
+    <div class="alert alert-warning" role="alert">
+        Configura una ubicación válida antes de activar Control de Asistencias.
+    </div>
+<?php endif; ?>
+
 <div class="panel">
     <div class="panel-body">
 
-        <?php if ($punto): ?>
+        <?php if (!empty($punto)): ?>    
             <form id="formPuntoControl" class="form-grid">
 
                 <!-- fila 1: campos + mapa+radio -->

@@ -22,20 +22,28 @@ class AsistenciasRepository
 
         $stmt = $this->db->prepare($sql);
 
-        return $stmt->execute([
-            ':rider_id'        => $payload['rider_id'],
-            ':grupo_id'        => $payload['grupo_id'],
-            ':turno_id'        => $payload['turno_id'],
-            ':fecha'           => $payload['fecha'],
-            ':hora'            => $payload['hora'],
-            ':tipo'            => $payload['tipo'],
-            ':dispositivo'     => $payload['dispositivo'],
-            ':ip_registro'     => $payload['ip_registro'],
-            ':lat'             => $payload['lat'],
-            ':lon'             => $payload['lon'],
-            ':punto_control_id'=> $payload['punto_control_id'],
-            ':observaciones'   => $payload['observaciones'],
-        ]);
+        try {
+            return $stmt->execute([
+                ':rider_id'        => $payload['rider_id'],
+                ':grupo_id'        => $payload['grupo_id'],
+                ':turno_id'        => $payload['turno_id'],
+                ':fecha'           => $payload['fecha'],
+                ':hora'            => $payload['hora'],
+                ':tipo'            => $payload['tipo'],
+                ':dispositivo'     => $payload['dispositivo'],
+                ':ip_registro'     => $payload['ip_registro'],
+                ':lat'             => $payload['lat'],
+                ':lon'             => $payload['lon'],
+                ':punto_control_id'=> $payload['punto_control_id'],
+                ':observaciones'   => $payload['observaciones'],
+            ]);
+        } catch (PDOException $exception) {
+            if (($exception->errorInfo[1] ?? null) === 1062) {
+                return false;
+            }
+
+            throw $exception;
+        }
     }
 
     /**

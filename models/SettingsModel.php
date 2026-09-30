@@ -26,7 +26,7 @@ class SettingsModel
         return $value === false ? $default : (string) $value;
     }
 
-    public function getBoolean(string $key, bool $default = true): bool
+    public function getBoolean(string $key, bool $default = false): bool
     {
         $value = $this->get($key);
 

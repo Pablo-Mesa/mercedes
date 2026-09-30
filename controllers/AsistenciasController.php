@@ -65,6 +65,9 @@ class AsistenciasController extends BaseController
      */
     public function store(): void
     {
+        // Forzar zona horaria local de Asunción
+        date_default_timezone_set('America/Asuncion');
+
         $payload = [
             'rider_id'        => $_SESSION['rider_id'] ?? null,
             'grupo_id'        => $_POST['grupo_id'] ?? null,
@@ -84,28 +87,47 @@ class AsistenciasController extends BaseController
 
         if (!empty($errors)) {
             $this->json([
-                'success' => false,
-                'error_code' => 400, // 👈 campo adicional para distinguir
-                'message' => implode(' ', $errors),
-            ], 400); // mantenemos el 400 para semántica REST
+                'success'    => false,
+                'error_code' => 400,
+                'message'    => implode(' ', $errors),
+            ], 400);
             return;
         }
 
         $success = $this->asistenciasService->registrar($payload);
 
-        // 👇 obtener nombre de empresa desde grupoModel
+        // Obtener nombre de empresa desde grupoModel
         $empresaNombre = null;
         if (!empty($payload['grupo_id'])) {
             $grupo = $this->grupoModel->getById($payload['grupo_id']);
             $empresaNombre = $grupo['nombre'] ?? null;
         }
 
+        // Obtener horas acumuladas del turno
+        $horaEntrada = $this->asistenciaModel->getHoraEntrada(
+            (int)$payload['rider_id'],
+            (int)$payload['grupo_id'],
+            (int)$payload['turno_id'],
+            $payload['fecha']
+        );
+
+        $horaSalida = $this->asistenciaModel->getHoraSalida(
+            (int)$payload['rider_id'],
+            (int)$payload['grupo_id'],
+            (int)$payload['turno_id'],
+            $payload['fecha']
+        );
+
         $this->json([
             'success' => $success,
             'message' => $success
                 ? 'Marcación registrada correctamente.'
                 : 'No se pudo registrar la marcación.',
-            'data' => $success ? array_merge($payload, ['empresa' => $empresaNombre]) : null
+            'data'    => $success ? array_merge($payload, [
+                'empresa'      => $empresaNombre,
+                'hora_entrada' => $horaEntrada,
+                'hora_salida'  => $horaSalida
+            ]) : null
         ]);
     }
 
@@ -117,16 +139,25 @@ class AsistenciasController extends BaseController
 
     public function form(): void
     {
+        // Forzar zona horaria local de Asunción
+        date_default_timezone_set('America/Asuncion');
+
         $riderId = $_SESSION['rider_id'] ?? null;
-        $fecha = date('Y-m-d');
+        $fecha   = date('Y-m-d');
+        $horaActual = date('H:i:s');
 
         if (!$riderId) {
             $this->redirect('/mercedes/login');
         }
 
         $grupos = $this->grupoModel->getByRider($riderId);
+
         foreach ($grupos as &$g) {
-            $g['turnos'] = $this->turnoModel->getByGrupo($g['id_grupo']);
+            $turnos = $this->turnoModel->getByGrupo($g['id_grupo']);
+            // Filtrar solo turnos activos según hora actual
+            $g['turnos'] = array_filter($turnos, function($t) use ($horaActual) {
+                return $horaActual >= $t['hora_inicio'] && $horaActual <= $t['hora_fin'];
+            });
         }
 
         $asistencias = $this->asistenciaModel->getByRiderAndDate($riderId, $fecha);

@@ -27,11 +27,13 @@ sessions/
 # Nunca versionar secretos ni configuraciones de entorno local
 .env
 .env.*
+!.env.example
 *.ini
 *.local
 *.conf
 config/local.php
 config/*.local.php
+config/installed.txt
 
 # ------------------------------------------------------------
 # 3) Dependencias externas

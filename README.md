@@ -20,48 +20,41 @@ public para CSS, JavaScript, imágenes y archivos subidos.
 
 Estructura Del Proyecto
 
+La estructura ejecutable actual es:
+
 mercedes/
 ├── app/
-│   ├── repositories/
+│   ├── repositories/AsistenciasRepository.php
 │   └── services/
+│       ├── AsistenciasService.php
+│       └── ProduccionService.php
 ├── config/
+│   ├── migrations/20260929_integridad_inicial.sql
 │   ├── Database.php
 │   ├── setup.php
-│   └── estructura_db_al_16-09-26
+│   └── estructura_db_al_29-09-26
 ├── controllers/
 ├── helpers/
 ├── models/
 ├── public/
-│   ├── assets/
+│   ├── assets/icons/
 │   ├── css/
 │   ├── images/
 │   ├── js/
 │   └── uploads/
 ├── test/
 ├── views/
-│   ├── asistencias/
-│   ├── configuraciones/
-│   ├── grupos/
-│   ├── herramientas/
-│   ├── layouts/
-│   ├── produccion/
-│   ├── rider_asistencia/
-│   ├── rider_produccion/
-│   ├── riders/
-│   ├── tarifas/
-│   ├── turnos/
-│   └── usuarios/
-├── index.php
-├── package.json
-└── README.md
+└── index.php
+
+El archivo `estructura de carpetas` describe una arquitectura propuesta, no la estructura implementada.
 
 Arquitectura
 Capa	Ubicación	Responsabilidad
 Router	index.php	Recibe la ruta y delega al controlador correspondiente
 Controllers	controllers	Orquestan solicitudes HTTP, permisos y respuestas
 Models	models	Consultas y acceso a entidades de la base de datos
-Services	services	Reglas de negocio y validaciones complejas
-Repositories	repositories	Acceso especializado a datos
+Services	app/services	Reglas de negocio y validaciones complejas
+Repositories	app/repositories	Acceso especializado a datos
 Helpers	helpers	Funciones y utilidades reutilizables
 Views	views	Renderizado de la interfaz
 Layout	main.php	Plantilla general y navbar dinámico
@@ -94,6 +87,8 @@ Clave	Herramienta
 tool_cuaderno_enabled	Cuaderno
 tool_asistencias_enabled	Control de Asistencias
 Los valores se almacenan normalmente como 1 o 0.
+
+Cuaderno y Control de Asistencias son independientes y pueden activarse por separado o juntos. Las instalaciones nuevas inicializan ambas en 0; las instalaciones existentes conservan sus valores. Para activar Asistencias, admin debe guardar primero un Punto de Control real. El registro de reserva `Predeterminado` con coordenadas `0,0` no habilita marcaciones.
 
 La gestión se realiza mediante:
 
@@ -211,7 +206,7 @@ El flujo administrativo está preparado mediante:
 
 AdminAsistenciasController.php
 index.php
-La vista index.php está reservada para mostrar una lista de riders que ya registraron su llegada al local. El listado administrativo todavía está pendiente de desarrollo.
+El listado administrativo existe mediante `AdminAsistenciasController.php`, `AsistenciaModel::getByDate()` y `views/asistencias/index.php`; permite filtrar marcaciones por fecha. No representa todavía un tablero de asistencia esperada/ausente.
 
 Rutas Principales
 Ruta	Función
@@ -258,7 +253,7 @@ Asistencias requiere Control de Asistencias.
 Riders requiere al menos una herramienta activa.
 Usuarios y Herramientas permanecen disponibles para admin.
 Base De Datos
-La conexión se centraliza en:
+La conexión se centraliza en `config/Database.php`.
 
 
 Configuración local actual:
@@ -267,20 +262,11 @@ Parámetro	Valor
 Host	127.0.0.1
 Base de datos	mercedes
 Usuario	root
-Contraseña	Vacía en el entorno local
+Contraseña	Vacía solo en el WAMP local; configurar credenciales seguras antes de desplegar
 Charset	utf8mb4
-El instalador automático se encuentra en:
+El instalador automático se encuentra en `config/setup.php`. Si no existe `config/installed.txt`, `index.php` lo ejecuta. Una instalación nueva requiere configurar `MERCEDES_ADMIN_PASSWORD` en el entorno PHP/Apache (mínimo 12 caracteres). El administrador inicial usa `admin@correo.com`; no hay una contraseña compartida en el código.
 
-
-Si no existe:
-
-
-index.php ejecuta el instalador automáticamente.
-
-El esquema SQL de referencia se encuentra en:
-
-
-Este archivo debe mantenerse alineado con setup.php, ya que ambos contienen definiciones de estructura de base de datos.
+El esquema de referencia es `config/estructura_db_al_29-09-26`. Es un snapshot SQL que contiene sentencias `DROP TABLE`; sirve para consulta y no debe ejecutarse sobre una base con datos. La migración no destructiva está en `config/migrations/20260929_integridad_inicial.sql`; hacer backup y probarla en una copia antes de usarla.
 
 Instalación Local
 Requisitos:
@@ -294,11 +280,7 @@ Pasos generales:
 Colocar el proyecto dentro del directorio público del servidor.
 Crear o iniciar la base de datos MySQL.
 Verificar las credenciales en Database.php.
-Acceder al proyecto mediante:
-
-Permitir que setup.php cree las tablas iniciales si la instalación aún no existe.
-Iniciar sesión con un usuario activo.
-Las credenciales iniciales definidas por el instalador deben utilizarse únicamente en desarrollo local y cambiarse antes de cualquier uso real.
+Configurar `MERCEDES_ADMIN_PASSWORD`, iniciar WAMP y acceder a `http://localhost/mercedes/`. Después de iniciar sesión, guardar la ubicación real del Punto de Control y activar desde Herramientas los módulos requeridos.
 
 Refactor Incremental
 El refactor debe realizarse de forma gradual para proteger los módulos que ya funcionan.
@@ -410,9 +392,9 @@ Como mejora de organización, se recomienda moverlos a:
 Antes de mover cualquier archivo se debe confirmar que no sea utilizado por una ruta activa, un script externo o un entorno existente.
 
 Estado Pendiente
-Desarrollar el listado administrativo de index.php.
-Completar pruebas automatizadas de autenticación y herramientas.
-Alinear completamente setup.php con el volcado SQL de referencia.
-Crear una capa formal de Validators/.
-Revisar y clasificar los scripts legacy.
+Completar pruebas automatizadas de autenticación, permisos y persistencia de herramientas.
+Validar una instalación limpia y probar la migración sobre una copia de la base existente.
+Mantener el volcado SQL como snapshot, no como instalador.
+Extraer validaciones reutilizables a una capa formal cuando el refactor lo requiera.
+Revisar y clasificar scripts legacy y archivos locales ya versionados.
 Continuar la separación progresiva entre controllers, services, repositories y models.

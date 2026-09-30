@@ -6,11 +6,14 @@ mercedes/
 │       ├── AsistenciasService.php
 │       └── ProduccionService.php
 ├── config/
+│   ├── migrations/
+│   │   └── 20260929_integridad_inicial.sql
 │   ├── Database.php
-│   ├── estructura_db_al_26-08-26
-│   ├── installed.txt
+│   ├── estructura_db_al_29-09-26
+│   ├── installed.txt  # marcador local de instalación; no distribuir
 │   └── setup.php
 ├── controllers/
+│   ├── AdminAsistenciasController.php
 │   ├── AsistenciasController.php
 │   ├── AuthController.php
 │   ├── BaseController.php
@@ -18,6 +21,8 @@ mercedes/
 │   ├── DashboardController.php
 │   ├── DetallesController.php
 │   ├── GruposController.php
+│   ├── HerramientasController.php
+│   ├── InvitadosController.php
 │   ├── ProduccionController.php
 │   ├── RiderProduccionController.php
 │   ├── RidersController.php
@@ -25,32 +30,18 @@ mercedes/
 │   ├── TurnosController.php
 │   └── UserController.php
 ├── helpers/
-│   ├── GrupoHelper.php
-│   ├── IconHelper.php
-│   ├── TurnoHelper.php
-│   └── UploadHelper.php
 ├── models/
-│   ├── AsistenciaModel.php
-│   ├── DashboardModel.php
-│   ├── DetalleTarifaModel.php
-│   ├── EncabezadoTarifaModel.php
-│   ├── GrupoEncabezadoTarifaModel.php
-│   ├── GruposModel.php
-│   ├── ProduccionModel.php
-│   ├── PuntoControlModel.php
-│   ├── RiderModel.php
-│   ├── TarifaModel.php
-│   ├── TurnoModel.php
-│   └── User.php
 ├── public/
-│   ├── assets/
+│   ├── assets/icons/
 │   ├── css/
 │   ├── images/
 │   ├── js/
-│   └── uploads/
+│   └── uploads/  # contiene imágenes ya versionadas
 ├── test/
+│   ├── asistencias_service_test.php
 │   ├── produccion_service_test.php
 │   ├── produccionservicetest.php
+│   ├── punto_control_config_test.php
 │   ├── test_turno_helper.php
 │   └── test_turno_helper_db.php
 ├── views/
@@ -58,20 +49,25 @@ mercedes/
 │   ├── components/
 │   ├── configuraciones/
 │   ├── grupos/
+│   ├── herramientas/
+│   ├── invitados/
 │   ├── layouts/
 │   ├── produccion/
-│   ├── riders/
 │   ├── rider_asistencia/
 │   ├── rider_produccion/
+│   ├── riders/
 │   ├── tarifas/
 │   ├── turnos/
 │   └── usuarios/
+├── .gitignore
 ├── .htaccess
 ├── index.php
-├── package.json
-├── package-lock.json
-├── README
-├── REFACTOR_PROMPT.md
-├── consulta.php
-├── pruebaapituruc.php
-└── setup.ps1
+├── README.md
+├── README_entregabilidad.md
+├── README_seguridad.md
+└── REFACTOR_PROMPT.md
+
+Notas:
+- `estructura de carpetas` es una propuesta futura, no describe el código ejecutable actual.
+- `.gitignore` evita incorporar nuevos archivos ignorados, pero no deja de versionar archivos ya presentes en Git.
+- El marcador `config/installed.txt` y las imágenes bajo `public/uploads/` siguen versionados actualmente; hay que retirarlos del índice en una tarea explícita para que la regla de exclusión surta efecto en clones nuevos.

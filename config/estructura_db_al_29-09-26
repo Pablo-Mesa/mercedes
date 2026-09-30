@@ -1,9 +1,11 @@
+-- SCHEMA SNAPSHOT ONLY: contains DROP TABLE statements; never run on a populated database.
+-- Application seed data is maintained by config/setup.php.
 -- phpMyAdmin SQL Dump
 -- version 5.2.3
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1:3306
--- Tiempo de generación: 16-09-2026 a las 21:23:50
+-- Tiempo de generación: 30-09-2026 a las 01:36:46
 -- Versión del servidor: 8.4.7
 -- Versión de PHP: 8.3.28
 
@@ -47,6 +49,8 @@ DROP TABLE IF EXISTS `asistencias`;
 CREATE TABLE IF NOT EXISTS `asistencias` (
   `id` int NOT NULL AUTO_INCREMENT,
   `rider_id` int NOT NULL,
+  `grupo_id` int NOT NULL,
+  `turno_id` int NOT NULL,
   `fecha` date NOT NULL,
   `hora` time NOT NULL,
   `tipo` enum('entrada','salida') COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -60,7 +64,9 @@ CREATE TABLE IF NOT EXISTS `asistencias` (
   `actualizado_el` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `idx_rider_fecha` (`rider_id`,`fecha`),
-  KEY `idx_punto_control` (`punto_control_id`)
+  KEY `idx_punto_control` (`punto_control_id`),
+  KEY `idx_grupo_turno` (`grupo_id`,`turno_id`),
+  UNIQUE KEY `uq_asistencia_rider_grupo_turno_fecha_tipo` (`rider_id`,`grupo_id`,`turno_id`,`fecha`,`tipo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -189,6 +195,7 @@ CREATE TABLE IF NOT EXISTS `punto_control` (
   `longitud` decimal(10,7) NOT NULL,
   `fecha_creacion` datetime DEFAULT CURRENT_TIMESTAMP,
   `fecha_actualizacion` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `radio_metros` int DEFAULT '300',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

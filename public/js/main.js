@@ -1051,7 +1051,12 @@ document.addEventListener('DOMContentLoaded', function () {
                         location.reload();
                     }, 1200); // 1,2 segundos para que se vea el toast
                 } else {
-                    showToast('Error al guardar', 'error');
+                    showToast(data.message || 'Error al guardar', 'error');
+                    if (data.redirect) {
+                        setTimeout(() => {
+                            window.location.href = data.redirect;
+                        }, 1200);
+                    }
                 }
             })
             .catch(err => {

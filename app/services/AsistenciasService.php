@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/../repositories/AsistenciasRepository.php';
 require_once __DIR__ . '/../../helpers/TurnoHelper.php';
+require_once __DIR__ . '/../../models/PuntoControlModel.php';
 
 class AsistenciasService
 {
@@ -25,29 +26,37 @@ class AsistenciasService
         if (empty($payload['grupo_id']) || empty($payload['turno_id'])) {
             $errors[] = 'Grupo o turno inválido.';
         }
-        if (!in_array($payload['tipo'], ['entrada','salida'])) {
+        if (!isset($payload['tipo']) || !in_array($payload['tipo'], ['entrada', 'salida'], true)) {
             $errors[] = 'Tipo de marcación inválido.';
+            return $errors;
         }
 
-        // Validar ubicación contra punto de control SOLO en entradas
+        $puntoControlId = filter_var($payload['punto_control_id'] ?? null, FILTER_VALIDATE_INT);
+        $puntoControl = $puntoControlId
+            ? $this->repository->getPuntoControlById($puntoControlId)
+            : null;
+
+        if (!PuntoControlModel::isConfigured($puntoControl)) {
+            $errors[] = 'El Punto de Control no está configurado o no es válido.';
+        }
+
         if ($payload['tipo'] === 'entrada') {
-            if (empty($payload['lat']) || empty($payload['lon'])) {
+            $latitud = $payload['lat'] ?? null;
+            $longitud = $payload['lon'] ?? null;
+            if (!is_numeric($latitud) || !is_numeric($longitud)
+                || (float)$latitud < -90 || (float)$latitud > 90
+                || (float)$longitud < -180 || (float)$longitud > 180) {
                 $errors[] = 'No se pudo obtener tu ubicación para validar la entrada.';
-            } elseif (!empty($payload['punto_control_id'])) {
-                $puntoControl = $this->repository->getPuntoControlById((int)$payload['punto_control_id']);
-                if ($puntoControl) {
-                    $distancia = $this->calcularDistancia(
-                        (float)$payload['lat'],
-                        (float)$payload['lon'],
-                        (float)$puntoControl['latitud'],
-                        (float)$puntoControl['longitud']
-                    );
+            } elseif (PuntoControlModel::isConfigured($puntoControl)) {
+                $distancia = $this->calcularDistancia(
+                    (float)$latitud,
+                    (float)$longitud,
+                    (float)$puntoControl['latitud'],
+                    (float)$puntoControl['longitud']
+                );
 
-                    error_log("Validación entrada: lat={$payload['lat']}, lon={$payload['lon']}, distancia={$distancia}, radio={$puntoControl['radio_metros']}");
-
-                    if ($distancia > (int)$puntoControl['radio_metros']) {
-                        $errors[] = 'Debes estar dentro del radio permitido del punto de control para marcar entrada.';
-                    }
+                if ($distancia > (int)($puntoControl['radio_metros'] ?? $puntoControl['radio'])) {
+                    $errors[] = 'Debes estar dentro del radio permitido del punto de control para marcar entrada.';
                 }
             }
         }
@@ -59,8 +68,6 @@ class AsistenciasService
                 (int)$payload['turno_id'],
                 $payload['fecha']
             );
-
-            error_log("Validación salida: entrada encontrada=" . json_encode($entrada));
 
             if (!$entrada) {
                 $errors[] = 'No puedes marcar salida sin haber registrado una entrada previa en este turno.';

@@ -1,8 +1,9 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-
+    <!--  -->
     <div class="form-grid">
         <!-- fila 1: info + mapa -->
         <div class="row">
+            <!-- info -->
             <div class="col">
                 <!-- info -->
                 <div class="rider-info">    
@@ -25,7 +26,7 @@
                     </div>
                 </div>
             </div>
-
+            <!-- mapa -->
             <div class="col">
                 <!-- mapa -->
                 <div id="map" class="map-style"></div>
@@ -39,8 +40,22 @@
             <div class="content-card">
                 <?php foreach (($grupos ?? []) as $g): ?>
                     <?php foreach ($g['turnos'] as $t): ?>
-                        <!-- tarjeta -->
-                        <div class="turno-card">                            
+                        <?php
+                            // Buscar asistencias de este rider en este turno
+                            $entrada = null;
+                            $salida  = null;
+                            foreach (($asistencias ?? []) as $a) {
+                                if ($a['grupo_id'] == $g['id_grupo'] && $a['turno_id'] == $t['id']) {
+                                    if ($a['tipo'] === 'entrada') $entrada = $a['hora'];
+                                    if ($a['tipo'] === 'salida')  $salida  = $a['hora'];
+                                }
+                            }
+                        ?>                        
+                        <div class="turno-card 
+                            <?php if ($entrada && $salida): ?> bg-green-100 
+                            <?php elseif ($entrada && !$salida): ?> bg-yellow-100 
+                            <?php else: ?> bg-blue-50 <?php endif; ?>">
+                            
                             <!-- Columna 1: Grupo/Empresa -->
                             <div class="flex-1">
                                 <strong><?= htmlspecialchars($g['nombre']) ?></strong>
@@ -54,25 +69,37 @@
                                 <span><?= htmlspecialchars($t['hora_inicio']) ?> - <?= htmlspecialchars($t['hora_fin']) ?></span>
                             </div>
 
-                            <!-- Columna 3: Tipo de marcación -->
-                            <div class="flex-1 text-center">
-                                <label><input type="radio" name="tipo" value="entrada" checked> Entrada</label>
-                                <label><input type="radio" name="tipo" value="salida"> Salida</label>
-                            </div>
+                            <?php if ($entrada && $salida): ?>
+                                <!-- Mostrar horas registradas -->
+                                <div class="flex-1 text-center">
+                                    <div>Entrada: <?= htmlspecialchars($entrada) ?></div>
+                                    <div>Salida: <?= htmlspecialchars($salida) ?></div>
+                                </div>
+                            <?php else: ?>
+                                <!-- Radios y botón solo si falta alguna marcación -->
+                                <div class="flex-1 text-center">
+                                    <?php if (!$entrada): ?>
+                                        <label><input type="radio" name="tipo" value="entrada" checked> Entrada</label>
+                                    <?php endif; ?>
+                                    <?php if ($entrada && !$salida): ?>
+                                        <label><input type="radio" name="tipo" value="salida"> Salida</label>
+                                    <?php endif; ?>
+                                </div>
 
-                            <!-- Columna 4: Botón de acción -->
-                            <div class="flex-0">
-                                <form action="<?= htmlspecialchars($formAction ?? '', ENT_QUOTES, 'UTF-8') ?>" method="POST" class="inline-form">
-                                    <input type="hidden" name="punto_control_id" value="<?= $puntoControl['id'] ?>">
-                                    <input type="hidden" name="grupo_id" value="<?= $g['id_grupo'] ?>">
-                                    <input type="hidden" name="turno_id" value="<?= $t['id'] ?>">
-                                    <input type="hidden" name="lat" id="lat">
-                                    <input type="hidden" name="lon" id="lon">
-                                    <input type="hidden" name="dispositivo" value="web">
-                                    <button type="submit" class="btn btn-primary">Marcar</button>
-                                </form>
-                            </div>
+                                <div class="flex-0">
+                                    <form action="<?= htmlspecialchars($formAction ?? '', ENT_QUOTES, 'UTF-8') ?>" method="POST" class="inline-form">
+                                        <input type="hidden" name="punto_control_id" value="<?= htmlspecialchars($puntoControl['id'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                                        <input type="hidden" name="grupo_id" value="<?= $g['id_grupo'] ?>">
+                                        <input type="hidden" name="turno_id" value="<?= $t['id'] ?>">
+                                        <input type="hidden" name="lat" id="lat">
+                                        <input type="hidden" name="lon" id="lon">
+                                        <input type="hidden" name="dispositivo" value="web">
+                                        <button type="submit" class="btn btn-primary">Marcar</button>
+                                    </form>
+                                </div>
+                            <?php endif; ?>
                         </div>
+
                     <?php endforeach; ?>
                 <?php endforeach; ?>
             </div>

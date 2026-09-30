@@ -1,4 +1,10 @@
 <div class="herramientas-view">
+  <?php if (empty($puntoControlConfigurado)): ?>
+    <div class="alert alert-warning" role="alert">
+      Para activar Control de Asistencias, primero configura el
+      <a href="/mercedes/punto-control">Punto de Control</a>.
+    </div>
+  <?php endif; ?>
   <form method="POST" action="/mercedes/herramientas" class="herramientas-selector">
     <label>
       <input type="checkbox" name="herramientas[cuaderno]" value="1" id="toggleCuaderno" <?= !empty($herramientasSeleccionadas['cuaderno']) ? 'checked' : '' ?>> Activar Cuaderno
