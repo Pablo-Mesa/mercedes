@@ -12,7 +12,7 @@
     <a href="/mercedes/grupos/crear" class="btn btn-primary btn-nuevo">+ Nueva Empresa</a>
 </div>
 
-<div class="panel table-panel">
+<div class="panel table-panel" tabindex="0" role="region" aria-label="Tabla de empresas">
     <table class="data-table">
         <thead>
             <tr>

@@ -5,6 +5,9 @@
  * Recibe la variable $view (definida por el controlador) e inyecta
  * dinámicamente la sub-vista correspondiente dentro de .content-body.
  */
+
+/** @var mixed $view */
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -34,7 +37,7 @@ $adminOrOperaciones = in_array($currentRole, ['admin', 'operaciones'], true);
 <html lang="es">
     <head>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Panel Administrativo</title>
         <link rel="icon" type="image/svg+xml" href="/mercedes/public/images/icono_solver_nobg.png">
         <link rel="stylesheet" href="/mercedes/public/css/style.css">

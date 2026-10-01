@@ -14,6 +14,7 @@ date_default_timezone_set('America/Asuncion');
 $fechaSeleccionada = isset($_GET['fecha']) && $_GET['fecha'] !== '' ? $_GET['fecha'] : date('Y-m-d');
 
 $produccionesResumen = $produccionesResumen ?? [];
+$produccionesPorRider = $produccionesPorRider ?? [];
 $riders = $riders ?? [];
 $tarifas = $tarifas ?? [];
 $grupos = $grupos ?? [];
@@ -64,73 +65,67 @@ $detalleProduccion = $detalleProduccion ?? [];
 
 <!-- grid tarjetas -->
 <div class="cards-grid w-full">
-  <?php foreach ($produccionesResumen as $grupo): ?>    
-    <?php if ($_SESSION['user_role'] === 'admin' || $grupo['grupo_id'] == $_SESSION['grupo_id']): ?>
-      <?php foreach ($grupo['riders'] as $p): ?>
-        <!-- tarjeta -->
-        <div class="card">
-        
-          <!-- avatar -->
-          <img src="/mercedes/public/uploads/riders/<?= $p['rider_foto'] ?? 'default.png' ?>" class="card-avatar">
-          
-          <!-- nombre rider -->
-          <h3><?= htmlspecialchars($p['rider_nombre']) ?></h3>
-          
-          <!-- servicios -->
-          <div class="crow">
-            <p>
-              <span class="badge-hora mb-1">
-                📊 Servicios: <?= count($p['facturas']) ?>
-              </span>
-            </p>
-            <button class="btn-transparent btn-detalle" 
-                    data-rider="<?= $p['rider_id'] ?>" 
-                    data-rider-name="<?= htmlspecialchars($p['rider_nombre']) ?>" >
-              🔍
-            </button>
-          </div>
-          
-          <!-- pendientes -->
-          <div class="crow mb-1">
-            <p>
-              <?php 
-                $pendientes = 0;
-                foreach ($p['facturas'] as $f) {
-                  if ((int)$f['rendicion'] === 0) {
-                    $pendientes++;
-                  }
-                }
-              ?>
-              <?php if ($pendientes === 0): ?>
-                <span class="badge-hora " style="background: linear-gradient(135deg, #C8E6C9, #A5D6A7);">
-                  ✅ Pendientes: 0
-                </span>
-              <?php else: ?>
-                <span class="badge-hora " style="background: linear-gradient(135deg, #FFCC80, #FFF59D);">
-                  ⚠️ <strong>Pendientes: <?= $pendientes ?></strong>
-                </span>
-              <?php endif; ?>
-            </p>
-            <?php if ($pendientes > 0): ?>            
-              <button class="btn-transparent" data-rider="">⚠️</button>
-            <?php endif; ?>          
-          </div>
-          
-          <!-- monto total -->
-          <div class="crow">
-            <p>
-              <span class="badge-hora">
-                <span class="img-nav-icon" >
-                    <?= render_icon('totales', 'nav-icon') ?>
-                </span>
-                Total: Gs. <strong><?= number_format((float)$p['total_tarifa'], 0, ',', '.') ?></strong>
-              </span>
-            </p>
-            <button class="btn-transparent btn-agregar" data-rider="<?= $p['rider_id'] ?>">➕</button>
-          </div>
-        </div>
-      <?php endforeach; ?>
-    <?php endif; ?>
+  <?php foreach ($produccionesPorRider as $p): ?>
+    <!-- tarjeta -->
+    <div class="card">
+    
+      <!-- avatar -->
+      <img src="/mercedes/public/uploads/riders/<?= $p['rider_foto'] ?? 'default.png' ?>" class="card-avatar">
+      
+      <!-- nombre rider -->
+      <h3><?= htmlspecialchars($p['rider_nombre']) ?></h3>
+      
+      <!-- servicios -->
+      <div class="crow">
+        <p>
+          <span class="badge-hora mb-1">
+            📊 Servicios: <?= count($p['facturas']) ?>
+          </span>
+        </p>
+        <button class="btn-transparent btn-detalle" 
+                data-rider="<?= $p['rider_id'] ?>" 
+                data-rider-name="<?= htmlspecialchars($p['rider_nombre']) ?>" >
+          🔍
+        </button>
+      </div>
+      
+      <!-- pendientes -->
+      <div class="crow mb-1">
+        <p>
+          <?php 
+            $pendientes = 0;
+            foreach ($p['facturas'] as $f) {
+              if ((int)$f['rendicion'] === 0) {
+                $pendientes++;
+              }
+            }
+          ?>
+          <?php if ($pendientes === 0): ?>
+            <span class="badge-hora" style="background: linear-gradient(135deg, #C8E6C9, #A5D6A7);">
+              ✅ Pendientes: 0
+            </span>
+          <?php else: ?>
+            <span class="badge-hora" style="background: linear-gradient(135deg, #FFCC80, #FFF59D);">
+              ⚠️ <strong>Pendientes: <?= $pendientes ?></strong>
+            </span>
+          <?php endif; ?>
+        </p>
+        <?php if ($pendientes > 0): ?>            
+          <button class="btn-transparent" data-rider="<?= $p['rider_id'] ?>">⚠️</button>
+        <?php endif; ?>          
+      </div>
+      
+      <!-- monto total -->
+      <div class="crow">
+        <p>
+          <span class="badge-hora">
+            <span class="img-nav-icon"><?= render_icon('totales', 'nav-icon') ?></span>
+            Total: Gs. <strong><?= number_format((float)$p['total_tarifa'], 0, ',', '.') ?></strong>
+          </span>
+        </p>
+        <!-- <button class="btn-transparent btn-agregar" data-rider="<?= $p['rider_id'] ?>">➕</button> -->
+      </div>
+    </div>
   <?php endforeach; ?>
 </div>
 
@@ -143,7 +138,7 @@ $detalleProduccion = $detalleProduccion ?? [];
           <?php if (!empty($grupo['grupo_icono'])): ?>
             <img src="/mercedes/public/uploads/grupos/<?= htmlspecialchars($grupo['grupo_icono']) ?>" 
                 alt="Icono <?= htmlspecialchars($grupo['grupo_nombre']) ?>" 
-                class="grupo-icono">
+                class="grupo-icono avatar-rounded">
           <?php endif; ?>
           <h2 class="grupo-titulo"><?= htmlspecialchars($grupo['grupo_nombre']) ?></h2>
         </div>
@@ -215,13 +210,16 @@ $detalleProduccion = $detalleProduccion ?? [];
       </p>
     </div>
     <p>
-      <span class="img-nav-icon" ><?= render_icon('produccion', 'nav-icon') ?></span>
-      Servicios totales: <?= $resumenGlobal['total_servicios'] ?> 
-      (🌞 <?= $resumenGlobal['mañana'] ?> | 🌙 <?= $resumenGlobal['tarde'] ?> | 🌃 <?= $resumenGlobal['noche'] ?>)</p>
+      <span class="img-nav-icon"><?= render_icon('produccion', 'nav-icon') ?></span>
+      Servicios totales: <?= $resumenGlobal['total_servicios'] ?>
+      <!-- <span class="resumen-turnos">
+        (🌞 <?= $resumenGlobal['mañana'] ?> | 🌙 <?= $resumenGlobal['tarde'] ?> | 🌃 <?= $resumenGlobal['noche'] ?>)
+      </span> -->
+    </p>    
     <p>
       <span class="img-nav-icon" ><?= render_icon('totales', 'nav-icon') ?></span>
       Total producción: Gs. <?= number_format((float)$resumenGlobal['total_produccion'], 0, ',', '.') ?>
-    </p>
+    </p>            
   </div>
 <?php endif; ?>
 

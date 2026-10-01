@@ -12,7 +12,7 @@
     <a href="/mercedes/tarifas/crear" class="btn btn-primary btn-nuevo">+ Nuevo Tarifa</a>
 </div>
 
-<div class="panel table-panel">
+<div class="panel table-panel" tabindex="0" role="region" aria-label="Tabla de tarifas">
   <table class="data-table">
     <thead>
       <tr>

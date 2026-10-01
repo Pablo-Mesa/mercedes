@@ -168,12 +168,40 @@ class ProduccionController extends BaseController
             'view'   => $view,
         ];
 
+        // Datos base siempre disponibles
+        $produccionesResumen = $this->produccionModel->getProduccionesConDetalle($fecha, $turno, $rider, $accion);
+        $data['produccionesResumen'] = $produccionesResumen; // para la tabla
+
         if ($vista === 'tarjetas') {
-            $data['produccionesResumen'] = $this->produccionModel->getProduccionesConDetalle($fecha, $turno, $rider, $accion);
+            // Consolidar por rider_id para las cards
+            $produccionesPorRider = [];
+            foreach ($produccionesResumen as $grupo) {
+                foreach ($grupo['riders'] as $p) {
+                    $riderId = $p['rider_id'];
+
+                    if (!isset($produccionesPorRider[$riderId])) {
+                        $produccionesPorRider[$riderId] = [
+                            'rider_id'     => $riderId,
+                            'rider_nombre' => $p['rider_nombre'],
+                            'rider_foto'   => $p['rider_foto'] ?? 'default.png',
+                            'facturas'     => [],
+                            'total_tarifa' => 0,
+                        ];
+                    }
+
+                    $produccionesPorRider[$riderId]['facturas'] = array_merge(
+                        $produccionesPorRider[$riderId]['facturas'],
+                        $p['facturas']
+                    );
+                    $produccionesPorRider[$riderId]['total_tarifa'] += (float)$p['total_tarifa'];
+                }
+            }
+            $data['produccionesPorRider'] = $produccionesPorRider; // para las cards
         } else {
             $data['producciones'] = $this->produccionModel->getProduccionesFiltradas($fecha, $turno, $rider, $accion);
         }
 
+        // Mantener el resto del código intacto
         $grupoId = $_SESSION['grupo_id'] ?? null;
 
         if ($_SESSION['user_role'] === 'admin') {
@@ -183,12 +211,12 @@ class ProduccionController extends BaseController
             if ($grupoId) {
                 $data['riders']        = $this->produccionModel->getRidersByGrupo((int)$grupoId);
                 $data['tarifas']       = $this->produccionModel->getTarifasByGrupo((int)$grupoId);
-                $data['turnos']        = $this->produccionModel->getTurnosByGrupo((int)$grupoId); // ✅ turnos filtrados
+                $data['turnos']        = $this->produccionModel->getTurnosByGrupo((int)$grupoId);
                 $data['resumenGlobal'] = $this->produccionModel->getProduccionResumenPorGrupo($fecha, (int)$grupoId);
             } else {
                 $data['riders']        = [];
                 $data['tarifas']       = [];
-                $data['turnos']        = []; // vacío hasta que elija grupo
+                $data['turnos']        = [];
                 $data['resumenGlobal'] = $this->produccionModel->getProduccionResumenGlobal($fecha);
             }
         } else {

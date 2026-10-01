@@ -7,7 +7,7 @@
         Nuevo Turno
     </a>
 
-    <div class="panel table-panel">
+    <div class="panel table-panel" tabindex="0" role="region" aria-label="Tabla de turnos">
     <table class="data-table">
         <thead>
             <tr>

@@ -13,7 +13,7 @@
     <a href="/mercedes/usuarios/crear" class="btn btn-primary btn-nuevo">+ Nuevo usuario</a>
 </div>
 
-<div class="panel table-panel">
+<div class="panel table-panel" tabindex="0" role="region" aria-label="Tabla de usuarios">
     <table class="data-table">
         <thead>
             <tr>

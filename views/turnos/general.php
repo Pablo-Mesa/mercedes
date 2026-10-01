@@ -10,7 +10,7 @@
         </div>
 
         <?php if (!empty($turnosPorGrupo[$g['id_grupo']])): ?>
-            <div class="panel table-panel">        
+            <div class="panel table-panel" tabindex="0" role="region" aria-label="Tabla de turnos del grupo">
                 <table class="data-table">
                     <thead>
                         <tr>

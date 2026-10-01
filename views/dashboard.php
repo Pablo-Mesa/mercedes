@@ -3,9 +3,15 @@
    * views/dashboard.php
    * Vista pura del panel principal. Se inyecta dentro de views/layouts/main.php.
    */
+  /** @var mixed $totales */
+  /** @var mixed $resumenMensual */
+  /** @var mixed $grupos */
+  /** @var mixed $grupoSeleccionado */
+  
 ?>
 
 <?php
+  $produccionesPorDia = $produccionesPorDia ?? [];
   $meses = [
       1 => 'Enero', 2 => 'Febrero', 3 => 'Marzo', 4 => 'Abril',
       5 => 'Mayo', 6 => 'Junio', 7 => 'Julio', 8 => 'Agosto',

@@ -348,10 +348,20 @@ ul, li {
 }
 
 .nav-item:focus {
-  outline: 2px solid--color-primary-dark; /* color visible */
+  outline: 2px solid var(--color-primary-dark);
   outline-offset: 2px;
   background: var(--color-primary);
   color: #fff; /* opcional */
+}
+
+.nav-item:focus-visible,
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 3px solid var(--color-primary-dark);
+    outline-offset: 2px;
 }
 
 .nav-icon {
@@ -709,8 +719,13 @@ ul, li {
 .table-panel {
     padding: 0;
     width: 100%;
-    overflow: hidden; /* Permite scroll horizontal solo en pantallas muy chicas */
+  overflow-x: auto;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Opcional: estética */
+}
+
+.table-panel:focus-visible {
+  outline: 3px solid var(--color-primary-dark);
+  outline-offset: 2px;
 }
 
 .data-table {
@@ -2865,6 +2880,7 @@ facturas-table[type="date"]::-webkit-calendar-picker-indicator {
 
   .content-generic .form-group {
     width: 100%;              /* cada bloque ocupa todo el ancho */
+    min-width: 0;
   }
 
   .turno-wrapper {
@@ -2881,8 +2897,9 @@ facturas-table[type="date"]::-webkit-calendar-picker-indicator {
   }
 
   .filter-bar {
-    flex-direction: row;   /* todos en una fila */
-    justify-content: space-between;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: stretch;
     gap: 8px;
   }
 
@@ -2893,8 +2910,15 @@ facturas-table[type="date"]::-webkit-calendar-picker-indicator {
   }
 
   .filter-item {
-    flex: 1; /* cada botón ocupa espacio proporcional */
+    flex: 1 1 140px;
     justify-content: center;
+  }
+
+  .filter-item > .btn,
+  .filter-item > button,
+  .filter-item > a {
+    min-height: 44px;
+    width: 100%;
   }
 
   .tabla-produccion-rider {
@@ -2943,9 +2967,8 @@ facturas-table[type="date"]::-webkit-calendar-picker-indicator {
     color: #2e7d32;
   }
 
-  /* En móvil solo mostrar iconos */
-  .btn-text { display: none; }
-  .btn-icon { display: inline; font-size: 18px; }
+  .btn-text { display: inline; }
+  .btn-icon { display: none; }
 
   .map-style{
     height:200px;
@@ -2997,9 +3020,46 @@ facturas-table[type="date"]::-webkit-calendar-picker-indicator {
     width: 100%;              /* cada bloque ocupa todo el ancho */
   }
 
+  .form-actions {
+    flex-wrap: wrap;
+  }
+
+  .form-actions > .btn,
+  .form-actions > a {
+    min-height: 44px;
+  }
+
+  .turno-card {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .turno-card > .flex-1 {
+    flex: 1 1 140px;
+    min-width: 0;
+  }
+
+  .turno-card > .flex-0 {
+    flex: 1 1 100%;
+  }
+
+  .turno-card button,
+  .btn-small {
+    min-height: 44px;
+  }
+
   .row-right {
     justify-content: flex-start; /* formulario alineado a la izquierda en móvil */
     margin-top: 8px;             /* pequeño espacio entre título y formulario */
+  }
+  
+  .mes-selector label {
+    font-size: 0;              /* oculta el texto */
+  }
+
+  .resumen-turnos {
+    display: block;   /* fuerza salto de línea */
+    margin-top: 4px;  /* opcional: espacio arriba */
   }
 
 }
@@ -3007,7 +3067,7 @@ facturas-table[type="date"]::-webkit-calendar-picker-indicator {
 /* =========================================================
    RESPONSIVE
    ========================================================= */
-@media (max-width: 900px) {
+@media (min-width: 769px) and (max-width: 900px) {
     .sidebar {
         width: 76px;
         padding: 18px 10px;
@@ -3056,6 +3116,49 @@ facturas-table[type="date"]::-webkit-calendar-picker-indicator {
         padding: 5px !important;
     }
 
+    .table-panel {
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .data-table {
+      display: table;
+      width: 100%;
+      min-width: 600px;
+      table-layout: auto;
+    }
+
+    .data-table thead {
+      display: table-header-group;
+      width: auto;
+      table-layout: auto;
+    }
+
+    .data-table tbody {
+      display: table-row-group;
+      width: auto;
+      max-height: none;
+      overflow: visible;
+    }
+
+    .data-table tbody tr {
+      display: table-row;
+      width: auto;
+      table-layout: auto;
+    }
+
+    .data-table th,
+    .data-table tbody td {
+      display: table-cell;
+      padding: 8px;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      vertical-align: middle;
+    }
+
+    .actions-cell {
+      flex-wrap: wrap;
+    }
+
     .cards-grid {
       grid-template-columns: 1fr; /* una sola columna */
       gap: 12px;
@@ -3093,6 +3196,7 @@ facturas-table[type="date"]::-webkit-calendar-picker-indicator {
       padding: 2px;
     }
 
+
 }
 
 @media (max-width: 640px) {
@@ -3105,7 +3209,64 @@ facturas-table[type="date"]::-webkit-calendar-picker-indicator {
     }
 
     .topbar {
-        padding: 0 16px;
+      gap: 8px;
+      padding: 0 12px;
+    }
+
+    .topbar-title {
+      flex: 1;
+      min-width: 0;
+      font-size: 16px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .topbar-user-info {
+      max-width: 88px;
+    }
+
+    .user-name,
+    .user-role {
+      max-width: 88px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .hamburger {
+      min-width: 44px;
+      min-height: 44px;
+    }
+
+    .btn {
+      min-height: 44px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      min-height: 44px;
+      font-size: 16px;
+    }
+
+    form input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+    form select,
+    form textarea {
+      min-height: 44px;
+      font-size: 16px;
+    }
+
+    .filter-form,
+    .mes-selector {
+      flex-wrap: wrap;
+      width: 100%;
+    }
+
+    input[type="checkbox"],
+    input[type="radio"] {
+      width: 24px;
+      height: 24px;
     }
 
     .search-form {
@@ -3124,6 +3285,17 @@ facturas-table[type="date"]::-webkit-calendar-picker-indicator {
     .search-form a.btn-primary {
         float: none !important;
         text-align: center;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
     }
 }
 

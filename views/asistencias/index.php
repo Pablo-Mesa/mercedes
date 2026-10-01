@@ -17,7 +17,7 @@
 </div>
 
 <div class="panel table-panel">
-    <div class="panel table-panel">
+    <div class="panel table-panel" tabindex="0" role="region" aria-label="Tabla de asistencias">
         <table class="data-table">
             <thead>
                 <tr>
