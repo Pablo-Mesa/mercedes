@@ -188,6 +188,11 @@ switch ($url) {
             $ridersController->edit();
         }
         break;
+
+    case 'riders/toggleStatus':
+        $ridersController = new RidersController();
+        $ridersController->toggleStatus();
+        break;
     
     case 'riders/estado':
         $ridersController = new RidersController();
@@ -375,6 +380,24 @@ switch ($url) {
         }
         break;    
     
+    // Mostrar formulario de activación (GET)
+    case 'activar-rider':
+        $authController = new AuthController();
+        $authController->showActivateRider();
+        break;
+
+    // Procesar activación (POST)
+    case 'activar-rider/store':
+        $authController = new AuthController();
+        $authController->storeActivateRider();
+        break;
+
+    // Enviar enlace de activación a Rider
+    case 'riders/sendActivation':
+        $ridersController = new RidersController();
+        $ridersController->sendActivation();
+        break;   
+
     default:
         http_response_code(404);
         echo '<h1 style="font-family: sans-serif; text-align:center; margin-top: 80px;">404 - Página no encontrada</h1>';

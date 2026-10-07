@@ -72,6 +72,12 @@ class UserController extends BaseController
             $this->redirect('/mercedes/usuarios/crear');
         }
 
+        $allowedRoles = [1,2,4];
+        if (!in_array($data['role_id'], $allowedRoles, true)) {
+            $_SESSION['error'] = 'Rol inválido. Solo se permiten Admin, Operaciones e Invitados.';
+            $this->redirect('/mercedes/usuarios/crear');
+        }
+
         $this->userModel->create($data);
         $_SESSION['success'] = 'Usuario creado correctamente.';
         $this->redirect('/mercedes/usuarios');
@@ -118,6 +124,12 @@ class UserController extends BaseController
 
         if ($data['role_id'] == $operacionesRoleId && empty($data['grupo_id'])) {
             $_SESSION['error'] = 'Debe asignar un grupo al usuario de operaciones.';
+            $this->redirect('/mercedes/usuarios/crear');
+        }
+
+        $allowedRoles = [1,2,4];
+        if (!in_array($data['role_id'], $allowedRoles, true)) {
+            $_SESSION['error'] = 'Rol inválido. Solo se permiten Admin, Operaciones e Invitados.';
             $this->redirect('/mercedes/usuarios/crear');
         }
 

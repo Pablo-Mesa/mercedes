@@ -12,7 +12,7 @@
     </div>
     <form method="GET" action="/mercedes/rider_asistencia" class="mes-selector">
         <label for="fecha">Fecha:</label>
-        <input type="date" name="fecha" id="fecha" value="<?= htmlspecialchars($fecha) ?>" class="form-control">
+        <input type="date" name="fecha" id="fecha" value="<?= htmlspecialchars($fecha ?? '') ?>" class="form-control">
         <button type="submit" class="btn btn-primary">Filtrar</button>
     </form>
 </div>

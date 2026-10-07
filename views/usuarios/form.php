@@ -1,8 +1,8 @@
 <?php
 /**
  * views/usuarios/form.php
- * Vista pura de formulario, reutilizada para crear y editar usuarios.
- * Variables disponibles: $usuario (null si es creación), $roles, $cargos, $formAction
+ * Formulario para crear y editar usuarios (acceso exclusivo administradores).
+ * Variables disponibles: $usuario (null si es creación), $roles, $cargos, $grupos, $formAction
  */
 $isEdit = !empty($usuario);
 ?>
@@ -18,17 +18,18 @@ $isEdit = !empty($usuario);
             <input type="hidden" name="id" value="<?= (int)$usuario['id'] ?>">
         <?php endif; ?>
 
-        <!-- nombre completo -->
+        <!-- nombre -->
         <div class="form-group">
             <label for="name">Nombre completo</label>
             <input type="text" id="name" name="name" required 
                    value="<?= htmlspecialchars($usuario['name'] ?? '') ?>">
         </div>
 
-        <!-- correo electronico -->
+        <!-- correo -->
         <div class="form-group">
             <label for="email">Correo electrónico</label>
-            <input type="email" id="email" name="email" required value="<?= htmlspecialchars($usuario['email'] ?? '') ?>">
+            <input type="email" id="email" name="email" required 
+                   value="<?= htmlspecialchars($usuario['email'] ?? '') ?>">
         </div>
 
         <!-- clave -->
@@ -37,13 +38,13 @@ $isEdit = !empty($usuario);
             <input type="password" id="password" name="password" <?= $isEdit ? '' : 'required' ?> placeholder="••••••••">
         </div>
 
-        <!-- telefono -->
+        <!-- teléfono -->
         <div class="form-group">
             <label for="phone">Teléfono</label>
             <input type="text" id="phone" name="phone" value="<?= htmlspecialchars($usuario['phone'] ?? '') ?>">
         </div>
 
-        <!-- direccion -->
+        <!-- dirección -->
         <div class="form-group form-group-wide">
             <label for="address">Dirección</label>
             <input type="text" id="address" name="address" value="<?= htmlspecialchars($usuario['address'] ?? '') ?>">
@@ -63,7 +64,7 @@ $isEdit = !empty($usuario);
         </div>
         
         <!-- grupo -->
-        <div class="form-group" id="grupoField" style="display:none;">
+        <div class="form-group">
             <label for="grupo_id">Grupo asignado</label>
             <select id="grupo_id" name="grupo_id">
                 <option value="">Selecciona un grupo</option>
@@ -101,10 +102,19 @@ $isEdit = !empty($usuario);
             </select>
         </div>
 
-        <!-- numero documento -->
+        <!-- número documento -->
         <div class="form-group">
             <label for="documento_numero">Número de documento</label>
             <input type="text" id="documento_numero" name="documento_numero" value="<?= htmlspecialchars($usuario['documento_numero'] ?? '') ?>">
+        </div>
+
+        <!-- estado -->
+        <div class="form-group">
+            <label for="is_active">Activo</label>
+            <select name="is_active" id="is_active" class="form-control">
+                <option value="1" <?= (isset($usuario) && $usuario && (int)$usuario['is_active'] === 1) ? 'selected' : '' ?>>Sí</option>
+                <option value="0" <?= (isset($usuario) && $usuario && (int)$usuario['is_active'] === 0) ? 'selected' : '' ?>>No</option>
+            </select>
         </div>
 
         <div class="form-actions">

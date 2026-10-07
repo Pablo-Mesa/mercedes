@@ -20,7 +20,6 @@
                 <th>Nombre</th>
                 <th>Correo</th>
                 <th>Rol</th>
-                <th>Cargo</th>
                 <th>Estado</th>
                 <th class="text-center">Acciones</th>
             </tr>
@@ -36,8 +35,8 @@
                         <td><?= htmlspecialchars($u['name']) ?></td>
                         <td><?= htmlspecialchars($u['email']) ?></td>
                         <td><span class="badge badge-role"><?= htmlspecialchars($u['role_name'] ?? '—') ?></span></td>
-                        <td><?= htmlspecialchars($u['cargo_name'] ?? '—') ?></td>
-                        <!-- <td><?= htmlspecialchars($u['documento_tipo'] . ' ' . $u['documento_numero']) ?></td> -->
+                        <!-- <td><?= htmlspecialchars($u['cargo_name'] ?? '—') ?></td>
+                        <td><?= htmlspecialchars($u['documento_tipo'] . ' ' . $u['documento_numero']) ?></td> -->
                         <td>
                             <?php if ((int)$u['is_active'] === 1): ?>
                                 <span class="badge badge-success">Activo</span>

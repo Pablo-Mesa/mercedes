@@ -18,9 +18,10 @@
             <tr>
                 <th>ID</th> 
                 <th>Nombre</th> 
-                <th>Contacto</th> 
+                <th>Teléfono</th> 
                 <th>Foto de perfil</th> 
-                <th>Estado</th> 
+                <th>Estado</th>
+                <th>Activacion</th> 
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -28,10 +29,9 @@
             <?php if (!empty($riders)): ?>
                 <?php foreach ($riders as $r): ?>
                     <tr>
-                        <td><?php echo $r['id']; ?></td>
-                        <td><?php echo htmlspecialchars($r['name']); ?></td>
-                        <td><?php echo htmlspecialchars($r['contacto']); ?></td>
-
+                        <td><?= (int)$r['id']; ?></td>
+                        <td><?= htmlspecialchars($r['name'] ?? '') ?></td>
+                        <td><?= htmlspecialchars($r['phone'] ?? ''); ?></td>
                         <td>
                             <img src="/mercedes/public/uploads/riders/<?= !empty($r['foto_perfil']) 
                                 ? htmlspecialchars($r['foto_perfil']) 
@@ -39,22 +39,28 @@
                                 alt="Foto de <?= htmlspecialchars($r['name']); ?>" 
                                 class="avatar-sm">
                         </td>
-
-
                         <td>
-                            <?php if ((int) $r['is_active'] === 1): ?>
+                            <?php if ((int)$r['is_active'] === 1): ?>
                                 <span class="badge badge-success">Activo</span>
                             <?php else: ?>
                                 <span class="badge badge-danger">Inactivo</span>
                             <?php endif; ?>
                         </td>
+                        
+                        <td>
+                            <a href="/mercedes/riders/sendActivation?id=<?= (int)$r['id'] ?>"
+                                class="btn btn-small btn-info-outline">
+                                Activar por WhatsApp
+                            </a>
+                        </td>
+
                         <td>
                             <a href="/mercedes/riders/editar?id=<?= (int)$r['id'] ?>" class="btn btn-small">Editar</a>
-                            <a href="/mercedes/riders/estado?id=<?= (int)$r['id'] ?>"
+                            <a href="/mercedes/riders/toggleStatus?id=<?= (int)$r['id'] ?>"
                                class="btn btn-small <?= ((int)$r['is_active'] === 1) ? 'btn-danger-outline' : 'btn-success-outline' ?>">
                                 <?= ((int)$r['is_active'] === 1) ? 'Desactivar' : 'Activar' ?>
                             </a>
-                            <!-- 
+                            <!--
                             <a href="/mercedes/riders/eliminar?id=<?= (int)$r['id'] ?>" 
                                class="btn btn-small btn-danger-outline"
                                onclick="return confirm('¿Seguro que deseas eliminar este rider?');">
