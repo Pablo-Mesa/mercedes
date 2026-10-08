@@ -22,11 +22,9 @@
         <thead>
             <tr>
                 <th>Fecha</th>
-                <th>Hora</th>
+                <th>Empresa</th>
                 <th>Tipo</th>
-                <th>Ubicación</th>
-                <th>Dispositivo</th>
-                <th>Observaciones</th>
+                <th>Hora</th>                
             </tr>
         </thead>
         <tbody>
@@ -34,7 +32,7 @@
                 <?php foreach ($asistencias as $a): ?>
                     <tr>
                         <td><?= htmlspecialchars(date("d-m-Y", strtotime($a['fecha']))); ?></td>
-                        <td><?= htmlspecialchars($a['hora']); ?></td>
+                        <td><?= htmlspecialchars($a['empresa']); ?></td>
                         <td>
                             <?php if ($a['tipo'] === 'entrada'): ?>
                                 <span class="badge badge-success">Entrada</span>
@@ -42,13 +40,7 @@
                                 <span class="badge badge-info">Salida</span>
                             <?php endif; ?>
                         </td>
-                        <td>
-                            <?= !empty($a['lat']) && !empty($a['lon'])
-                                ? htmlspecialchars($a['lat'] . ', ' . $a['lon'])
-                                : 'No disponible'; ?>
-                        </td>
-                        <td><?= htmlspecialchars($a['dispositivo']); ?></td>
-                        <td><?= htmlspecialchars($a['observaciones'] ?? ''); ?></td>
+                        <td><?= htmlspecialchars($a['hora']); ?></td>                                                
                     </tr>
                 <?php endforeach; ?>
             <?php else: ?>

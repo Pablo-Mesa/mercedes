@@ -155,21 +155,24 @@ class RidersController extends BaseController {
 
         $this->userModel->setActivationToken($id, $tokenHash, $expiresAt);
 
-        $activationLink = 'http://192.168.100.9/mercedes/activar-rider?token=' . urlencode($token);
-        
-        $mensaje =
-            "Hola {$rider['name']}.\n\n" .
-            "Tu cuenta de Rider fue creada correctamente.\n\n" .
-            "Activa tu acceso desde el siguiente enlace:\n\n" .
-            $activationLink .
-            "\n\n" .
-            "Este enlace expira en 24 horas.";
+        $activationLink = 'http://192.168.100.108/mercedes/activar-rider?token=' . urlencode($token);
+
+        // Define el mensaje con saltos de línea normales sin concatenar con puntos innecesarios
+        $mensaje = "Hola {$rider['name']}.\n\n"
+                . "Tu cuenta de Rider fue creada correctamente.\n\n"
+                . "Creado {$rider['created_at']}.\n\n"
+                . "Usuario {$rider['email']}.\n\n"
+                . "Activa tu acceso desde el siguiente enlace:\n\n"
+                . $activationLink . "\n\n"
+                . "Este enlace expira en 24 horas.";
 
         $telefono = preg_replace('/\D/', '', $rider['phone']);
         if (str_starts_with($telefono, '0')) {
             $telefono = '595' . substr($telefono, 1);
         }
-        $whatsappUrl = 'https://wa.me/' . $telefono . '?text=' . urlencode($mensaje);
+
+        // Codifica TODO el parámetro text al final para evitar rupturas de URL
+        $whatsappUrl = "https://wa.me/" . $telefono . "?text=" . urlencode($mensaje);
 
         header('Location: ' . $whatsappUrl);
         exit;

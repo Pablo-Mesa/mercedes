@@ -28,7 +28,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 <body class="auth-layout">
 
-    <main class="auth-container">
+    <main class="content-body">
 
         <?php
         if (isset($data) && is_array($data)) {

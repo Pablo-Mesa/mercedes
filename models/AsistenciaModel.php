@@ -100,14 +100,24 @@ class AsistenciaModel
      */
     public function getByDate(string $fecha): array
     {
-        $sql = "SELECT a.*, r.name AS rider_name, r.contacto AS rider_contacto
-                FROM asistencias a
-                JOIN riders r ON a.rider_id = r.id
-                WHERE a.fecha = :fecha
-                ORDER BY a.hora ASC";
+        $sql = "
+            SELECT
+                a.*,
+                u.name AS rider_name,
+                u.phone AS rider_contacto,
+                u.foto_perfil
+            FROM asistencias a
+            INNER JOIN usuarios u
+                ON a.rider_id = u.id
+                AND u.role_id = 3
+            WHERE a.fecha = :fecha
+            ORDER BY a.hora ASC
+        ";
 
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([':fecha' => $fecha]);
+        $stmt->execute([
+            ':fecha' => $fecha
+        ]);
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }

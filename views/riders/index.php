@@ -45,15 +45,20 @@
                             <?php else: ?>
                                 <span class="badge badge-danger">Inactivo</span>
                             <?php endif; ?>
-                        </td>
-                        
+                        </td>                        
                         <td>
-                            <a href="/mercedes/riders/sendActivation?id=<?= (int)$r['id'] ?>"
-                                class="btn btn-small btn-info-outline">
-                                Activar por WhatsApp
-                            </a>
+                            <?php if (!empty($r['activated_at'])): ?>
+                                <span class="badge badge-success">
+                                    Activado
+                                </span>
+                            <?php else: ?>
+                                <a href="/mercedes/riders/sendActivation?id=<?= (int)$r['id'] ?>"
+                                    class="btn btn-small btn-info-outline"
+                                    target="_blank">                                    
+                                    Activar por WhatsApp
+                                </a>
+                            <?php endif; ?>    
                         </td>
-
                         <td>
                             <a href="/mercedes/riders/editar?id=<?= (int)$r['id'] ?>" class="btn btn-small">Editar</a>
                             <a href="/mercedes/riders/toggleStatus?id=<?= (int)$r['id'] ?>"

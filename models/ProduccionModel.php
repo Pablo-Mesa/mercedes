@@ -517,7 +517,7 @@ class ProduccionModel {
                     p.total_factura, p.rendicion, a.codigo AS accion_codigo,
                     t.costo AS tarifa, p.id_grupo, g.nombre AS grupo_nombre, g.icono AS grupo_icono
                 FROM produccion p
-                JOIN riders r ON p.id_rider = r.id
+                JOIN usuarios r ON p.id_rider = r.id AND r.role_id = 3
                 JOIN acciones_rider a ON p.id_accion = a.id_accion
                 JOIN detalles_tarifas t ON p.id_detalle_tarifa = t.id
                 JOIN grupos g ON p.id_grupo = g.id_grupo
@@ -596,19 +596,30 @@ class ProduccionModel {
 
         return array_values($producciones);
     }
+    public function getRidersByGrupo(int $grupoId): array
+    {
+        $sql = "
+            SELECT DISTINCT
+                u.id,
+                u.name,
+                u.phone,
+                u.email
+            FROM usuarios u
+            INNER JOIN rider_grupo rg
+                ON rg.rider_id = u.id
+            WHERE
+                rg.grupo_id = :grupo_id
+                AND u.role_id = 3
+                AND u.is_active = 1
+            ORDER BY u.name ASC
+        ";
 
-    public function getRidersByGrupo($grupoId) {
-        $sql = "SELECT DISTINCT r.* 
-                FROM riders r
-                JOIN rider_grupo rg ON rg.rider_id = r.id
-                WHERE rg.grupo_id = :grupo_id AND r.is_active = 1
-                ORDER BY r.name ASC";
         $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':grupo_id', $grupoId, PDO::PARAM_INT);
+        $stmt->bindValue(':grupo_id', $grupoId, PDO::PARAM_INT);
         $stmt->execute();
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
     public function getByRider(int $riderId, ?string $fecha = null, ?int $grupoId = null): array
     {
         $sql = "SELECT p.id, p.fecha_creacion, p.rendicion, 

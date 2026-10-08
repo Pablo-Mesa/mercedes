@@ -970,15 +970,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 toggleMenu();
             }
         });
-    }
 
-    // Opcional: cerrar si se hace click fuera
-    document.addEventListener("click", (e) => {
-        if (!configBtn.contains(e.target) && !configDropdown.contains(e.target)) {
-            configDropdown.classList.remove("open");
-            configBtn.setAttribute("aria-expanded", false);
-        }
-    });
+        // Opcional: cerrar si se hace click fuera
+        document.addEventListener("click", (e) => {
+            if (!configBtn.contains(e.target) && !configDropdown.contains(e.target)) {
+                configDropdown.classList.remove("open");
+                configBtn.setAttribute("aria-expanded", false);
+            }
+        });
+
+    }
     
     //actualizar estados en la vista herramientas    
     function actualizarVistas() {

@@ -137,6 +137,11 @@
         </div>
     </div>
 
+    <!-- acciones -->
+    <div class="form-actions">
+        <a href="#" class="btn btn-primary">Mis llegadas</a>
+    </div>
+
 </div>
 
 <script>
