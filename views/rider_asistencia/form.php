@@ -139,7 +139,8 @@
 
     <!-- acciones -->
     <div class="form-actions">
-        <a href="#" class="btn btn-primary">Mis llegadas</a>
+        <?php $hoy = date('Y-m-d'); ?>
+        <a href="/mercedes/rider_asistencia?fecha=<?= $hoy ?>" class="btn btn-volver">Mis llegadas</a>
     </div>
 
 </div>

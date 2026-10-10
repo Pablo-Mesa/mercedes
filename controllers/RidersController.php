@@ -149,6 +149,13 @@ class RidersController extends BaseController {
             return;
         }
 
+        // Impedir generar otro token si ya activó su cuenta
+        if (!empty($rider['activated_at'])) {
+            $_SESSION['error'] = 'Este Rider ya activó su cuenta. No necesita otro enlace.';
+            $this->redirect('/mercedes/riders');
+            return;
+        }
+
         $token = bin2hex(random_bytes(32));
         $tokenHash = hash('sha256', $token);
         $expiresAt = date('Y-m-d H:i:s', strtotime('+24 hours'));

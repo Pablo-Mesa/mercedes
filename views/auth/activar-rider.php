@@ -7,7 +7,15 @@
  * - $tokenOriginal (string con el token de activación)
  */
 ?>
-<div class="page-header page-header-actions">
+<link rel="stylesheet" href="/mercedes/public/css/style.css">
+<link rel="stylesheet" href="/mercedes/public/css/css_cubo.css">
+<script src="/mercedes/public/js/tool-kit-v002.js"></script>
+
+<div class="w-full align-start">
+    <div id="contenedorCuboLogin"></div>
+</div>
+
+<div class="page-header page-header-actions">        
     <div>
         <h2>Activar cuenta de Rider</h2>
         <p>Por favor define tu contraseña para completar la activación.</p>
@@ -61,4 +69,10 @@
             <button type="submit" class="btn btn-primary">Activar cuenta</button>
         </div>
     </form>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Esto se ejecutará solo cuando el HTML esté completamente mapeado
+            drawCube("contenedorCuboLogin", false, "28px");
+        });
+    </script>
 </div>

@@ -564,6 +564,31 @@
 }
 
 
+/* Captura panorámica del Dashboard */
+
+.aboutdev-screenshot-wide {
+    margin: 32px 0;
+    padding: 14px;
+    border: 1px solid var(--ad-border);
+    border-radius: 16px;
+    background: var(--ad-surface);
+}
+
+.aboutdev-screenshot-wide img {
+    width: 100%;
+    height: auto;
+    max-height: 620px;
+    object-fit: contain;
+    border-radius: 10px;
+}
+
+@media (max-width: 640px) {
+    .aboutdev-screenshot-wide {
+        padding: 8px;
+        margin: 24px 0;
+    }
+}
+
 /* ========================================
    12. CAPTURAS DEL PROYECTO
 ======================================== */

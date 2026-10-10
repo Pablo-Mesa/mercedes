@@ -2850,6 +2850,39 @@ facturas-table[type="date"]::-webkit-calendar-picker-indicator {
   justify-content: flex-end; /* 👈 mantiene el formulario a la derecha */
 }
 
+/* Botón de volver adaptado */
+.btn-volver {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px; /* Espacio entre la flecha y el texto */
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #555555; /* Texto gris neutro */
+    background-color: #f5f5f5; /* Fondo suave */
+    border: 1px solid #dddddd;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+}
+
+/* Efecto al pasar el mouse (Hover) */
+.btn-volver:hover {
+    color: #222222;
+    background-color: #eaeaea;
+    border-color: #cccccc;
+    transform: translateX(-2px); /* Pequeño efecto de empuje hacia la izquierda */
+}
+
+/* Ícono de flecha nativo en CSS (si no usas FontAwesome) */
+.btn-volver::before {
+    content: "←";
+    font-size: 16px;
+    line-height: 1;
+}
+
 /* Adaptación móvil */
 @media (max-width: 768px) {
   .hamburger {
@@ -3313,6 +3346,7 @@ panel-header d-flex align-items-center
     .flex-row { flex-direction: row !important; }
     .justify-between { justify-content: space-between !important; }
     .justify-center { justify-content: center !important; }
+    .align-start { align-items:flex-start !important; }
     .align-center { align-items: center !important; }
     .align-bottom { align-items: flex-end !important; }
     .gap-8 { gap: 8px !important; }

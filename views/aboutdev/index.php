@@ -245,6 +245,18 @@
                 </span>
 
                 <h3>Marcaciones y ubicación</h3>
+                
+                <figure class="aboutdev-screenshot">
+                    <img
+                        src="/mercedes/public/images/aboutdev/asistencia.webp"
+                        alt="Interfaz de Control de Asistencias de Solver App"
+                        loading="lazy"
+                        decoding="async"
+                    >
+                    <figcaption>
+                        Marcaciones de asistencia y control geográfico.
+                    </figcaption>
+                </figure>
 
                 <p>
                     Permite configurar un punto de control
@@ -296,6 +308,18 @@
             <h2 id="aboutdev-desarrollo-title">
                 Cómo está construido Solver App
             </h2>
+            
+            <figure class="aboutdev-screenshot aboutdev-screenshot-wide">
+                <img
+                    src="/mercedes/public/images/aboutdev/dashboard.webp"
+                    alt="Panel Dashboard de Solver App con indicadores de producción"
+                    loading="lazy"
+                    decoding="async"
+                >
+                <figcaption>
+                    Panel de administración y visualización de información operativa.
+                </figcaption>
+            </figure>
 
             <p class="aboutdev-section-intro">
                 Detrás de cada pantalla hay decisiones
