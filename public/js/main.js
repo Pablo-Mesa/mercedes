@@ -36,7 +36,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const toggleBtn = document.getElementById('toggleVista');    
     const btnGrupo = document.getElementById('grupo');
     const selectRole = document.getElementById('role_id');
-    const btnToggleTabla = document.getElementById('btnToggleTabla');
     const btnToggleTheme = document.getElementById('btnToggleTheme');
     const btnToggleEdit = document.getElementById('toggleEdit');
 
@@ -889,22 +888,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 grupoField.style.display = 'flex';
             } else {
                 grupoField.style.display = 'none';
-            }
-        });
-    }
-
-    /*si btnToggleTabla*/
-    if(btnToggleTabla){
-        btnToggleTabla.addEventListener('click', function() {
-            const completa = document.getElementById('tablaCompleta');
-            const compacta = document.getElementById('tablaCompacta');
-
-            if (completa.style.display === 'none') {
-                completa.style.display = 'block';
-                compacta.style.display = 'none';
-            } else {
-                completa.style.display = 'none';
-                compacta.style.display = 'block';
             }
         });
     }

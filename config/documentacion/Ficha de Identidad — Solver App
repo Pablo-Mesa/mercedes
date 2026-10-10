@@ -1,0 +1,127 @@
+Ficha de Identidad — Solver App
+Versión 1.0
+9 de octubre de 2026 · Documento base del proyecto
+
+Propósito: establecer qué es Solver App, por qué nació, qué problema resuelve, quién lo utiliza, cuál es tu intervención como desarrollador y hacia dónde se dirige.
+Esta ficha será nuestra referencia para diseñar About Dev, documentar GitHub y planificar futuras mejoras sin perder la identidad original del sistema.
+Para evitar confusiones, distinguiremos tres estados:
+- Actual: funcionalidad observada en capturas o respaldada por las fuentes.
+- Por verificar: existe evidencia parcial, pero falta una comprobación técnica o funcional.
+- Proyectado: forma parte de la visión de crecimiento, no necesariamente de la implementación actual.
+
+1. ¿Qué es Solver App?
+Solver App es una aplicación web de gestión operativa para servicios de reparto tercerizados, diseñada para organizar la producción de los riders, sus tarifas, las rendiciones y el control de asistencias.
+Está construida a partir de una operación real y reúne dos herramientas complementarias dentro de un mismo sistema.
+Su objetivo no es reemplazar una plataforma de pedidos ni administrar las ventas de los restaurantes, sino organizar el trabajo de reparto y la información necesaria para supervisarlo.
+Actual: aplicación funcional con interfaces diferenciadas para Administrador, Operaciones, Rider e Invitado.
+
+Proyectado: administrar operaciones en múltiples ubicaciones físicas.
+
+
+2. ¿Qué problema o situación digitaliza?
+El origen real
+La operación actual se desarrolla en un predio que reúne dos negocios gastronómicos: uno de comida asiática y otro de empanadas.
+Rolando coordina el servicio de reparto tercerizado. Dependiendo de los turnos, aproximadamente entre seis y diez riders pueden prestar servicios a ambos negocios.
+Tú formas parte de esa flota como Rider.
+Antes de Solver App, parte de la información se gestionaba mediante:
+- Un cuaderno físico para anotar servicios, importes, tarifas y obligaciones de rendición.
+- Fotografías del cuaderno compartidas mediante WhatsApp.
+- Comunicaciones por mensajería para informar llegadas al lugar de trabajo.
+El problema identificado
+La información operativa dependía de registros manuales y comunicaciones dispersas.
+Solver App busca centralizarla, facilitar su consulta y permitir que cada participante acceda a la información correspondiente a su función.
+No afirmamos todavía que haya reducido tiempos, errores o costos en un porcentaje determinado. Eso requeriría mediciones.
+3. Las dos herramientas
+
+Cuaderno
+Gestión de producción y rendiciones
+Registra los servicios realizados por cada Rider, asociados a empresas, turnos, tarifas y acciones como efectivo, POS o entrega. Permite consultar producción, pendientes y totales mediante vistas resumidas y detalladas.
+Funcionalidad observada
+
+
+
+
+
+Control de Asistencias
+Marcaciones vinculadas a ubicación y turnos
+Permite configurar un punto de control con ubicación y radio de cobertura, mostrarlo al Rider y registrar o consultar sus marcaciones de entrada y salida.
+Interfaces y registros observados
+
+
+
+
+La activación independiente de ambas herramientas es una característica relevante del diseño actual.
+La validación exacta de geolocalización, distancias y casos excepcionales queda sujeta a pruebas técnicas.
+4. ¿Quiénes utilizan Solver App?
+Rol	Representación real	Responsabilidad
+Administrador	Rolando	Administración general de la operación, configuración y gestión
+Operaciones	Funcionario autorizado de cada negocio	Registro de servicios, cobros y rendiciones de su ámbito
+Rider	Repartidores, incluido tú	Consulta de producción propia y marcaciones de asistencia
+Invitado	Propietario o responsable autorizado	Consulta limitada de producción de los negocios correspondientes
+La experiencia cambia según el rol. Las capturas muestran un menú administrativo amplio, pantallas móviles específicas del Rider y una vista simplificada para Invitado.
+Regla de seguridad fundamental: un Rider solo debe poder acceder a sus propios registros, incluso si modifica manualmente una URL o una solicitud. Lo mismo aplica al aislamiento de datos de Operaciones e Invitados por empresa autorizada.
+5. ¿Qué hiciste tú?
+Este apartado es central para About Dev.
+Tu posición no es la de un programador externo que recibió una especificación cerrada.
+Eres simultáneamente participante de la operación y desarrollador de la solución.
+Tu intervención en el proyecto
+1. Conociste directamente el proceso operativo trabajando como Rider.
+2. Identificaste oportunidades para digitalizar el registro de producción y las llegadas.
+3. Definiste la propuesta de reunir Cuaderno y Control de Asistencias.
+4. Desarrollaste y evolucionas Solver App mediante código, decisiones funcionales, pruebas y ajustes.
+5. Estás proyectando su crecimiento para acompañar nuevas operaciones de reparto.
+
+Esta descripción reconoce tu autoría y dirección del proyecto sin atribuirte tareas de terceros.
+También permite explicar el uso de herramientas de asistencia para programar sin restar importancia a tu papel en la definición, integración y validación de la solución.
+Pendiente de precisar: el grado exacto de implementación operativa cotidiana, las pruebas realizadas con otros usuarios y las responsabilidades específicas que asumiste en el despliegue.
+6. ¿Qué decisiones técnicas son realmente relevantes?
+No todas las tecnologías utilizadas tienen el mismo valor para explicar el proyecto. Estas son las decisiones que mejor representan su diseño.
+Nivel	Decisión	Importancia
+BD	Relacionar producción con Rider, grupo, turno, tarifa y acción	Permite organizar los registros operativos
+PHP	Consultar y agrupar producción por empresa y Rider	Permite ofrecer diferentes vistas sobre los mismos datos
+PHP	Separar autenticación, roles y autorización	Protege las operaciones según el tipo de usuario
+PHP	Evolucionar progresivamente hacia MVC	Facilita mantenimiento y crecimiento
+HTML/CSS/JS	Ofrecer vistas diferenciadas para administración y Rider	Adapta la experiencia a cada función
+Geolocalización	Configurar un punto físico y radio de cobertura	Vincula las marcaciones con una ubicación operativa
+El modelo de producción contiene consultas por Rider y filtros por grupo, así como una consulta que agrupa registros por empresa y Rider. ProduccionModel.php
+ ProduccionModel.php
+
+Hay una decisión futura especialmente importante: pasar de administrar un punto de control a administrar múltiples puntos, sin duplicar toda la lógica ni romper las vistas actuales.
+Esto requerirá revisar la base de datos y los permisos antes de modificar la interfaz.
+7. ¿Qué evidencia podemos mostrar?
+Capturas reales: login, dashboard, producción, formulario, rendiciones, llegadas, herramientas, punto de control y vistas móviles del Rider.
+
+Código fuente: controladores, modelos y lógica del sistema.
+
+Documentación: README y estructura del proyecto.
+
+GitHub: repositorio público del proyecto, según lo que nos has contado.
+
+Validación operativa: falta documentar con precisión qué funcionalidades se usan cotidianamente y cuáles están todavía en pruebas.
+
+
+Para el portfolio, seleccionaría cuatro evidencias principales: la vista de producción por empresa, el formulario de registro, la marcación móvil del Rider y la configuración del punto de control.
+No hace falta publicar capturas con nombres, teléfonos, direcciones o coordenadas reales. Podemos utilizar datos demostrativos.
+8. ¿Qué continúa en desarrollo?
+Área	Estado
+Cuaderno y vistas de producción	Funcionales en las capturas
+Control de Asistencias	Interfaces y marcaciones observadas; validaciones por comprobar
+Separación por roles	Implementación visible; pruebas de seguridad pendientes
+Arquitectura MVC	Evolución progresiva
+Soporte de múltiples puntos	Proyectado
+Registro y primer acceso seguro de nuevos Riders	Por verificar y completar según corresponda
+Pruebas automatizadas y migraciones	Pendientes de consolidación
+Mejoras de responsividad	Progresivas
+About Dev	Por desarrollar
+El crecimiento hacia nuevos puntos de control es una evolución funcional del producto, no un requisito para terminar About Dev.
+Conviene mantener ambos trabajos separados.
+9. ¿Qué NO debemos afirmar?
+Para preservar la credibilidad del proyecto, evitaremos presentarlo como:
+- Una plataforma SaaS comercial ya consolidada.
+- Un sistema desplegado en infraestructura profesional si actualmente funciona desde un entorno local con acceso externo.
+- Una aplicación que ya administra múltiples puntos independientes.
+- Un sistema con seguridad completamente auditada.
+- Una solución que redujo costos o tiempos en porcentajes no medidos.
+- Un producto contratado oficialmente por los propietarios o por Rolando, sin que eso haya ocurrido.
+- Una aplicación terminada, sin funcionalidades pendientes.
+En cambio, podemos presentarlo como un proyecto funcional en desarrollo y validación, nacido de una necesidad operativa real y con una visión de expansión definida.

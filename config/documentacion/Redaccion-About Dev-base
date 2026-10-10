@@ -1,0 +1,88 @@
+# About Dev
+**De la experiencia operativa al desarrollo de software**
+
+## 1. Presentación — Detrás de Solver App
+
+Soy el desarrollador de **Solver App**, una aplicación web que nace de mi experiencia directa trabajando como repartidor.
+
+Mi participación en el mundo del delivery me permitió conocer de cerca cómo se organizan los servicios, los turnos, las tarifas y las rendiciones, así como las dificultades de mantener toda esa información actualizada y accesible.
+
+A partir de esa experiencia decidí desarrollar una herramienta que ayudara a digitalizar estos procesos y reuniera la información operativa en un mismo lugar.
+
+Solver App representa la unión de dos aspectos de mi trabajo: **conocer una necesidad desde dentro y utilizar la programación para construir una solución**.
+
+## 2. El origen — Del cuaderno físico al registro digital
+
+En la operación que dio origen al proyecto, varios repartidores prestan servicios a dos negocios gastronómicos ubicados en un mismo predio.
+
+Durante la jornada, cada entrega implica registrar información: quién realizó el servicio, para qué empresa, qué tarifa corresponde y si existe dinero o un dispositivo POS pendiente de rendición.
+
+Parte de este seguimiento se realizaba mediante un cuaderno físico, cuyas páginas posteriormente se compartían por WhatsApp. Las llegadas de los repartidores también se comunicaban mediante mensajes.
+
+Este procedimiento respondía a las necesidades de la operación, pero me permitió identificar una oportunidad: **centralizar los registros y facilitar su consulta sin depender exclusivamente del papel y la mensajería**.
+
+Así comenzó Solver App: no como un ejercicio académico, sino como un proyecto inspirado en una situación que conozco personalmente.
+
+## 3. La solución — Dos herramientas, una aplicación
+
+**Solver App reúne dos herramientas complementarias que pueden habilitarse de forma independiente.**
+
+### Cuaderno — Gestión de producción
+
+Permite registrar los servicios realizados por los repartidores, vinculándolos con la empresa, el turno, la tarifa y la acción correspondiente.
+
+Contempla situaciones como cobros en efectivo, operaciones con POS y entregas que no requieren rendición de dinero.
+
+La información puede consultarse mediante resúmenes por Rider y vistas detalladas organizadas por empresa, con seguimiento de servicios, tarifas, totales y rendiciones pendientes.
+
+### Control de Asistencias — Llegadas y salidas
+
+Permite configurar un punto de control geográfico, incluyendo su ubicación y radio de cobertura, y ofrece a los repartidores una interfaz para realizar marcaciones y consultar sus registros.
+
+La herramienta incorpora mapas y geolocalización como parte del proceso de control de asistencias.
+
+Ambas herramientas comparten una misma aplicación, pero atienden necesidades operativas diferentes.
+
+## 4. Desarrollo — Cómo está construido Solver App
+
+Solver App está desarrollado como una aplicación web utilizando **PHP, SQL, HTML, CSS y JavaScript**, con una arquitectura MVC en evolución.
+
+Uno de los objetivos del desarrollo ha sido organizar las responsabilidades del sistema para facilitar su mantenimiento y permitir mejoras progresivas sin interrumpir las funcionalidades existentes.
+
+Entre sus decisiones de diseño se encuentran:
+
+- **Acceso por roles:** Administrador, Operaciones, Rider e Invitado, con funciones y vistas diferenciadas.
+- **Organización por empresas y repartidores:** registros de producción vinculados con turnos, tarifas y acciones.
+- **Consultas adaptadas al usuario:** vistas administrativas, consultas de producción del Rider y acceso limitado para Invitados.
+- **Herramientas independientes:** Cuaderno y Control de Asistencias pueden habilitarse según las necesidades de la operación.
+- **Geolocalización:** incorporación de mapas, puntos de control y radios de cobertura para las marcaciones.
+
+El desarrollo continúa mediante revisiones de código, pruebas y mejoras en la estructura y la experiencia de uso.
+
+Más que una colección de tecnologías, Solver App representa un ejercicio continuo de **análisis, diseño, desarrollo y evolución de una solución funcional**.
+
+## 5. Evolución — Una solución pensada para crecer
+
+Actualmente, Solver App está orientado a una operación de reparto que presta servicios a dos negocios ubicados en un mismo punto físico.
+
+Sin embargo, la visión del proyecto contempla un escenario más amplio.
+
+La intención es que el administrador general pueda incorporar nuevos puntos de control y organizar desde una misma aplicación diferentes ubicaciones, empresas, turnos, tarifas y repartidores.
+
+De esta manera, el sistema podría acompañar la expansión de la operación hacia otros negocios sin necesidad de desarrollar una aplicación diferente para cada lugar.
+
+**La administración de múltiples puntos independientes forma parte de la evolución prevista del proyecto**, no de una funcionalidad que se presenta como terminada.
+
+Solver App continúa en desarrollo, con atención especial a la arquitectura, la seguridad de los accesos, las validaciones y la adaptación a dispositivos móviles.
+
+## 6. Código y documentación — Explorar el proyecto
+
+Solver App es también una muestra de mi proceso de aprendizaje, desarrollo y resolución de problemas mediante software.
+
+Su repositorio en GitHub permite explorar el código fuente, la organización del proyecto, su documentación y los cambios realizados durante su evolución.
+
+El objetivo de compartirlo no es presentar un producto perfecto o definitivo, sino hacer visible el trabajo que existe detrás de una aplicación construida a partir de una necesidad real.
+
+**Explorar el código en GitHub →**
+
+*Proyecto funcional en desarrollo y evolución continua.*

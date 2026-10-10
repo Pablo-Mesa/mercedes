@@ -187,7 +187,7 @@ $adminOrOperaciones = in_array($currentRole, ['admin', 'operaciones'], true);
                             <?= render_icon('tools', 'nav-icon') ?> Herramientas
                             </a>
                         <?php endif; ?>                            
-                        <a href="/mercedes/about" class="value">
+                        <a href="/mercedes/aboutdev" class="value">
                             <?= render_icon('dev', 'nav-icon') ?> About Dev
                         </a>
                         <a href="/mercedes/logout" class="value">
@@ -236,6 +236,7 @@ $adminOrOperaciones = in_array($currentRole, ['admin', 'operaciones'], true);
                             'asistencias/index' => '<span class="img-nav-icon">' . render_icon('llegada', 'nav-icon') . '</span> Llegadas',
                             'invitados/index' => '<span class="img-nav-icon">' . render_icon('produccion', 'nav-icon') . '</span> Produccion',                            
                             'herramientas/index' => '<span class="img-nav-icon">' . render_icon('tools', 'nav-icon') . '</span> Herramientas',
+                            'aboutdev/index' => '<span class="img-nav-icon">' . render_icon('dev', 'nav-icon') . '</span> About dev',
                             default => 'Inicio'
                         } ?>
                     </div>

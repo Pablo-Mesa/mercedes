@@ -1,0 +1,7 @@
+Solver App es una aplicación web desarrollada a partir de la experiencia directa de un repartidor que identificó la necesidad de digitalizar procesos cotidianos de gestión operativa.
+
+Integra dos herramientas complementarias: Cuaderno, para registrar servicios, tarifas y rendiciones; y Control de Asistencias, para gestionar marcaciones vinculadas a puntos de control geográficos.
+
+El sistema contempla cuatro roles de usuario y está diseñado para evolucionar desde una operación compartida por dos negocios hacia la posible gestión de múltiples ubicaciones y empresas.
+
+Su desarrollo continúa, combinando funcionalidades implementadas, validación en un contexto operativo real y mejoras progresivas de arquitectura, seguridad y experiencia de usuario.

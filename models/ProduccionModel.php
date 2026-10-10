@@ -23,8 +23,8 @@ class ProduccionModel {
                     COUNT(CASE WHEN p.rendicion = 'pendiente' THEN 1 END) AS rendiciones_pendientes,
                     COUNT(p.id) AS servicios_realizados,
                     SUM(t.costo) AS total_tarifas
-                FROM produccion p
-                JOIN riders r ON p.id_rider = r.id
+                FROM produccion p                
+                JOIN usuarios r ON p.id_rider = r.id AND r.role_id = 3
                 JOIN detalles_tarifas t ON p.id_detalle_tarifa = t.id
                 JOIN usuarios u ON p.id_usuario = u.id
                 JOIN turnos tu ON p.id_turno = tu.id
@@ -47,7 +47,7 @@ class ProduccionModel {
                     u.name AS usuario_nombre,
                     tu.turno AS turno
                 FROM produccion p
-                JOIN riders r ON p.id_rider = r.id
+                JOIN usuarios r ON p.id_rider = r.id AND r.role_id = 3                
                 JOIN detalles_tarifas t ON p.id_detalle_tarifa = t.id
                 JOIN usuarios u ON p.id_usuario = u.id
                 JOIN turnos tu ON p.id_turno = tu.id
@@ -94,11 +94,19 @@ class ProduccionModel {
     /** 
      * Helpers para poblar selects.
      */
-    public function getAllRiders(): array {
-        $sql = "SELECT id, name FROM riders WHERE is_active = 1 ORDER BY name ASC";
+    public function getAllRiders(): array{
+        $sql = "
+            SELECT
+                id,
+                name
+            FROM usuarios
+            WHERE role_id = 3
+            AND is_active = 1
+            ORDER BY name ASC
+        ";
+
         return $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
-
     public function getAllTarifas(): array {
         $sql = "SELECT id, costo FROM detalles_tarifas ORDER BY costo ASC";
         return $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
@@ -156,7 +164,7 @@ class ProduccionModel {
                     END AS turno,
                     t.costo AS tarifa_detalle
                 FROM produccion p
-                JOIN riders r ON p.id_rider = r.id
+                JOIN usuarios r ON p.id_rider = r.id AND r.role_id = 3
                 JOIN acciones_rider a ON p.id_accion = a.id_accion
                 JOIN detalles_tarifas t ON p.id_detalle_tarifa = t.id
                 WHERE 1=1";
@@ -212,7 +220,7 @@ class ProduccionModel {
                     END AS turno,
                     a.nombre AS accion_nombre
                 FROM produccion p
-                JOIN riders r ON p.id_rider = r.id
+                JOIN usuarios r ON p.id_rider = r.id AND r.role_id = 3
                 JOIN acciones_rider a ON p.id_accion = a.id_accion
                 JOIN detalles_tarifas t ON p.id_detalle_tarifa = t.id
                 WHERE 1=1";
@@ -724,7 +732,7 @@ class ProduccionModel {
                     a.nombre AS accion,
                     t.costo AS tarifa_detalle
                 FROM produccion p
-                JOIN riders r ON p.id_rider = r.id
+                JOIN usuarios r ON p.id_rider = r.id AND r.role_id = 3
                 JOIN detalles_tarifas t ON p.id_detalle_tarifa = t.id
                 JOIN usuarios u ON p.id_usuario = u.id
                 JOIN turnos tu ON p.id_turno = tu.id
@@ -792,7 +800,7 @@ class ProduccionModel {
                     t.costo AS tarifa,
                     p.id_grupo, g.nombre AS grupo_nombre, g.icono AS grupo_icono
                 FROM produccion p
-                JOIN riders r ON p.id_rider = r.id
+                JOIN usuarios r ON p.id_rider = r.id AND r.role_id = 3
                 JOIN acciones_rider a ON p.id_accion = a.id_accion
                 JOIN detalles_tarifas t ON p.id_detalle_tarifa = t.id
                 JOIN grupos g ON p.id_grupo = g.id_grupo

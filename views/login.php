@@ -43,11 +43,13 @@ if (session_status() === PHP_SESSION_NONE) {
 
                 <button type="submit" class="btn btn-primary btn-block">Ingresar</button>
             </form>
-
+            
+            <!--         
             <div class="login-hint">
                 <strong>Credenciales por defecto</strong>
                 <span>admin@correo.com &nbsp;/&nbsp; admin123</span>
             </div>
+            -->
         </div>
     </div>
 

@@ -1,3 +1,5 @@
+<?php $grupos = $grupos ?? []; ?>
+
 <!-- Filtros -->
 <div class="crow">
   <!-- Formulario Filtros -->
@@ -23,43 +25,7 @@
            alt="<?= htmlspecialchars($grupoSeleccionado['nombre']) ?>" 
            class="icono-grupo-seleccionado">
     <?php endif; ?>
-  <?php endif; ?>
-  
-  <!-- Botón alternar vista tipo tablas -->
-  <!-- <button id="btnToggleTabla" class="btn-toggle">
-    🔀 <span class="hide-element-text">Cambiar vista</span>
-  </button> -->
-</div>
-
-<!-- Tabla completa -->      
-<div id="tablaCompleta" style="display:none;">
-  <!-- Tabla completa -->
-  <table class="tabla-produccion-rider">
-    <thead>
-      <tr>
-        <th>Fecha</th>
-        <th>Empresa</th>
-        <th>Turno</th>
-        <th>Acción</th>
-        <th>Costo</th>
-      </tr>
-    </thead>
-    <tbody>
-      <?php if (!empty($producciones)): ?>
-        <?php foreach ($producciones as $p): ?>
-          <tr>
-            <td data-label="Fecha"><?= date('d/m/Y H:i', strtotime($p['fecha_creacion'])) ?></td>
-            <td data-label="Empresa"><?= htmlspecialchars($p['grupo_nombre']) ?></td>
-            <td data-label="Turno"><?= htmlspecialchars($p['turno']) ?></td>
-            <td data-label="Acción"><?= htmlspecialchars($p['accion']) ?></td>
-            <td data-label="Costo">Gs. <?= number_format((float)$p['tarifa_detalle'], 0, ',', '.') ?></td>
-          </tr>
-        <?php endforeach; ?>
-      <?php else: ?>
-        <tr><td colspan="5">No hay registros para los filtros seleccionados.</td></tr>
-      <?php endif; ?>
-    </tbody>
-  </table>
+  <?php endif; ?>  
 </div>
 
 <!-- Tabla compacta -->
@@ -115,7 +81,6 @@
   <?php else: ?>
     <p class="badge-muted">No hay registros...</p>
   <?php endif; ?> 
-
 </div>
 
 <!-- Resumen tabla-resumen-modern-->

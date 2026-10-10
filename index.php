@@ -33,6 +33,7 @@ require_once __DIR__ . '/controllers/AsistenciasController.php';
 require_once __DIR__ . '/controllers/AdminAsistenciasController.php';
 require_once __DIR__ . '/controllers/InvitadosController.php';
 require_once __DIR__ . '/controllers/HerramientasController.php';
+require_once __DIR__ . '/controllers/AboutdevController.php';
 
 // Captura y limpia la ruta solicitada (sin query string, sin slashes sobrantes)
 $url = isset($_GET['url']) ? trim($_GET['url'], '/') : '';
@@ -396,8 +397,14 @@ switch ($url) {
     case 'riders/sendActivation':
         $ridersController = new RidersController();
         $ridersController->sendActivation();
-        break;   
-
+        break;        
+    
+    // Página About Dev
+    case 'aboutdev':
+        $aboutdevController = new AboutdevController();
+        $aboutdevController->index();
+        break;
+   
     default:
         http_response_code(404);
         echo '<h1 style="font-family: sans-serif; text-align:center; margin-top: 80px;">404 - Página no encontrada</h1>';
