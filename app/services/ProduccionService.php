@@ -125,4 +125,42 @@ class ProduccionService
         return $produccionModel->getAllProduccionConRiders($fecha);
     }
 
+    public function getResumenPorGrupo(array $produccionesResumen): array
+    {
+        $resumen = [];
+
+        foreach ($produccionesResumen as $grupo) {
+
+            $serviciosGrupo = 0;
+            $importeGrupo = 0;
+
+            $riders = [];
+
+            foreach ($grupo['riders'] as $rider) {
+
+                $cantidadServicios = count($rider['tarifas']);
+                $importe = (float)$rider['total_tarifa'];
+
+                $serviciosGrupo += $cantidadServicios;
+                $importeGrupo += $importe;
+
+                $riders[] = [
+                    'nombre' => $rider['rider_nombre'],
+                    'servicios' => $cantidadServicios,
+                    'importe' => $importe
+                ];
+            }
+
+            $resumen[] = [
+                'grupo_nombre' => $grupo['grupo_nombre'],
+                'grupo_icono' => $grupo['grupo_icono'],
+                'servicios' => $serviciosGrupo,
+                'importe' => $importeGrupo,
+                'riders' => $riders
+            ];
+        }
+
+        return $resumen;
+    }
+
 }

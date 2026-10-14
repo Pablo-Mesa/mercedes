@@ -28,10 +28,12 @@ class InvitadosController extends BaseController {
         $fechaSeleccionada = $_GET['fecha'] ?? ($_POST['fecha'] ?? date('Y-m-d'));
 
         $produccionesResumen = $this->produccionService->getProduccionPorFecha($fechaSeleccionada);
+        $resumenPorGrupo = $this->produccionService->getResumenPorGrupo($produccionesResumen);
 
         $data = [
             'view' => 'invitados/index',
             'produccionesResumen' => $produccionesResumen,
+            'resumenPorGrupo' => $resumenPorGrupo,
             'fechaSeleccionada' => $fechaSeleccionada
         ];
 

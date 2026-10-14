@@ -6,7 +6,7 @@
       <!-- Fecha -->
       <div class="filter-item">
         <input type="date" name="fecha" id="fecha" 
-              value="<?= htmlspecialchars($fechaSeleccionada) ?>">        
+              value="<?= htmlspecialchars($fechaSeleccionada ?? '') ?>">        
       </div>
       <!-- Botón Filtrar -->
       <div class="filter-item">
@@ -33,7 +33,7 @@
           <h2 class="grupo-titulo"><?= htmlspecialchars($grupo['grupo_nombre']) ?></h2>
         </div>
         <div class="wrapper">
-          <?php foreach ($grupo['riders'] as $p): ?>      
+          <?php foreach ($grupo['riders'] as $p): ?>  
             <div class="rider-col">
               <h3 class="span-monto"><?= htmlspecialchars($p['rider_nombre']) ?></h3>
               <table class="produccion-table">
@@ -66,6 +66,36 @@
               <span class="span-monto"><?= number_format($p['total_tarifa'], 0, ',', '.') ?></span>
             </div>
           <?php endforeach; ?>
+          <div class="rider-col-resume">
+            
+            <div class="resumen-grupo-header">
+              <?php if (!empty($grupo['grupo_icono'])): ?>              
+                <img src="/mercedes/public/uploads/grupos/<?= htmlspecialchars($grupo['grupo_icono']) ?>" 
+                    alt="Icono <?= htmlspecialchars($grupo['grupo_nombre']) ?>" 
+                    class="resumen-grupo-icono">
+              <?php endif; ?>
+              <h3 class="resumen-grupo-titulo"><?= htmlspecialchars($grupo['grupo_nombre']) ?></h3>
+            </div>            
+
+            <div class="resumen-grupo">
+
+                <div class="resumen-header">
+                    <span>ENVIOS</span>
+                    <span>TOTAL</span>
+                </div>
+
+                <div class="resumen-separador"></div>
+
+                <div class="resumen-fila">
+                    <span><?= number_format($grupo['cantidad_servicios'], 0, ',', '.') ?></span>
+                    <span><?= number_format($grupo['importe'], 0, ',', '.') ?></span>
+                </div>
+
+                <div class="resumen-separador"></div>
+
+            </div>
+
+          </div>
         </div>
       </div>
     <?php endforeach; ?>

@@ -1815,6 +1815,43 @@ input:checked + .slider:before {
   padding-left: 0.5rem;
 }
 
+/* resumen grupo */
+.wrapper .rider-col-resume {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border-radius: 6px;
+  background: var(--color-surface);         /* fondo blanco para contraste */
+  border: 1px solid #ddd;
+  transition: transform 0.2s ease;
+  width: 190px;
+}
+
+
+.resumen-grupo-header{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:12px;
+}
+
+.resumen-grupo-icono{
+    width:32px;
+    height:32px;
+    border-radius:50%;
+    object-fit:cover;
+    flex-shrink:0;
+}
+
+.resumen-grupo-titulo{
+    margin:0;
+    font-family:Consolas, "Courier New", monospace;
+    font-size:1rem;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:1px;
+}
+
+
 /* Rider dentro del grupo */
 .wrapper .rider-col {
   margin-bottom: 1.5rem;
@@ -2220,6 +2257,32 @@ facturas-table[type="date"]::-webkit-calendar-picker-indicator {
   font-weight: bold;
   padding: 10px;
   color: #fff;
+}
+
+.resumen-grupo{
+    margin-bottom:20px;
+    padding:12px 0;
+}
+
+.resumen-header,
+.resumen-fila{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    max-width:260px;
+
+    font-family: Consolas, "Courier New", monospace;
+    font-size:0.95rem;
+}
+
+.resumen-header{
+    font-weight:700;
+}
+
+.resumen-separador{
+    width: 100%;
+    border-top:1px dashed #8c8c8c;
+    margin:6px 0;
 }
 
 .icono-grupo-dark {

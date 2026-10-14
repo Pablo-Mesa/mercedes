@@ -816,9 +816,11 @@ class ProduccionModel {
             $grupoId = $row['id_grupo'];
             if (!isset($producciones[$grupoId])) {
                 $producciones[$grupoId] = [
-                    'grupo_id'     => $grupoId,
-                    'grupo_nombre' => $row['grupo_nombre'],
-                    'grupo_icono'  => $row['grupo_icono'],
+                    'grupo_id'           => $grupoId,
+                    'grupo_nombre'       => $row['grupo_nombre'],
+                    'grupo_icono'        => $row['grupo_icono'],
+                    'importe'            => 0,
+                    'cantidad_servicios' => 0,
                     'riders'       => []
                 ];
             }
@@ -850,6 +852,9 @@ class ProduccionModel {
             ];
 
             $producciones[$grupoId]['riders'][$riderId]['total_tarifa'] += $row['tarifa'];
+            $producciones[$grupoId]['importe'] += (float)$row['tarifa'];
+            $producciones[$grupoId]['cantidad_servicios']++;
+
         }
 
         return array_values($producciones);
