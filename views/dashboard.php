@@ -72,16 +72,13 @@
         <th><span class="img-nav-icon" ><?= render_icon('empresas', 'nav-icon') ?></span></th>
         <th><span class="img-nav-icon" ><?= render_icon('calendario', 'nav-icon') ?></span></th>
         <th><span class="img-nav-icon" ><?= render_icon('riders', 'nav-icon') ?></span></th>
-        <th colspan="3"><span class="img-nav-icon" ><?= render_icon('turnos', 'nav-icon') ?></span> Turnos</th>
         <th><span class="img-nav-icon" ><?= render_icon('tarifas', 'nav-icon') ?></span></th>
       </tr>
       <tr>
         <th>Empresa</th>
         <th>Día</th>        
         <th>Deliverys activos</th>
-        <th>Mañana</th>
-        <th>Tarde</th>
-        <th>Noche</th>
+        
         <th>Total costo</th>
       </tr>
     </thead>
@@ -95,9 +92,6 @@
           </td>
           <td><?= date('d/m/Y', strtotime($dia['dia'])) ?></td>          
           <td><?= (int)$dia['deliverys_activos'] ?></td>
-          <td><?= (int)$dia['mañana'] ?></td>
-          <td><?= (int)$dia['tarde'] ?></td>
-          <td><?= (int)$dia['noche'] ?></td>
           <td>Gs. <?= number_format((float)$dia['total_costo'], 0, ',', '.') ?></td>
         </tr>
       <?php endforeach; ?>      
@@ -106,9 +100,6 @@
       <tr>
         <td colspan="2"><strong>Totales</strong></td>
         <td><?= $totales['deliverys_activos'] ?></td>
-        <td><?= $totales['mañana'] ?></td>
-        <td><?= $totales['tarde'] ?></td>
-        <td><?= $totales['noche'] ?></td>
         <td>Gs. <?= number_format((float)$totales['total_costo'], 0, ',', '.') ?></td>
       </tr>
     </tfoot>
@@ -119,23 +110,22 @@
 <!-- Resumen mensual -->
 <div class="resumen-produccion">
     <!-- Badge de grupo con icono -->
-    <p>
-      
-        <span class="img-nav-icon" ><?= render_icon('empresas', 'nav-icon') ?></span> Empresa: 
-        <?php if ($grupoSeleccionado): ?>
-          <span class="badge-filtro">
-            <?php 
-              // Buscar el grupo seleccionado en el array $grupos
-              $grupoData = array_filter($grupos, fn($g) => $g['id_grupo'] == $grupoSeleccionado);
-              $grupoData = reset($grupoData);
-            ?>
-            <img src="/mercedes/public/uploads/grupos/<?= htmlspecialchars($grupoData['icono']) ?>" 
-                alt="icono grupo" class="badge-icon">
-            <?= htmlspecialchars($grupoData['nombre']) ?>
-          </span>
-        <?php else: ?>
-          Todas las empresas
-        <?php endif; ?>      
+    <p>    
+      <span class="img-nav-icon" ><?= render_icon('empresas', 'nav-icon') ?></span> Empresa: 
+      <?php if ($grupoSeleccionado): ?>
+        <span class="badge-filtro">
+          <?php 
+            // Buscar el grupo seleccionado en el array $grupos
+            $grupoData = array_filter($grupos, fn($g) => $g['id_grupo'] == $grupoSeleccionado);
+            $grupoData = reset($grupoData);
+          ?>
+          <img src="/mercedes/public/uploads/grupos/<?= htmlspecialchars($grupoData['icono']) ?>" 
+              alt="icono grupo" class="badge-icon">
+          <?= htmlspecialchars($grupoData['nombre']) ?>
+        </span>
+      <?php else: ?>
+        Todas las empresas
+      <?php endif; ?>      
     </p>
     <p><span class="img-nav-icon" ><?= render_icon('riders', 'nav-icon') ?></span> Deliverys activos en el mes: <?= $resumenMensual['deliverys_activos_mes'] ?></p>
     <p><span class="img-nav-icon" ><?= render_icon('envios', 'nav-icon') ?></span> Total envíos en el mes: <?= $resumenMensual['total_envios_mes'] ?></p>

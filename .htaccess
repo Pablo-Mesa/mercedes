@@ -1,6 +1,8 @@
 RewriteEngine On
 RewriteBase /mercedes/
 
+SetEnvIfNoCase Authorization "^(.+)$" HTTP_AUTHORIZATION=$1
+
 # Servir directamente los archivos y carpetas físicas existentes (assets de /public/, favicon, etc.)
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d

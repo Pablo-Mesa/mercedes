@@ -24,6 +24,7 @@ $resumenGlobal = $resumenGlobal ?? [];
 $turnoActualId = $turnoActualId ?? null;
 $grupoIcono = $grupoIcono ?? null;
 $detalleProduccion = $detalleProduccion ?? [];
+$suma_total_tarifa = 0;
 ?>
 
 <!-- encabezdo de la vista -->
@@ -171,7 +172,7 @@ $detalleProduccion = $detalleProduccion ?? [];
                 <?php $i = 1; ?>
                 <?php foreach ($p['tarifas'] as $t): ?>
                   <tr>
-                    <td class="tarifa-num"><?= $i++ ?>)</td>
+                    <td class="tarifa-num"><?= $i++ ?></td>
                     <td class="tarifa-costo"><?= number_format($t['costo'], 0, ',', '.') ?></td>
                   </tr>
                 <?php endforeach; ?>
@@ -180,11 +181,35 @@ $detalleProduccion = $detalleProduccion ?? [];
               
               <strong>Producción:</strong><br>
               <span class="span-monto"><?= number_format($p['total_tarifa'], 0, ',', '.') ?></span>
+            </div>                        
+            <?php $suma_total_tarifa = $suma_total_tarifa + $p['total_tarifa']; ?>
+          <?php endforeach; ?>            
+          
+          <div class="rider-col-resume">            
+            <div class="resumen-grupo-header">
+              <?php if (!empty($grupo['grupo_icono'])): ?>              
+                <img src="/mercedes/public/uploads/grupos/<?= htmlspecialchars($grupo['grupo_icono']) ?>" 
+                    alt="Icono <?= htmlspecialchars($grupo['grupo_nombre']) ?>" 
+                    class="resumen-grupo-icono">
+              <?php endif; ?>
+              <h3 class="resumen-grupo-titulo"><?= htmlspecialchars($grupo['grupo_nombre']) ?></h3>
+            </div>                
+            <div class="resumen-grupo">
+                <div class="resumen-header">
+                    <span>ENVIOS</span>
+                    <span>TOTAL</span>
+                </div>
+                <div class="resumen-separador"></div>
+                <div class="resumen-fila">
+                    <span> <?= number_format($suma_total_tarifa, 0, ',', '.') ?> </span>
+                    <span> 0 </span>                    
+                </div>
+                <div class="resumen-separador"></div>
             </div>
-            <!-- <div class="separator-vertical"></div> -->            
-          <?php endforeach; ?>          
-        </div>                
-      </div>                
+          </div>
+          <?php $suma_total_tarifa = 0; ?>
+        </div>        
+      </div>             
     <?php endif; ?>
   <?php endforeach; ?>
 </div>
@@ -356,8 +381,7 @@ $detalleProduccion = $detalleProduccion ?? [];
 </div>
 
 <!-- Detalles Producción -->
-<div id="detalleModal" class="modal">
-  <div class="modal-content">
+<div id="detalleModal" class="modal">  <div class="modal-content">
     <!-- encabezado modal -->
     <div class="content-b">
       <div class="disposicion_a0">

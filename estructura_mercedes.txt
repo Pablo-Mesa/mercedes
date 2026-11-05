@@ -1,0 +1,273 @@
+﻿comando: tree /F /A | Out-File -Encoding utf8 estructura.txt
+
+Listado de rutas de carpetas
+mercedes:.
+|   .gitignore
+|   .htaccess
+|   estructura.txt
+|   index.php
+|   README.md
+|   setup.ps1
+|   
++---app
+|   +---repositories
+|   |       AsistenciasRepository.php
+|   |       
+|   \---services
+|           AsistenciasService.php
+|           MailerService.php
+|           ProduccionService.php
+|           
++---config
+|   |   Database.php
+|   |   estructura de  carpetas actual
+|   |   estructura_db_al_29-09-26
+|   |   installed.txt
+|   |   setup.php
+|   |   
+|   +---documentacion
+|   |       Declaracion-Identidad-del-proyecto
+|   |       Ficha de Identidad ù Solver App
+|   |       Redaccion-About Dev-base
+|   |       
+|   \---migrations
+|           20260929_integridad_inicial.sql
+|           
++---controllers
+|       AboutdevController.php
+|       ActivacionRiderController.php
+|       AdminAsistenciasController.php
+|       ApiAuthController.php
+|       ApiAuthController.php.bak
+|       AsistenciasController.php
+|       AuthController.php
+|       BaseController.php
+|       ConfiguracionesController.php
+|       DashboardController.php
+|       DetallesController.php
+|       GruposController.php
+|       HerramientasController.php
+|       InvitadosController.php
+|       ProduccionController.php
+|       RiderProduccionController.php
+|       RidersController.php
+|       TarifasController.php
+|       TurnosController.php
+|       UserController.php
+|       
++---helpers
+|       GrupoHelper.php
+|       IconHelper.php
+|       TurnoHelper.php
+|       UploadHelper.php
+|       
++---models
+|       ApiLoginIntento.php
+|       ApiToken.php
+|       AsistenciaModel.php
+|       DashboardModel.php
+|       DetalleTarifaModel.php
+|       EncabezadoTarifaModel.php
+|       GrupoEncabezadoTarifaModel.php
+|       GruposModel.php
+|       ProduccionModel.php
+|       PuntoControlModel.php
+|       RiderModel.php
+|       SettingsModel.php
+|       TarifaModel.php
+|       TurnoModel.php
+|       User.php
+|       
++---public
+|   +---assets
+|   |   \---icons
+|   |           afternoon.png
+|   |           moon.png
+|   |           sun.png
+|   |           turno_6a859c499e028_madrugada.png
+|   |           turno_6a85a00f23961_moon.png
+|   |           turno_6a86e6ecaca26_madrugada.png
+|   |           turno_6a9b11bf0820b_madrugada.png
+|   |           turno_6a9b1a784e615_turno.png
+|   |           turno_6a9b1a9277c4a_sun (2).png
+|   |           turno_6a9b1aa0e9f8f_moon.png
+|   |           turno_6a9b1b47531ac_tardenoche.png
+|   |           
+|   +---css
+|   |       aboutdev.css
+|   |       css_cubo.css
+|   |       style.css
+|   |       
+|   +---images
+|   |   |   analisis-de-los-datos.png
+|   |   |   analisis.png
+|   |   |   checkpoint.png
+|   |   |   empresa.png
+|   |   |   entrega.png
+|   |   |   favicon.svg
+|   |   |   grupo.png
+|   |   |   hora_envio.png
+|   |   |   icono_solver_nobg.png
+|   |   |   interfaz-del-panel.png
+|   |   |   llegada.png
+|   |   |   moon.png
+|   |   |   nuevo.png
+|   |   |   rider.png
+|   |   |   seguimiento-del-tiempo.png
+|   |   |   sun.png
+|   |   |   tarifas.png
+|   |   |   turno.png
+|   |   |   usuarios.png
+|   |   |   usuarios2.png
+|   |   |   
+|   |   \---aboutdev
+|   |           asistencia.webp
+|   |           cuaderno.webp
+|   |           dashboard.webp
+|   |           
+|   +---js
+|   |   |   loader.js
+|   |   |   main.js
+|   |   |   puntodecontrol.js
+|   |   |   rider_asistencia.js
+|   |   |   tool-kit-v002.js
+|   |   |   
+|   |   \---components
+|   |           ModalConfirmacion.js
+|   |           
+|   \---uploads
+|       +---grupos
+|       |       default.png
+|       |       grupos_6a84a51c5eb9b.jpg
+|       |       grupos_6a84e4ddc6641.jpg
+|       |       grupos_6ab50be69195b.png
+|       |       grupos_6ab50bf69c287.png
+|       |       grupos_6ab50d471792d.png
+|       |       grupos_6ab50d50897f2.png
+|       |       grupos_6ab50dbd1cfee.png
+|       |       grupos_6ab50dc739779.png
+|       |       grupos_6ab50e231688e.png
+|       |       grupos_6ab50e2d88433.png
+|       |       grupos_6ab8391582cf0.png
+|       |       grupos_6ab8397059cce.jpg
+|       |       grupos_6ab839ab295db.jpg
+|       |       grupos_6ab839d24af0a.png
+|       |       grupos_6abdab6b6f366.jpg
+|       |       grupos_6abdab769fad9.jpg
+|       |       
+|       \---riders
+|               default.png
+|               riders_6a5a8be403527.jpg
+|               riders_6a5a8bf6b363f.png
+|               riders_6a6014e66b83c.jpg
+|               riders_6a6019659932f.jpg
+|               riders_6a601aa44a75a.png
+|               riders_6a601bb610b05.jpg
+|               riders_6a601c09ed868.png
+|               riders_6a601cba247b3.png
+|               riders_6a601cc8b730c.png
+|               riders_6a60203224eac.png
+|               riders_6a60205eb8d66.png
+|               riders_6a6021cd3b71c.png
+|               riders_6a60257d39628.png
+|               riders_6ac16ada60702.svg
+|               
++---test
+|       asistencias_service_test.php
+|       produccionservicetest.php
+|       produccion_service_test.php
+|       punto_control_config_test.php
+|       test_turno_helper.php
+|       test_turno_helper_db.php
+|       
+\---views
+    |   dashboard.php
+    |   login.php
+    |   
+    +---aboutdev
+    |       index.php
+    |       
+    +---asistencias
+    |       index.php
+    |       
+    +---auth
+    |       activar-rider.php
+    |       
+    +---components
+    |   \---icons
+    |           calendario.svg
+    |           dashboard.svg
+    |           dev.svg
+    |           down.svg
+    |           empresas.svg
+    |           envios.svg
+    |           github.svg
+    |           llegada.svg
+    |           logout.svg
+    |           menu.svg
+    |           pos.svg
+    |           produccion.svg
+    |           puntodecontrol.svg
+    |           reloj.svg
+    |           riders.svg
+    |           settings.svg
+    |           tarifas.svg
+    |           tools.svg
+    |           tool_book.svg
+    |           tool_controldeasistencias.svg
+    |           totales.svg
+    |           turnos.svg
+    |           up.svg
+    |           user.svg
+    |           warning.svg
+    |           
+    +---configuraciones
+    |       puntodecontrol.php
+    |       
+    +---grupos
+    |       form.php
+    |       index.php
+    |       tarifas.php
+    |       
+    +---herramientas
+    |       index.php
+    |       
+    +---invitados
+    |       index.php
+    |       
+    +---layouts
+    |       main.php
+    |       public.php
+    |       
+    +---produccion
+    |       cards.php
+    |       index.php
+    |       
+    +---riders
+    |       form.php
+    |       index.php
+    |       
+    +---rider_asistencia
+    |       form.php
+    |       index.php
+    |       
+    +---rider_produccion
+    |       detalle.php
+    |       index.php
+    |       
+    +---tarifas
+    |       detalles.php
+    |       editar_detalle.php
+    |       form.php
+    |       index.php
+    |       nuevo_detalle.php
+    |       
+    +---turnos
+    |       form.php
+    |       general.php
+    |       index.php
+    |       
+    \---usuarios
+            form.php
+            index.php
+            

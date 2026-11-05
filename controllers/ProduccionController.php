@@ -172,6 +172,9 @@ class ProduccionController extends BaseController
         $produccionesResumen = $this->produccionModel->getProduccionesConDetalle($fecha, $turno, $rider, $accion);
         $data['produccionesResumen'] = $produccionesResumen; // para la tabla
 
+        $produccionesResumenTotales = $this->produccionService->getProduccionPorFecha($fecha);
+        $resumenPorGrupo = $this->produccionService->getResumenPorGrupo($produccionesResumenTotales);
+
         if ($vista === 'tarjetas') {
             // Consolidar por rider_id para las cards
             $produccionesPorRider = [];
@@ -239,6 +242,7 @@ class ProduccionController extends BaseController
         $data['grupos']        = $grupos ?? [];
         $data['acciones']      = $this->produccionModel->getAccionesRider();
         $data['turnoActualId'] = TurnoHelper::getTurnoActual($data['turnos']);
+        $data['resumenPorGrupo'] = $resumenPorGrupo;
 
         return $data;
     }

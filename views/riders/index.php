@@ -12,16 +12,16 @@
     <a href="/mercedes/riders/crear" class="btn btn-primary btn-nuevo">+ Nuevo rider</a>
 </div>
 
-<div class="panel table-panel" tabindex="0" role="region" aria-label="Tabla de riders">
+<section class="panel table-panel" aria-label="Tabla de riders">
     <table class="data-table">
         <thead>
             <tr>
-                <th>ID</th> 
-                <th>Nombre</th> 
-                <th>Teléfono</th> 
-                <th>Foto de perfil</th> 
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Teléfono</th>
+                <th>Foto de perfil</th>
                 <th>Estado</th>
-                <th>Activacion</th> 
+                <th>Activacion</th>
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -45,7 +45,7 @@
                             <?php else: ?>
                                 <span class="badge badge-danger">Inactivo</span>
                             <?php endif; ?>
-                        </td>                        
+                        </td>
                         <td>
                             <?php if (!empty($r['activated_at'])): ?>
                                 <span class="badge badge-success">
@@ -54,10 +54,10 @@
                             <?php else: ?>
                                 <a href="/mercedes/riders/sendActivation?id=<?= (int)$r['id'] ?>"
                                     class="btn btn-small btn-info-outline"
-                                    target="_blank">                                    
+                                    target="_blank">
                                     Activar por WhatsApp
                                 </a>
-                            <?php endif; ?>    
+                            <?php endif; ?>
                         </td>
                         <td>
                             <a href="/mercedes/riders/editar?id=<?= (int)$r['id'] ?>" class="btn btn-small">Editar</a>
@@ -65,13 +65,6 @@
                                class="btn btn-small <?= ((int)$r['is_active'] === 1) ? 'btn-danger-outline' : 'btn-success-outline' ?>">
                                 <?= ((int)$r['is_active'] === 1) ? 'Desactivar' : 'Activar' ?>
                             </a>
-                            <!--
-                            <a href="/mercedes/riders/eliminar?id=<?= (int)$r['id'] ?>" 
-                               class="btn btn-small btn-danger-outline"
-                               onclick="return confirm('¿Seguro que deseas eliminar este rider?');">
-                                Eliminar
-                            </a>
-                            -->
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -82,4 +75,4 @@
             <?php endif; ?>
         </tbody>
     </table>
-</div>
+</section>

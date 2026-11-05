@@ -4,15 +4,17 @@
  * Formulario de creación/edición de grupos.
  * Variables disponibles: $grupo, $formAction
  */
+$grupo = $grupo ?? null;
+$puntosControl = $puntosControl ?? [];
 ?>
 <div class="page-header">
-    <h2><?= $grupo ? 'Editar Empresa' : 'Nueva Empresa' ?></h2>
+    <h2><?= !empty($grupo) ? 'Editar Empresa' : 'Nueva Empresa' ?></h2>
 </div>
 
 
 <div class="panel form-panel-medium">
 
-    <form action="<?= $formAction ?>" method="post" enctype="multipart/form-data" class="form-panel-medium">
+    <form action="<?= htmlspecialchars($formAction ?? '', ENT_QUOTES, 'UTF-8') ?>" method="post" enctype="multipart/form-data" class="form-panel-medium">
     
         <?php if ($grupo): ?>
             <input type="hidden" name="id" value="<?= (int)$grupo['id_grupo'] ?>">
@@ -22,9 +24,9 @@
             <label for="id_punto_control">Punto de Control</label>
             <select name="id_punto_control" id="id_punto_control" required>
                 <?php foreach ($puntosControl as $pc): ?>
-                    <option value="<?= $pc['id'] ?>" 
-                        <?= ($grupo && $grupo['id_punto_control'] == $pc['id']) ? 'selected' : '' ?>>
-                        <?= htmlspecialchars($pc['titulo']) ?>
+                    <option value="<?= $pc['id'] ?>"
+                    <?= ($grupo && $grupo['id_punto_control'] == $pc['id']) ? 'selected' : '' ?>>
+                    <?= htmlspecialchars($pc['titulo']) ?>
                     </option>
                 <?php endforeach; ?>
             </select>
@@ -32,8 +34,8 @@
 
         <div class="form-group">
             <label for="nombre">Nombre del Grupo</label>
-            <input type="text" name="nombre" id="nombre" 
-                value="<?= htmlspecialchars($grupo['nombre'] ?? '') ?>" required>
+            <input type="text" name="nombre" id="nombre"
+            value="<?= htmlspecialchars($grupo['nombre'] ?? '') ?>" required>
         </div>
 
         <div class="form-group">

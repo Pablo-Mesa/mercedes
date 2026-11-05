@@ -45,8 +45,8 @@ class TurnoModel
 
     public function insert(array $data): bool
     {
-        $sql = "INSERT INTO turnos (turno, hora_inicio, hora_fin, url_icono, id_grupo) 
-                VALUES (:turno, :hora_inicio, :hora_fin, :url_icono, :id_grupo)";
+        $sql = "INSERT INTO turnos (turno, hora_inicio, hora_fin, url_icono, id_grupo)
+        VALUES (:turno, :hora_inicio, :hora_fin, :url_icono, :id_grupo)";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([
             ':turno' => $data['turno'],
@@ -59,10 +59,10 @@ class TurnoModel
 
     public function update(int $id, array $data): bool
     {
-        $sql = "UPDATE turnos 
-                SET turno = :turno, hora_inicio = :hora_inicio, hora_fin = :hora_fin, 
-                    url_icono = :url_icono, id_grupo = :id_grupo
-                WHERE id = :id";
+        $sql = "UPDATE turnos
+        SET turno = :turno, hora_inicio = :hora_inicio, hora_fin = :hora_fin,
+        url_icono = :url_icono, id_grupo = :id_grupo
+        WHERE id = :id";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([
             ':turno' => $data['turno'],
@@ -80,4 +80,11 @@ class TurnoModel
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([':id' => $id]);
     }
+
+    public function toggleTurnoStatus(int $id): bool
+    {
+        $stmt = $this->db->prepare("UPDATE turnos SET is_active = NOT is_active WHERE id = :id");
+        return $stmt->execute(['id' => $id]);
+    }
+
 }

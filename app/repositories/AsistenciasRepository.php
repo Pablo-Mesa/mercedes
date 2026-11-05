@@ -139,4 +139,61 @@ class AsistenciasRepository
         return $row ?: null;
     }
 
+    /**
+     * Obtener todas las entradas pendientes de salida de un Rider.
+     *
+     * Cada jornada se identifica por:
+     * rider_id + grupo_id + turno_id + fecha.
+     *
+     * Permite varias jornadas abiertas en empresas diferentes
+     * y entradas correspondientes a días anteriores.
+     */
+    public function getEntradasPendientes(int $riderId): array
+    {
+        $sql = "
+            SELECT
+                entrada.id,
+                entrada.rider_id,
+                entrada.grupo_id,
+                entrada.turno_id,
+                entrada.fecha,
+                entrada.hora AS hora_entrada,
+                entrada.creado_el AS registrada_el,
+                g.nombre AS empresa,
+                t.turno,
+                t.hora_inicio,
+                t.hora_fin
+            FROM asistencias entrada
+
+            INNER JOIN grupos g
+                ON g.id_grupo = entrada.grupo_id
+
+            INNER JOIN turnos t
+                ON t.id = entrada.turno_id
+
+            WHERE entrada.rider_id = :rider_id
+            AND entrada.tipo = 'entrada'
+
+            AND NOT EXISTS (
+                SELECT 1
+                FROM asistencias salida
+                WHERE salida.rider_id = entrada.rider_id
+                    AND salida.grupo_id = entrada.grupo_id
+                    AND salida.turno_id = entrada.turno_id
+                    AND salida.fecha = entrada.fecha
+                    AND salida.tipo = 'salida'
+            )
+
+            ORDER BY entrada.fecha DESC, entrada.hora DESC
+        ";
+
+        $stmt = $this->db->prepare($sql);
+
+        $stmt->execute([
+            ':rider_id' => $riderId
+        ]);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
 }

@@ -29,8 +29,9 @@
             </thead>
             <tbody>
                 <?php if (!empty($asistencias)): ?>
-                    <?php foreach ($asistencias as $a): ?>
+                    <?php foreach ($asistencias as $a): ?>                        
                         <tr>
+                            <td><?= htmlspecialchars($a['empresa'] ?? '') ?></td>
                             <td><?= htmlspecialchars(isset($a['fecha']) && $a['fecha'] !== '' ? date('d-m-Y', strtotime($a['fecha'])) : '') ?></td>
                             <td><?= htmlspecialchars($a['rider_name'] ?? '') ?></td>
                             <td>                                
@@ -50,7 +51,7 @@
                     <?php endforeach; ?>
                 <?php else: ?>
                     <tr>
-                        <td colspan="7" class="text-center text-muted">
+                        <td class="text-center text-muted">
                             No se encontraron asistencias para la fecha seleccionada.
                         </td>
                     </tr>

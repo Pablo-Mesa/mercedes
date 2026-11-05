@@ -3,8 +3,7 @@
 </div>
 
 <div class="panel form-panel-medium">
-    <form action="<?= isset($turno) ? '/mercedes/turnos/update' : '/mercedes/turnos/store' ?>" 
-          method="post" enctype="multipart/form-data">
+    <form action="<?= isset($turno) ? '/mercedes/turnos/update' : '/mercedes/turnos/store' ?>" method="post" enctype="multipart/form-data">
         <?php if (isset($turno)): ?>
             <input type="hidden" name="id" value="<?= (int)$turno['id'] ?>">
         <?php endif; ?>
@@ -39,8 +38,7 @@
 
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">Guardar</button>
-            <a href="/mercedes/turnos?id=<?= isset($turno) ? $turno['id_grupo'] : (int)($_GET['id_grupo'] ?? 0) ?>" 
-               class="btn btn-secondary">Cancelar</a>
+            <a href="/mercedes/turnos?id=<?= isset($turno) ? $turno['id_grupo'] : (int)($_GET['id_grupo'] ?? 0) ?>" class="btn btn-secondary">Cancelar</a>
         </div>
     </form>
 </div>

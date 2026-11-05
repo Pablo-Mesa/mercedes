@@ -66,6 +66,7 @@
               <span class="span-monto"><?= number_format($p['total_tarifa'], 0, ',', '.') ?></span>
             </div>
           <?php endforeach; ?>
+
           <div class="rider-col-resume">
             
             <div class="resumen-grupo-header">
@@ -75,8 +76,7 @@
                     class="resumen-grupo-icono">
               <?php endif; ?>
               <h3 class="resumen-grupo-titulo"><?= htmlspecialchars($grupo['grupo_nombre']) ?></h3>
-            </div>            
-
+            </div>                
             <div class="resumen-grupo">
 
                 <div class="resumen-header">
@@ -96,6 +96,7 @@
             </div>
 
           </div>
+          
         </div>
       </div>
     <?php endforeach; ?>

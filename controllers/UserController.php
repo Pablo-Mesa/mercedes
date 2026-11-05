@@ -122,7 +122,7 @@ class UserController extends BaseController
             exit;
         }
 
-        if ($data['role_id'] == $operacionesRoleId && empty($data['grupo_id'])) {
+        if ($data['role_id'] === $operacionesRoleId && empty($data['grupo_id'])) {
             $_SESSION['error'] = 'Debe asignar un grupo al usuario de operaciones.';
             $this->redirect('/mercedes/usuarios/crear');
         }

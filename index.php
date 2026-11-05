@@ -5,7 +5,13 @@
  * Ruta base absoluta del proyecto: /mercedes/
  */
 
-if (session_status() === PHP_SESSION_NONE) {
+// Las rutas de la API móvil utilizan tokens Bearer.
+// No necesitan iniciar sesiones PHP.
+$rutaSolicitada = isset($_GET['url']) ? trim($_GET['url'], '/') : '';
+
+$esApiMovil = str_starts_with($rutaSolicitada, 'api/');
+
+if (!$esApiMovil && session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
@@ -35,6 +41,20 @@ require_once __DIR__ . '/controllers/InvitadosController.php';
 require_once __DIR__ . '/controllers/HerramientasController.php';
 require_once __DIR__ . '/controllers/AboutdevController.php';
 
+require_once __DIR__ . '/controllers/ApiAuthController.php';
+require_once __DIR__ . '/controllers/ApiProduccionController.php';
+require_once __DIR__ . '/controllers/ApiAsistenciasController.php';
+
+require_once __DIR__ . '/models/ApiToken.php';
+require_once __DIR__ . '/models/ApiLoginIntento.php';
+require_once __DIR__ . '/models/ProduccionModel.php';
+
+require_once __DIR__ . '/models/AsistenciaModel.php';
+require_once __DIR__ . '/models/GruposModel.php';
+require_once __DIR__ . '/models/TurnoModel.php';
+require_once __DIR__ . '/app/repositories/AsistenciasRepository.php';
+require_once __DIR__ . '/models/SettingsModel.php';
+
 // Captura y limpia la ruta solicitada (sin query string, sin slashes sobrantes)
 $url = isset($_GET['url']) ? trim($_GET['url'], '/') : '';
 $url = filter_var($url, FILTER_SANITIZE_URL);
@@ -42,7 +62,50 @@ $url = filter_var($url, FILTER_SANITIZE_URL);
 switch ($url) {
 
     case '':
-    case 'login':
+        // Redirige automáticamente a /login si entran a la raíz
+        header('Location: login');
+        exit;
+        break;
+
+    // =====================================
+    // API SOLVER MOBILE
+    // =====================================
+    case 'api/login':
+        $apiAuth = new ApiAuthController();
+        $apiAuth->login();
+        break;
+        
+    case 'api/me':
+        $apiAuth = new ApiAuthController();
+        $apiAuth->me();
+        break;
+    
+    case 'api/logout':
+        $apiAuth = new ApiAuthController();
+        $apiAuth->logout();
+        break;
+    
+        case 'api/producciones':
+        $apiProduccion = new ApiProduccionController();
+        $apiProduccion->index();
+        break;
+    
+        case 'api/asistencias':
+        $apiAsistencias = new ApiAsistenciasController();
+        $apiAsistencias->index();
+        break;
+        
+    case 'api/asistencias/opciones':
+        $apiAsistencias = new ApiAsistenciasController();
+        $apiAsistencias->opciones();
+        break;
+    
+        case 'api/asistencias/marcar':
+        $apiAsistencias = new ApiAsistenciasController();
+        $apiAsistencias->marcar();
+        break;
+    
+        case 'login':
         $auth = new AuthController();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $auth->login();
@@ -101,33 +164,32 @@ switch ($url) {
         } else {
             $tarifasController->create();
         }
-        break;    
-
-    case 'tarifas/editar':
+        break;
+    
+        case 'tarifas/editar':
         $tarifasController = new TarifasController();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $tarifasController->update();
-        } else {
-            $tarifasController->edit();
         }
         break;
     
     case 'tarifas/estado':
         $tarifasController = new TarifasController();
         $tarifasController->toggleEncabezado();
-        break;    
-        
-    case 'tarifas/eliminar':
+        break;
+    
+        case 'tarifas/eliminar':
         $tarifasController = new TarifasController();
         $tarifasController->delete();
-        break;    
-
-    case 'tarifas/detalles':
+        break;
+    
+        case 'tarifas/detalles':
         $tarifasController = new TarifasController();
-        $tarifasController->detalles();        
+        $tarifasController->detalles();
         break;
                 
     case 'detalles/crear':
+    case 'tarifas/nuevo_detalle':
         $detallesController = new DetallesController();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $detallesController->store($_GET['id_encabezado']);
@@ -140,8 +202,6 @@ switch ($url) {
         $detallesController = new DetallesController();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $detallesController->update($_GET['id'], $_GET['id_encabezado']);
-        } else {
-            $detallesController->edit($_GET['id'], $_GET['id_encabezado']);
         }
         break;
 
@@ -158,15 +218,6 @@ switch ($url) {
         $detallesController->delete($_GET['id'], $_GET['id_encabezado']);
         break;
 
-    case 'tarifas/nuevo_detalle':
-        $detallesController = new DetallesController();
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $detallesController->store($_GET['id_encabezado']);
-        } else {
-            $detallesController->create($_GET['id_encabezado']);
-        }
-        break;
-
     case 'riders':
         $ridersController = new RidersController();
         $ridersController->index();
@@ -179,9 +230,9 @@ switch ($url) {
         } else {
             $ridersController->create();
         }
-        break;    
-
-    case 'riders/editar':
+        break;
+    
+        case 'riders/editar':
         $ridersController = new RidersController();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $ridersController->update();
@@ -194,11 +245,6 @@ switch ($url) {
         $ridersController = new RidersController();
         $ridersController->toggleStatus();
         break;
-    
-    case 'riders/estado':
-        $ridersController = new RidersController();
-        $ridersController->toggleStatus();
-        break;    
         
     case 'riders/eliminar':
         $ridersController = new RidersController();
@@ -235,10 +281,9 @@ switch ($url) {
     case 'produccion/delete':
         $produccionController = new ProduccionController();
         $produccionController->delete();
-        break;    
-
-    // --- Punto de control ---    
-    case 'punto-control':
+        break;
+    
+        case 'punto-control':
         $configController = new ConfiguracionesController();
         $configController->puntodecontrol();
         break;
@@ -253,7 +298,7 @@ switch ($url) {
         }
         break;
 
-    // --- Grupos ---    
+    // --- Grupos ---
     case 'grupos':
         $gruposController = new GruposController();
         $gruposController->index();
@@ -321,6 +366,11 @@ switch ($url) {
     case 'turnos/delete':
         $turnosController = new TurnosController();
         $turnosController->delete();
+        break;
+    
+    case 'turnos/toggleStatus':
+        $turnosController = new TurnosController();
+        $turnosController->toggleStatus();
         break;
     
     case 'produccion/getRidersByGrupoAjax':

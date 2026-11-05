@@ -92,7 +92,7 @@ class GruposModel
      */
     public function getByRider(int $riderId): array
     {
-        $sql = "SELECT g.id_grupo, g.nombre, g.icono, p.titulo AS punto_titulo
+        $sql = "SELECT g.id_grupo, g.nombre, g.icono, p.titulo AS punto_titulo, g.icono as grupo_icono
                 FROM grupos g
                 JOIN punto_control p ON g.id_punto_control = p.id
                 JOIN rider_grupo rg ON g.id_grupo = rg.grupo_id

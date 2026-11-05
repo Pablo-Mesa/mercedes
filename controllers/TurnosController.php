@@ -102,8 +102,13 @@ class TurnosController extends BaseController
         $id = (int)($_GET['id'] ?? 0);
         $turno = $this->turnoModel->getById($id);
 
+        if (!$turno) {
+            $this->redirect('/mercedes/turnos');
+            return;
+        }
+
         $view = 'turnos/form';
-        require __DIR__ . '/../views/layouts/main.php';
+        require_once __DIR__ . '/../views/layouts/main.php';
     }
     
     /**
@@ -152,4 +157,19 @@ class TurnosController extends BaseController
             exit;
         }
     }
+
+
+    /** Activar/Desactivar Turnos */
+    public function toggleStatus(): void {
+        $id = (int)($_GET['id'] ?? 0);
+        $turno = $this->turnoModel->getById($id);
+        if ($id) {
+            $this->turnoModel->toggleTurnoStatus($id);
+            $_SESSION['success'] = 'Estado de turno actualizado correctamente.';
+        }
+        header("Location: /mercedes/turnos?id=" . $turno['id_grupo']);
+        exit;
+    }
+
+
 }
