@@ -24,27 +24,53 @@ La estructura ejecutable actual es:
 
 mercedes/
 ├── app/
-│   ├── repositories/AsistenciasRepository.php
+│   ├── repositories/
 │   └── services/
-│       ├── AsistenciasService.php
-│       └── ProduccionService.php
 ├── config/
-│   ├── migrations/20260929_integridad_inicial.sql
-│   ├── Database.php
-│   ├── setup.php
-│   └── estructura_db_al_29-09-26
+│   ├── documentacion/
+│   └── migrations/
 ├── controllers/
 ├── helpers/
 ├── models/
 ├── public/
-│   ├── assets/icons/
+│   ├── assets/
+│   │   └── icons/
 │   ├── css/
 │   ├── images/
+│   │   └── aboutdev/
 │   ├── js/
+│   │   └── components/
 │   └── uploads/
+│   │   ├── grupos/
+│   │   └── riders/
 ├── test/
 ├── views/
-└── index.php
+│   ├── aboutdev/
+│   ├── asistencias/
+│   ├── auth/
+│   ├── components/
+│   │   └── icons/
+│   ├── configuraciones/
+│   ├── grupos/
+│   ├── herramientas/
+│   ├── invitados/
+│   ├── layouts/
+│   ├── produccion/
+│   ├── riders/
+│   ├── rider_asistencia/
+│   ├── rider_produccion/
+│   ├── tarifas/
+│   ├── turnos/
+│   └── usuarios/
+├── .gitignore
+├── .htaccess
+├── arbol_proyecto.txt
+├── estructura_mercedes.txt
+├── index.php
+├── package.json
+├── pnpm-lock.yaml
+├── README.md
+└── setup.ps1
 
 El archivo `estructura de carpetas` describe una arquitectura propuesta, no la estructura implementada.
 

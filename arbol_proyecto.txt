@@ -1,0 +1,47 @@
+﻿├── app/
+│   │   └── repositories/
+│   │   └── services/
+├── config/
+│   │   └── documentacion/
+│   │   └── migrations/
+├── controllers/
+├── helpers/
+├── models/
+├── public/
+│   │   └── assets/
+│   │   └── css/
+│   │   └── images/
+│   │   └── js/
+│   │   └── uploads/
+│   │   │   └── icons/
+│   │   │   └── aboutdev/
+│   │   │   └── components/
+│   │   │   └── grupos/
+│   │   │   └── riders/
+├── test/
+├── views/
+│   │   └── aboutdev/
+│   │   └── asistencias/
+│   │   └── auth/
+│   │   └── components/
+│   │   └── configuraciones/
+│   │   └── grupos/
+│   │   └── herramientas/
+│   │   └── invitados/
+│   │   └── layouts/
+│   │   └── produccion/
+│   │   └── riders/
+│   │   └── rider_asistencia/
+│   │   └── rider_produccion/
+│   │   └── tarifas/
+│   │   └── turnos/
+│   │   └── usuarios/
+│   │   │   └── icons/
+└── .gitignore
+└── .htaccess
+└── estructura_mercedes.txt
+└── index.php
+└── package.json
+└── pnpm-lock.yaml
+└── README.md
+└── setup.ps1

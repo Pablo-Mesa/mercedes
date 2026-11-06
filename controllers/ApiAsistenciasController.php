@@ -3,6 +3,8 @@
 
 class ApiAsistenciasController
 {
+    private const MENSAJE_MODULO_DESACTIVADO = 'El Control de Asistencias está desactivado.';
+
     public function index(): void
     {
         header('Content-Type: application/json; charset=utf-8');
@@ -96,7 +98,7 @@ class ApiAsistenciasController
 
                 echo json_encode([
                     'ok' => false,
-                    'mensaje' => 'El Control de Asistencias está desactivado.'
+                    'mensaje' => self::MENSAJE_MODULO_DESACTIVADO
                 ]);
                 return;
             }
@@ -202,7 +204,7 @@ class ApiAsistenciasController
 
                 echo json_encode([
                     'ok' => false,
-                    'mensaje' => 'El Control de Asistencias está desactivado.'
+                    'mensaje' => self::MENSAJE_MODULO_DESACTIVADO
                 ]);
                 return;
             }
@@ -504,7 +506,7 @@ class ApiAsistenciasController
 
                 echo json_encode([
                     'ok' => false,
-                    'mensaje' => 'El Control de Asistencias está desactivado.'
+                    'mensaje' => self::MENSAJE_MODULO_DESACTIVADO
                 ]);
                 return;
             }
