@@ -52,6 +52,10 @@ class ApiProduccionController
                 ->format('Y-m-d');
 
             $fecha = $_GET['fecha'] ?? $fechaActual;
+            $empresa = $_GET['empresa'] ?? null;
+            if($empresa === ''){ 
+                $empresa = null;
+            }
 
             if (
                 !is_string($fecha) ||
@@ -105,13 +109,14 @@ class ApiProduccionController
 
             $producciones = $produccionModel->getProduccionPorRider(
                 $riderId,
-                null,
+                $empresa,
                 $fecha
             );
 
             $resumenGrupos = $produccionModel->getResumenPorGrupo(
                 $riderId,
-                $fecha
+                $fecha,
+                $empresa
             );
 
             http_response_code(200);

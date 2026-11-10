@@ -47,7 +47,7 @@ class AsistenciaModel
      */
     public function getByRiderAndDate(int $riderId, string $fecha): array
     {
-        $sql = "SELECT a.*, g.nombre AS empresa
+        $sql = "SELECT a.*, g.nombre AS empresa, g.icono as grupo_icono
                 FROM asistencias a
                 LEFT JOIN grupos g ON a.grupo_id = g.id_grupo
                 WHERE a.rider_id = :rider_id AND a.fecha = :fecha

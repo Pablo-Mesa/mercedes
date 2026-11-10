@@ -44,6 +44,7 @@ require_once __DIR__ . '/controllers/AboutdevController.php';
 require_once __DIR__ . '/controllers/ApiAuthController.php';
 require_once __DIR__ . '/controllers/ApiProduccionController.php';
 require_once __DIR__ . '/controllers/ApiAsistenciasController.php';
+require_once __DIR__ . '/controllers/ApiEmpresaController.php';
 
 require_once __DIR__ . '/models/ApiToken.php';
 require_once __DIR__ . '/models/ApiLoginIntento.php';
@@ -84,7 +85,7 @@ switch ($url) {
         $apiAuth = new ApiAuthController();
         $apiAuth->logout();
         break;
-    
+        
         case 'api/producciones':
         $apiProduccion = new ApiProduccionController();
         $apiProduccion->index();
@@ -104,7 +105,11 @@ switch ($url) {
         $apiAsistencias = new ApiAsistenciasController();
         $apiAsistencias->marcar();
         break;
-    
+
+    case 'api/empresas':
+        $apiEmpresa = new ApiEmpresaController();
+        $apiEmpresa->index();
+        break;
         case 'login':
         $auth = new AuthController();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {

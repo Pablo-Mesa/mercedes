@@ -117,7 +117,8 @@ class ApiAsistenciasController
                         'fecha'    => $asistencia['fecha'],
                         'empresa'  => $asistencia['empresa'],
                         'tipo'     => $asistencia['tipo'],
-                        'hora'     => $asistencia['hora']
+                        'hora'     => $asistencia['hora'], 
+                        'grupo_icono'     => $asistencia['grupo_icono']
                     ];
                 },
                 $asistencias
