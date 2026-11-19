@@ -57,7 +57,7 @@
 
 /* Imagen aplicada a todas las caras */
 #uno, #dos, #tres, #cuatro, #cinco, #seis {
-    background-image: url(/mercedes/public/images/icono_solver_nobg.png);
+    background-image: url(../images/icono_solver_nobg.png);
     background-color: whitesmoke;
 }
 

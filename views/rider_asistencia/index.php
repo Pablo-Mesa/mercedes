@@ -10,7 +10,7 @@
     <div>
         <p>Consulta tu historial de llegadas y salidas.</p>
     </div>
-    <form method="GET" action="/mercedes/rider_asistencia" class="mes-selector">
+    <form method="GET" action="<?= BASE_PATH ?>/rider_asistencia" class="mes-selector">
         <label for="fecha">Fecha:</label>
         <input type="date" name="fecha" id="fecha" value="<?= htmlspecialchars($fecha ?? '') ?>" class="form-control">
         <button type="submit" class="btn btn-primary">Filtrar</button>
@@ -53,5 +53,5 @@
 </div>
 <!-- acciones -->
 <div class="form-actions">
-    <a href="/mercedes/rider_asistencia/form" class="btn btn-primary">Marcar mi llegada</a>
+    <a href="<?= BASE_PATH ?>/rider_asistencia/form" class="btn btn-primary">Marcar mi llegada</a>
 </div>

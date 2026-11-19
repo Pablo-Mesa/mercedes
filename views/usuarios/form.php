@@ -118,7 +118,7 @@ $isEdit = !empty($usuario);
         </div>
 
         <div class="form-actions">
-            <a href="/mercedes/usuarios" class="btn btn-outline">Cancelar</a>
+            <a href="<?= BASE_PATH ?>/usuarios" class="btn btn-outline">Cancelar</a>
             <button type="submit" class="btn btn-primary"><?= $isEdit ? 'Guardar cambios' : 'Crear usuario' ?></button>
         </div>
     </form>

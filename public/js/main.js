@@ -3,6 +3,8 @@
  * Interacciones ligeras del frontend (sin dependencias externas).
  */
 
+const APP_BASE_PATH = window.APP_BASE_PATH || '';
+
 let contador = 0;
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -319,7 +321,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function openDetalleModal(riderId, fecha) {
 
         Loader.show();
-        fetch('/mercedes/produccion/byRider?id=' + riderId + '&fecha=' + fecha)
+        fetch(APP_BASE_PATH + '/produccion/byRider?id=' + riderId + '&fecha=' + fecha)
         .then(res => res.json())
         .then(data => {
             const tablaDetalle = document.getElementById('detalleTable');
@@ -357,13 +359,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 tbody.innerHTML += `
                 <tr>
                     <td>
-                        <img src="/mercedes/public/uploads/grupos/${p.icono}" alt="icono grupo" style="height:20px;vertical-align:middle;margin-right:5px;">
+                        <img src="${APP_BASE_PATH}/public/uploads/grupos/${p.icono}" alt="icono grupo" style="height:20px;vertical-align:middle;margin-right:5px;">
                         <span>${p.grupo_nombre}</span>
                     </td>
                     <td>${turnoBadge}</td>
                     <td>
                         <span class="badge-hora">
-                            <img src="/mercedes/public/images/hora_envio.png" alt="hora de envio">
+                            <img src="${APP_BASE_PATH}/public/images/hora_envio.png" alt="hora de envio">
                             ${horaStr}
                         </span>
                     </td>
@@ -377,7 +379,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     </td>
                     ${rendicionCell}
                     <td class="acciones-col hidden">
-                        <a href="/mercedes/produccion/delete?id=${p.id}" class="btn btn-danger">&#128465; Eliminar</a>
+                        <a href="${APP_BASE_PATH}/produccion/delete?id=${p.id}" class="btn btn-danger">&#128465; Eliminar</a>
                     </td>
                 </tr>`;
             });
@@ -504,7 +506,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // funcion cargar detalle produccion
     function cargarDetalleProducciones(riderId, riderName) {
-        fetch('/mercedes/produccion/byRider?id=' + riderId)
+        fetch(APP_BASE_PATH + '/produccion/byRider?id=' + riderId)
         .then(res => res.json())
         .then(data => {
             const tbody = document.querySelector('#detalleTable tbody');
@@ -566,7 +568,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const idProduccion = e.target.dataset.id;
             const estado = e.target.checked ? 1 : 0;
             Loader.show();
-            fetch('/mercedes/produccion/rendicion_update?id=' + idProduccion + '&estado=' + estado)
+            fetch(APP_BASE_PATH + '/produccion/rendicion_update?id=' + idProduccion + '&estado=' + estado)
             .then(res => {
                 if (!res.ok) {
                 throw new Error('Respuesta HTTP inválida');
@@ -654,7 +656,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function guardarProduccion(form) {
         Loader.show();
-        fetch('/mercedes/produccion/store', {
+        fetch(APP_BASE_PATH + '/produccion/store', {
             method: 'POST',
             body: new FormData(document.getElementById('formProduccion'))
         })
@@ -671,7 +673,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const fecha = document.querySelector('[name="fecha_creacion"]').value;
                 const soloFecha = fecha.split("T")[0]; 
                 // refrescar vista produccion con la fecha actual del formulario
-                window.location.href = '/mercedes/produccion?fecha=' + soloFecha;
+                window.location.href = APP_BASE_PATH + '/produccion?fecha=' + soloFecha;
             }
             else{
                 showToast(resp.message);
@@ -789,7 +791,7 @@ document.addEventListener('DOMContentLoaded', function () {
             Promise.all([
 
                 /*fetch riders*/
-                fetch('/mercedes/produccion/getRidersByGrupoAjax?grupo=' + grupoId)
+                fetch(APP_BASE_PATH + '/produccion/getRidersByGrupoAjax?grupo=' + grupoId)
                     .then(res => res.json())
                     .then(data => {
                     const riderSelect = document.getElementById('rider');
@@ -800,7 +802,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     }),
 
                 /*fetch tarifas*/    
-                fetch('/mercedes/produccion/getTarifasByGrupoAjax?grupo=' + grupoId)
+                fetch(APP_BASE_PATH + '/produccion/getTarifasByGrupoAjax?grupo=' + grupoId)
                     .then(res => res.json())
                     .then(data => {
                     tarifaSelect.innerHTML = '<option value="">-- Seleccionar Tarifa --</option>';
@@ -810,7 +812,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     }),
 
                 /*fetch turnos*/    
-                fetch('/mercedes/produccion/getTurnosByGrupoAjax?grupo=' + grupoId)
+                fetch(APP_BASE_PATH + '/produccion/getTurnosByGrupoAjax?grupo=' + grupoId)
                 .then(res => res.json())
                 .then(data => {
                     const turnoSelect = document.getElementById('turno');

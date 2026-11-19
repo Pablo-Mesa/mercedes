@@ -33,7 +33,7 @@ class AuthController extends BaseController
 
         if ($email === '' || $password === '') {
             $_SESSION['error'] = 'Debes completar el correo y la contraseña.';
-            $this->redirect('/mercedes/login');
+            $this->redirect(BASE_PATH . '/login');
         }
 
         $user = $this->userModel->findByEmail($email);
@@ -41,25 +41,25 @@ class AuthController extends BaseController
         // Usuario no encontrado
         if (!$user) {
             $_SESSION['error'] = 'Credenciales incorrectas. Verifica tu correo y contraseña.';
-            $this->redirect('/mercedes/login');
+            $this->redirect(BASE_PATH . '/login');
         }
 
         // Validar contraseña
         if (!password_verify($password, $user['password'])) {
             $_SESSION['error'] = 'Credenciales incorrectas. Verifica tu correo y contraseña.';
-            $this->redirect('/mercedes/login');
+            $this->redirect(BASE_PATH . '/login');
         }
 
         // Validar estado activo
         if ((int)$user['is_active'] !== 1) {
             $_SESSION['error'] = 'Tu cuenta se encuentra desactivada. Contacta al administrador.';
-            $this->redirect('/mercedes/login');
+            $this->redirect(BASE_PATH . '/login');
         }
 
         // Validar activación SOLO para Riders
         if ($user['role_slug'] === 'rider' && empty($user['activated_at'])) {
             $_SESSION['error'] = 'Tu cuenta aún no ha sido activada. Revisa tu correo para el enlace de activación.';
-            $this->redirect('/mercedes/login');
+            $this->redirect(BASE_PATH . '/login');
         }
 
         // Regenerar sesión
@@ -99,29 +99,29 @@ class AuthController extends BaseController
 
         if ($cuadernoActivo) {
             return match ($role) {
-                'admin' => '/mercedes/dashboard',
-                'operaciones' => '/mercedes/produccion?vista=tarjetas&fecha=' . $fechaQuery,
-                'rider' => '/mercedes/rider_produccion?fecha=' . $fechaQuery,
-                'invitado' => '/mercedes/invitados?fecha=' . $fechaQuery,
-                default => '/mercedes/login',
+                'admin' => BASE_PATH . '/dashboard',
+                'operaciones' => BASE_PATH . '/produccion?vista=tarjetas&fecha=' . $fechaQuery,
+                'rider' => BASE_PATH . '/rider_produccion?fecha=' . $fechaQuery,
+                'invitado' => BASE_PATH . '/invitados?fecha=' . $fechaQuery,
+                default => BASE_PATH . '/login',
             };
         }
 
         if ($asistenciasActivas) {
             return match ($role) {
-                'admin', 'operaciones' => '/mercedes/asistencias',
-                'rider' => '/mercedes/rider_asistencia?fecha=' . $fechaQuery,
-                'invitado' => '/mercedes/invitados?fecha=' . $fechaQuery,
-                default => '/mercedes/login',
+                'admin', 'operaciones' => BASE_PATH . '/asistencias',
+                'rider' => BASE_PATH . '/rider_asistencia?fecha=' . $fechaQuery,
+                'invitado' => BASE_PATH . '/invitados?fecha=' . $fechaQuery,
+                default => BASE_PATH . '/login',
             };
         }
 
         return match ($role) {
-            'admin' => '/mercedes/herramientas',
-            'operaciones' => '/mercedes/produccion?fecha=' . $fechaQuery,
-            'rider' => '/mercedes/rider_produccion?fecha=' . $fechaQuery,
-            'invitado' => '/mercedes/invitados?fecha=' . $fechaQuery,
-            default => '/mercedes/login',
+            'admin' => BASE_PATH . '/herramientas',
+            'operaciones' => BASE_PATH . '/produccion?fecha=' . $fechaQuery,
+            'rider' => BASE_PATH . '/rider_produccion?fecha=' . $fechaQuery,
+            'invitado' => BASE_PATH . '/invitados?fecha=' . $fechaQuery,
+            default => BASE_PATH . '/login',
         };
     }
 
@@ -132,7 +132,7 @@ class AuthController extends BaseController
         $_SESSION = [];
         session_destroy();
 
-        $this->redirect('/mercedes/login');
+        $this->redirect(BASE_PATH . '/login');
     }
 
     public function showActivateRider(): void
@@ -140,7 +140,7 @@ class AuthController extends BaseController
         $token = $_GET['token'] ?? '';
         if ($token === '') {
             $_SESSION['error'] = 'Token de activación inválido.';
-            $this->redirect('/mercedes/login');
+            $this->redirect(BASE_PATH . '/login');
         }
 
         // Buscar usuario por token hash
@@ -157,7 +157,7 @@ class AuthController extends BaseController
 
         if (!$usuario) {
             $_SESSION['error'] = 'El enlace de activación no es válido o ha expirado.';
-            $this->redirect('/mercedes/login');
+            $this->redirect(BASE_PATH . '/login');
         }
 
         $tokenOriginal = $token;
@@ -173,17 +173,17 @@ class AuthController extends BaseController
 
         if ($token === '' || $password === '' || $passwordConfirm === '') {
             $_SESSION['error'] = 'Debes completar todos los campos.';
-            $this->redirect('/mercedes/login');
+            $this->redirect(BASE_PATH . '/login');
         }
 
         if ($password !== $passwordConfirm) {
             $_SESSION['error'] = 'Las contraseñas no coinciden.';
-            $this->redirect('/mercedes/activar-rider?token=' . urlencode($token));
+            $this->redirect(BASE_PATH . '/activar-rider?token=' . urlencode($token));
         }
 
         if (strlen($password) < 12) {
             $_SESSION['error'] = 'La contraseña debe tener al menos 12 caracteres.';
-            $this->redirect('/mercedes/activar-rider?token=' . urlencode($token));
+            $this->redirect(BASE_PATH . '/activar-rider?token=' . urlencode($token));
         }
 
         $tokenHash = hash('sha256', $token);
@@ -199,7 +199,7 @@ class AuthController extends BaseController
 
         if (!$usuario) {
             $_SESSION['error'] = 'El enlace de activación no es válido o ha expirado.';
-            $this->redirect('/mercedes/login');
+            $this->redirect(BASE_PATH . '/login');
         }
 
         // Actualizar usuario con nueva contraseña y marcar activación
@@ -211,7 +211,7 @@ class AuthController extends BaseController
         ]);
 
         $_SESSION['success'] = 'Cuenta activada correctamente. Ya puedes iniciar sesión.';
-        $this->redirect('/mercedes/login');
+        $this->redirect(BASE_PATH . '/login');
     }
 
 }

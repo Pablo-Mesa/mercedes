@@ -196,4 +196,42 @@ class AsistenciasRepository
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function obtenerLlegadasPosterioresA(int $ultimoId, string $fecha): array
+    {
+        $sql = "
+            SELECT
+                a.id,
+                a.rider_id,
+                a.grupo_id,
+                a.turno_id,
+                a.fecha,
+                a.hora,
+                a.tipo,
+                a.dispositivo,
+                a.ip_registro,
+                a.lat,
+                a.lon,
+                a.punto_control_id,
+                a.observaciones,
+                u.name AS rider_name,
+                u.phone AS rider_contacto,
+                u.foto_perfil
+            FROM asistencias a
+            INNER JOIN usuarios u
+                ON a.rider_id = u.id
+                AND u.role_id = 3
+            WHERE a.id > :ultimo_id
+            AND DATE(a.fecha) = :fecha
+            ORDER BY a.id ASC
+        ";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
+            ':ultimo_id' => $ultimoId,
+            ':fecha'     => $fecha,
+        ]);
+
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }    
+
 }

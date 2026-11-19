@@ -12,7 +12,7 @@ class DetallesController extends BaseController
     {
         $this->startSession();
         if (!isset($_SESSION['user_id'])) {
-            $this->redirect('/mercedes/login');
+            $this->redirect(BASE_PATH . '/login');
         }
         $this->detalleModel = new DetalleTarifaModel();
         $this->encabezadoModel = new EncabezadoTarifaModel();
@@ -35,7 +35,7 @@ class DetallesController extends BaseController
     {
         $encabezado = $this->encabezadoModel->findById($id_encabezado);
 
-        $formAction = '/mercedes/tarifas/nuevo_detalle?id_encabezado=' . $id_encabezado;
+        $formAction = BASE_PATH . '/tarifas/nuevo_detalle?id_encabezado=' . $id_encabezado;
         $view = 'tarifas/nuevo_detalle';
         require __DIR__ . '/../views/layouts/main.php';
     }
@@ -52,7 +52,7 @@ class DetallesController extends BaseController
         ];
         $this->detalleModel->create($data);
         $_SESSION['success'] = 'Detalle creado correctamente.';
-        $this->redirect('/mercedes/tarifas/detalles?id=' . $id_encabezado);
+        $this->redirect(BASE_PATH . '/tarifas/detalles?id=' . $id_encabezado);
     }
 
     // Actualizar detalle existente
@@ -66,20 +66,20 @@ class DetallesController extends BaseController
         ];
         $this->detalleModel->update($id, $data);
         $_SESSION['success'] = 'Detalle actualizado correctamente.';
-        $this->redirect('/mercedes/tarifas/detalles?id=' . $id_encabezado);
+        $this->redirect(BASE_PATH . '/tarifas/detalles?id=' . $id_encabezado);
     }
 
     // Toggle habilitar/deshabilitar detalle
     public function toggleDetalle(int $id, int $id_encabezado): void
     {
         $this->detalleModel->toggle($id);
-        $this->redirect('/mercedes/tarifas/detalles?id=' . $id_encabezado);
+        $this->redirect(BASE_PATH . '/tarifas/detalles?id=' . $id_encabezado);
     }
     
     // Eliminar detalle
     public function delete(int $id, int $id_encabezado): void
     {
         $this->detalleModel->delete($id);
-        $this->redirect('/mercedes/tarifas/detalles?id=' . $id_encabezado);
+        $this->redirect(BASE_PATH . '/tarifas/detalles?id=' . $id_encabezado);
     }
 }

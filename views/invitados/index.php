@@ -1,6 +1,6 @@
 <!-- encabezdo de la vista -->
 <div class="page-header page-header-actions w-full">    
-  <form method="get" action="/mercedes/invitados" class="filtro-produccion">
+  <form method="get" action="<?= BASE_PATH ?>/invitados" class="filtro-produccion">
     <!-- barra para aplicar filtros -->  
     <div class="filter-bar">      
       <!-- Fecha -->
@@ -26,7 +26,7 @@
       <div class="content-wrap">
         <div class="modal-header-icon">
           <?php if (!empty($grupo['grupo_icono'])): ?>
-            <img src="/mercedes/public/uploads/grupos/<?= htmlspecialchars($grupo['grupo_icono']) ?>" 
+            <img src="<?= BASE_PATH ?>/public/uploads/grupos/<?= htmlspecialchars($grupo['grupo_icono']) ?>"
                 alt="Icono <?= htmlspecialchars($grupo['grupo_nombre']) ?>" 
                 class="icono-grupo-seleccionado">
           <?php endif; ?>
@@ -71,7 +71,7 @@
             
             <div class="resumen-grupo-header">
               <?php if (!empty($grupo['grupo_icono'])): ?>              
-                <img src="/mercedes/public/uploads/grupos/<?= htmlspecialchars($grupo['grupo_icono']) ?>" 
+                <img src="<?= BASE_PATH ?>/public/uploads/grupos/<?= htmlspecialchars($grupo['grupo_icono']) ?>"
                     alt="Icono <?= htmlspecialchars($grupo['grupo_nombre']) ?>" 
                     class="resumen-grupo-icono">
               <?php endif; ?>

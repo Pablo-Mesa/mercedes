@@ -9,7 +9,7 @@
     <div>
         <p>Administra los tarifas del sistema. Los cambios en su estado son reversibles.</p>
     </div>
-    <a href="/mercedes/tarifas/crear" class="btn btn-primary btn-nuevo">+ Nuevo Tarifa</a>
+    <a href="<?= BASE_PATH ?>/tarifas/crear" class="btn btn-primary btn-nuevo">+ Nuevo Tarifa</a>
 </div>
 
 <div class="panel table-panel" tabindex="0" role="region" aria-label="Tabla de tarifas">
@@ -35,11 +35,11 @@
             <?php endif; ?>
           </td>
           <td>
-            <a href="/mercedes/tarifas/estado?id=<?= (int)$encabezado['id_encabezado_tarifa'] ?>"
+            <a href="<?= BASE_PATH ?>/tarifas/estado?id=<?= (int)$encabezado['id_encabezado_tarifa'] ?>"
               class="btn btn-small <?= ((int)$encabezado['is_active'] === 1) ? 'btn-danger-outline' : 'btn-success-outline' ?>">
               <?= ((int)$encabezado['is_active'] === 1) ? 'Desactivar' : 'Activar' ?>
             </a>
-            <a href="/mercedes/tarifas/detalles?id=<?= (int)$encabezado['id_encabezado_tarifa'] ?>" class="btn btn-small">Ver Detalles</a>               
+            <a href="<?= BASE_PATH ?>/tarifas/detalles?id=<?= (int)$encabezado['id_encabezado_tarifa'] ?>" class="btn btn-small">Ver Detalles</a>
           </td>
         </tr>
       <?php endforeach; ?>

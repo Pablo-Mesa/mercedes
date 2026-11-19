@@ -33,7 +33,7 @@ $isEdit = !empty($tarifas);
     <?php endif; ?>
 
     <div class="form-actions">
-        <a href="/mercedes/tarifas" class="btn btn-outline">Cancelar</a>
+        <a href="<?= BASE_PATH ?>/tarifas" class="btn btn-outline">Cancelar</a>
         <button type="submit" class="btn btn-primary"><?= $isEdit ? 'Guardar cambios' : 'Crear tarifa' ?></button>
     </div>
 

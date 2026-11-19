@@ -2,7 +2,7 @@
 /**
  * index.php
  * Front Controller - Punto de entrada único de la aplicación.
- * Ruta base absoluta del proyecto: /mercedes/
+ * La ruta base se detecta para admitir /mercedes en WAMP y la raíz del subdominio.
  */
 
 // Las rutas de la API móvil utilizan tokens Bearer.
@@ -11,15 +11,53 @@ $rutaSolicitada = isset($_GET['url']) ? trim($_GET['url'], '/') : '';
 
 $esApiMovil = str_starts_with($rutaSolicitada, 'api/');
 
-if (!$esApiMovil && session_status() === PHP_SESSION_NONE) {
-    session_start();
+$scriptName = str_replace('\\', '/', (string)($_SERVER['SCRIPT_NAME'] ?? '/index.php'));
+$scriptDirectory = str_replace('\\', '/', dirname($scriptName));
+define('BASE_PATH', $scriptDirectory === '/' || $scriptDirectory === '.'
+    ? ''
+    : rtrim($scriptDirectory, '/'));
+
+$environment = strtolower((string)(getenv('MERCEDES_ENV') ?: ''));
+$serverAddress = (string)($_SERVER['SERVER_ADDR'] ?? '');
+$serverName = strtolower((string)($_SERVER['SERVER_NAME'] ?? ''));
+$documentRoot = strtolower(str_replace('\\', '/', (string)($_SERVER['DOCUMENT_ROOT'] ?? '')));
+$scriptFilename = strtolower(str_replace('\\', '/', (string)($_SERVER['SCRIPT_FILENAME'] ?? '')));
+$isWamp = PHP_OS_FAMILY === 'Windows'
+    && $serverName === 'localhost'
+    && str_ends_with($documentRoot, '/wamp64/www')
+    && str_starts_with($scriptFilename, $documentRoot . '/');
+$isLocalEnvironment = PHP_SAPI === 'cli'
+    || $environment === 'local'
+    || $isWamp
+    || (PHP_OS_FAMILY === 'Windows' && in_array($serverAddress, ['127.0.0.1', '::1'], true));
+
+if (!$isLocalEnvironment) {
+    ini_set('display_errors', '0');
+    ini_set('log_errors', '1');
 }
 
-define('BASE_PATH', '/mercedes');
+header('X-Content-Type-Options: nosniff');
+header('X-Frame-Options: DENY');
+header('Referrer-Policy: strict-origin-when-cross-origin');
 
-// Si el sistema no ha sido instalado, ejecuta el instalador automático.
-if (!file_exists(__DIR__ . '/config/installed.txt')) {
-    require_once __DIR__ . '/config/setup.php';
+$isHttps = (!empty($_SERVER['HTTPS']) && strtolower((string)$_SERVER['HTTPS']) !== 'off')
+    || (int)($_SERVER['SERVER_PORT'] ?? 0) === 443;
+
+if ($isHttps) {
+    header('Strict-Transport-Security: max-age=15552000');
+}
+
+if (!$esApiMovil && session_status() === PHP_SESSION_NONE) {
+    ini_set('session.use_strict_mode', '1');
+    ini_set('session.use_only_cookies', '1');
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path' => BASE_PATH === '' ? '/' : BASE_PATH . '/',
+        'secure' => $isHttps,
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ]);
+    session_start();
 }
 
 require_once __DIR__ . '/config/Database.php';
@@ -54,6 +92,7 @@ require_once __DIR__ . '/models/AsistenciaModel.php';
 require_once __DIR__ . '/models/GruposModel.php';
 require_once __DIR__ . '/models/TurnoModel.php';
 require_once __DIR__ . '/app/repositories/AsistenciasRepository.php';
+require_once __DIR__ . '/app/services/AsistenciaStreamService.php';
 require_once __DIR__ . '/models/SettingsModel.php';
 
 // Captura y limpia la ruta solicitada (sin query string, sin slashes sobrantes)
@@ -267,7 +306,7 @@ switch ($url) {
             $produccionController->store();
         } else {
             // opcional: redirigir al listado si no es POST
-            header('Location: /mercedes/produccion');
+            header('Location: ' . BASE_PATH . '/produccion');
             exit;
         }
         break;
@@ -421,6 +460,11 @@ switch ($url) {
         $adminAsistenciasController = new AdminAsistenciasController();
         $adminAsistenciasController->index();
         break;
+
+    case 'asistencias/stream':
+        $adminAsistenciasController = new AdminAsistenciasController();
+        $adminAsistenciasController->stream();
+        break;    
 
     case 'invitados':
         $invitadosController = new InvitadosController();

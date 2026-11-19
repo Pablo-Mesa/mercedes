@@ -29,7 +29,7 @@ $suma_total_tarifa = 0;
 
 <!-- encabezdo de la vista -->
 <div class="page-header page-header-actions w-full">    
-  <form method="get" action="/mercedes/produccion" class="filtro-produccion">
+  <form method="get" action="<?= BASE_PATH ?>/produccion" class="filtro-produccion">
     <!-- barra para aplicar filtros -->  
     <div class="filter-bar">      
 
@@ -71,7 +71,7 @@ $suma_total_tarifa = 0;
     <div class="card">
     
       <!-- avatar -->
-      <img src="/mercedes/public/uploads/riders/<?= $p['rider_foto'] ?? 'default.png' ?>" class="card-avatar">
+      <img src="<?= BASE_PATH ?>/public/uploads/riders/<?= $p['rider_foto'] ?? 'default.png' ?>" class="card-avatar">
       
       <!-- nombre rider -->
       <h3><?= htmlspecialchars($p['rider_nombre']) ?></h3>
@@ -137,7 +137,7 @@ $suma_total_tarifa = 0;
       <div class="content-wrap">
         <div class="modal-header-icon">
           <?php if (!empty($grupo['grupo_icono'])): ?>
-            <img src="/mercedes/public/uploads/grupos/<?= htmlspecialchars($grupo['grupo_icono']) ?>" 
+            <img src="<?= BASE_PATH ?>/public/uploads/grupos/<?= htmlspecialchars($grupo['grupo_icono']) ?>"
                 alt="Icono <?= htmlspecialchars($grupo['grupo_nombre']) ?>" 
                 class="grupo-icono avatar-rounded">
           <?php endif; ?>
@@ -188,7 +188,7 @@ $suma_total_tarifa = 0;
           <div class="rider-col-resume">            
             <div class="resumen-grupo-header">
               <?php if (!empty($grupo['grupo_icono'])): ?>              
-                <img src="/mercedes/public/uploads/grupos/<?= htmlspecialchars($grupo['grupo_icono']) ?>" 
+                <img src="<?= BASE_PATH ?>/public/uploads/grupos/<?= htmlspecialchars($grupo['grupo_icono']) ?>"
                     alt="Icono <?= htmlspecialchars($grupo['grupo_nombre']) ?>" 
                     class="resumen-grupo-icono">
               <?php endif; ?>
@@ -268,7 +268,7 @@ $suma_total_tarifa = 0;
     </div>
 
     <!-- formulario -->
-    <form id="formProduccion" action="/mercedes/produccion/store" method="post">
+    <form id="formProduccion" action="<?= BASE_PATH ?>/produccion/store" method="post">
       
       <!-- fecha y turno -->
       <div class="content-generic">

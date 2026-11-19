@@ -14,7 +14,7 @@ class GruposController extends BaseController {
     public function __construct() {
         $this->startSession();
         if (!isset($_SESSION['user_id'])) {
-            $this->redirect('/mercedes/login');
+            $this->redirect(BASE_PATH . '/login');
         }
         $this->grupoModel = new GruposModel();
         $this->requireRole(['admin']);
@@ -29,7 +29,7 @@ class GruposController extends BaseController {
 
     public function create() {
         $grupo = null;
-        $formAction = '/mercedes/grupos/crear';
+        $formAction = BASE_PATH . '/grupos/crear';
 
         // Cargar puntos de control dinámicamente
         $puntosControlModel = new PuntoControlModel();
@@ -42,7 +42,7 @@ class GruposController extends BaseController {
     public function edit(): void {
         $id = (int)($_GET['id'] ?? 0);
         $grupo = $this->grupoModel->getById($id);
-        $formAction = '/mercedes/grupos/editar?id=' . $id;
+        $formAction = BASE_PATH . '/grupos/editar?id=' . $id;
 
         // Cargar puntos de control dinámicamente
         $puntosControlModel = new PuntoControlModel();
@@ -54,24 +54,36 @@ class GruposController extends BaseController {
 
 
     public function store(): void {
-        $data = $this->procesarDatos();
+        try {
+            $data = $this->procesarDatos();
+        } catch (InvalidArgumentException | RuntimeException $e) {
+            $_SESSION['error'] = $e->getMessage();
+            $this->redirect(BASE_PATH . '/grupos/crear');
+        }
+
         $this->grupoModel->insert($data);
-        header('Location: /mercedes/grupos');
+        header('Location: ' . BASE_PATH . '/grupos');
         exit;
     }
 
     public function update(): void {
         $id = (int)($_GET['id'] ?? $_POST['id'] ?? 0);
-        $data = $this->procesarDatos();
+        try {
+            $data = $this->procesarDatos();
+        } catch (InvalidArgumentException | RuntimeException $e) {
+            $_SESSION['error'] = $e->getMessage();
+            $this->redirect(BASE_PATH . '/grupos/editar?id=' . $id);
+        }
+
         $this->grupoModel->update($id, $data);
-        header('Location: /mercedes/grupos');
+        header('Location: ' . BASE_PATH . '/grupos');
         exit;
     }
 
     public function delete() {
         $id = (int)($_GET['id'] ?? $_POST['id'] ?? 0);
         $this->grupoModel->delete($id);
-        header('Location: /mercedes/grupos');
+        header('Location: ' . BASE_PATH . '/grupos');
         exit;
     }
 
@@ -114,7 +126,7 @@ class GruposController extends BaseController {
         $grupoEncabezadoModel = new GrupoEncabezadoTarifaModel();
         $grupoEncabezadoModel->syncEncabezados($id, $encabezadosSeleccionados);
 
-        header("Location: /mercedes/grupos");
+        header("Location: " . BASE_PATH . "/grupos");
         exit;
     }
 

@@ -1,12 +1,24 @@
+Options -MultiViews
 RewriteEngine On
-RewriteBase /mercedes/
 
 SetEnvIfNoCase Authorization "^(.+)$" HTTP_AUTHORIZATION=$1
+
+# Evitar el acceso directo a código, configuración, pruebas y documentación interna.
+RewriteRule ^(?:config|controllers|models|views|app|helpers|test|node_modules)(?:/|$) - [F,NC,L]
+RewriteRule (^|/)\.(?!well-known(?:/|$)) - [F,NC,L]
+RewriteCond %{REQUEST_URI} !^/\.well-known/ [NC]
+RewriteRule \.(?:sql|bak|log|ini|conf|local|orig|old|tmp|temp|swp|md|txt|json|ya?ml|ps1|lock)$ - [F,NC,L]
+
+# No exponer listados de carpetas públicas si el hosting los habilita.
+RewriteRule ^public(?:/.*)?/$ - [F,NC,L]
 
 # Servir directamente los archivos y carpetas físicas existentes (assets de /public/, favicon, etc.)
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
 
-# Todo lo demás se despacha a través del Front Controller (index.php)
-RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
+# Despachar rutas tanto desde /mercedes en WAMP como desde la raíz del subdominio.
+RewriteCond %{REQUEST_URI} ^/mercedes(?:/|$) [NC]
+RewriteRule ^(.*)$ /mercedes/index.php?url=$1 [QSA,L]
+
+RewriteRule ^(.*)$ /index.php?url=$1 [QSA,L]

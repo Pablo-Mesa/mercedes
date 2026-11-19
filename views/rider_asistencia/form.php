@@ -140,7 +140,7 @@
     <!-- acciones -->
     <div class="form-actions">
         <?php $hoy = date('Y-m-d'); ?>
-        <a href="/mercedes/rider_asistencia?fecha=<?= $hoy ?>" class="btn btn-volver">Mis llegadas</a>
+        <a href="<?= BASE_PATH ?>/rider_asistencia?fecha=<?= $hoy ?>" class="btn btn-volver">Mis llegadas</a>
     </div>
 
 </div>
@@ -148,5 +148,5 @@
 <script>
     window.puntoControl = <?= json_encode($puntoControl ?? []) ?>;
 </script>
-<script src="/mercedes/public/js/rider_asistencia.js"></script>
+<script src="<?= BASE_PATH ?>/public/js/rider_asistencia.js"></script>
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>

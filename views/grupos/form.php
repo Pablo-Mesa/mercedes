@@ -56,7 +56,7 @@ $puntosControl = $puntosControl ?? [];
             <input type="file" name="icono" id="icono" accept="image/*">
             <?php if (!empty($grupo['icono'])): ?>
                 <div class="preview">
-                    <img src="/mercedes/public/uploads/grupos/<?= ($grupo['icono'] === 'default.png') ? 'default.png' : htmlspecialchars($grupo['icono']) ?>" alt="Icono grupo" class="avatar-sm">
+                    <img src="<?= BASE_PATH ?>/public/uploads/grupos/<?= ($grupo['icono'] === 'default.png') ? 'default.png' : htmlspecialchars($grupo['icono']) ?>" alt="Icono grupo" class="avatar-sm">
                     <label>
                         <input type="checkbox" name="reset_icono" value="1"> Restablecer a default
                     </label>
@@ -66,7 +66,7 @@ $puntosControl = $puntosControl ?? [];
 
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">Guardar</button>
-            <a href="/mercedes/grupos" class="btn btn-secondary">Cancelar</a>
+            <a href="<?= BASE_PATH ?>/grupos" class="btn btn-secondary">Cancelar</a>
         </div>
     </form>
 

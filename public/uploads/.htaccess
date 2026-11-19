@@ -1,0 +1,2 @@
+RewriteEngine On
+RewriteRule \.(?:php[0-9]?|phtml|phar|phps)$ - [F,NC,L]

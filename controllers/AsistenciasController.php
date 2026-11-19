@@ -9,11 +9,10 @@ require_once __DIR__ . '/../models/GruposModel.php';
 require_once __DIR__ . '/BaseController.php';
 require_once __DIR__ . '/../app/services/AsistenciasService.php';
 
-
 class AsistenciasController extends BaseController
 {
     private AsistenciaModel $asistenciaModel;
-    private AsistenciasService $asistenciasService;
+    private AsistenciasService $asistenciasService;    
     private RiderModel $riderModel;
     private PuntoControlModel $puntoControlModel;
     private $grupoModel;
@@ -24,18 +23,27 @@ class AsistenciasController extends BaseController
         $this->startSession();
 
         if (!isset($_SESSION['user_id'])) {
-            $this->redirect('/mercedes/login');
+            $this->redirect(BASE_PATH . '/login');
         }
 
-        $this->asistenciaModel    = new AsistenciaModel();
-        $this->asistenciasService = new AsistenciasService(new AsistenciasRepository());
-        $this->grupoModel         = new GruposModel();
-        $this->riderModel         = new RiderModel();
-        $this->puntoControlModel  = new PuntoControlModel();
-        $this->turnoModel         = new TurnoModel();   // 👈 inicialización faltante
+        $repository                    = new AsistenciasRepository();
+        $this->asistenciaModel         = new AsistenciaModel();
+        $this->asistenciasService      = new AsistenciasService($repository);
+        
+        $this->grupoModel              = new GruposModel();
+        $this->riderModel              = new RiderModel();
+        $this->puntoControlModel       = new PuntoControlModel();
+        $this->turnoModel              = new TurnoModel();
 
-        // Solo riders pueden acceder a esta vista
-        $this->requireRole(['rider']);
+        // Validar rol según la ruta: el stream SSE es para el panel admin, el resto para riders
+        $uri = $_SERVER['REQUEST_URI'] ?? '';
+        if (str_contains($uri, '/stream')) {
+            // Ajusta el nombre del rol si en tu sistema es 'administrador' o 'superadmin'
+            $this->requireRole(['admin']);
+        } else {
+            $this->requireRole(['rider']);
+        }
+
         $this->requireToolEnabled('tool_asistencias_enabled', 'El Control de Asistencias está desactivado.');
     }
 
@@ -48,7 +56,7 @@ class AsistenciasController extends BaseController
         $fecha = $_GET['fecha'] ?? date('Y-m-d');
 
         if (!$riderId) {
-            $this->redirect('/mercedes/login');
+            $this->redirect(BASE_PATH . '/login');
         }
 
         $asistencias = $this->asistenciaModel->getByRiderAndDate($riderId, $fecha);
@@ -147,7 +155,7 @@ class AsistenciasController extends BaseController
         $horaActual = date('H:i:s');
 
         if (!$riderId) {
-            $this->redirect('/mercedes/login');
+            $this->redirect(BASE_PATH . '/login');
         }
 
         $grupos = $this->grupoModel->getByRider($riderId);
@@ -168,6 +176,6 @@ class AsistenciasController extends BaseController
             'grupos'       => $grupos,
             'asistencias'  => $asistencias
         ]);
-    }
-
+    }    
+    
 }

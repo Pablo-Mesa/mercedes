@@ -1,0 +1,37 @@
+RewriteEngine On
+
+# 1. Forzar redirección a HTTPS (excepto para validaciones de AutoSSL)
+RewriteCond %{HTTPS} off
+RewriteCond %{REQUEST_URI} !^/\.well-known/ [NC]
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# 2. Encabezados de seguridad para SSL Labs (A+)
+<IfModule mod_headers.c>
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# 3. Pasar el encabezado Authorization a PHP (vital para tokens JWT/Bearer en la app móvil)
+SetEnvIfNoCase Authorization "^(.+)$" HTTP_AUTHORIZATION=$1
+
+# 4. Evitar el acceso directo a código, configuración, pruebas y documentación interna
+RewriteRule ^(?:config|controllers|models|views|app|helpers|test|node_modules)(?:/|$) - [F,NC,L]
+RewriteRule (^|/)\.(?!well-known(?:/|$)) - [F,NC,L]
+RewriteCond %{REQUEST_URI} !^/\.well-known/ [NC]
+RewriteRule \.(?:sql|bak|log|ini|conf|local|orig|old|tmp|temp|swp|md|txt|json|ya?ml|ps1|lock)$ - [F,NC,L]
+
+# 5. No exponer listados de carpetas públicas si el hosting los habilita
+RewriteRule ^public(?:/.*)?/$ - [F,NC,L]
+
+# 6. Servir directamente los archivos y carpetas físicas existentes (assets de /public/, favicon, etc.)
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# 7. Despachar rutas tanto desde /mercedes en WAMP como desde la raíz del subdominio
+RewriteCond %{REQUEST_URI} ^/mercedes(?:/|$) [NC]
+RewriteRule ^(.*)$ /mercedes/index.php?url=$1 [QSA,L]
+
+RewriteRule ^(.*)$ /index.php?url=$1 [QSA,L]

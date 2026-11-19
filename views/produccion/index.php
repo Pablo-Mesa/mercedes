@@ -11,7 +11,7 @@
 <!-- header -->
 <div class="page-header page-header-actions">
     <!-- Filtros de Producción -->
-    <form method="get" action="/mercedes/produccion" class="filtro-produccion">
+    <form method="get" action="<?= BASE_PATH ?>/produccion" class="filtro-produccion">
       <div class="content-filter">
         
         <!-- Fecha -->
@@ -60,16 +60,16 @@
         <!-- Botones -->
         <div class="form-actions">
           <button type="submit" class="btn-filtrar">Filtrar</button>
-          <a href="/mercedes/produccion" class="btn-reset">Ver todas</a>
+          <a href="<?= BASE_PATH ?>/produccion" class="btn-reset">Ver todas</a>
           <a href="#" class="btn btn-primary btn-nuevo" id="btnAbrirModal" >+ Agregar produccion</a>          
         </div>
 
         <div class="view-switch">
-            <a href="/mercedes/produccion?vista=tabla" 
+            <a href="<?= BASE_PATH ?>/produccion?vista=tabla"
               class="switch-btn <?= ($_GET['vista'] ?? 'tabla') === 'tabla' ? 'active' : '' ?>">
               📊 Tabla
             </a>
-            <a href="/mercedes/produccion?vista=tarjetas" 
+            <a href="<?= BASE_PATH ?>/produccion?vista=tarjetas"
               class="switch-btn <?= ($_GET['vista'] ?? 'tabla') === 'tarjetas' ? 'active' : '' ?>">
               🗂️ Tarjetas
             </a>
@@ -107,7 +107,7 @@
                   </span>
                 </td>
                 <td class="d-flex align-center gap-8 text-center">
-                  <img src="/mercedes/public/uploads/riders/<?= $p['rider_foto'] ?? 'default.png' ?>" 
+                  <img src="<?= BASE_PATH ?>/public/uploads/riders/<?= $p['rider_foto'] ?? 'default.png' ?>"
                         alt="<?= htmlspecialchars($p['rider_nombre']) ?>" class="avatar-sm">
                   <span><?= htmlspecialchars($p['rider_nombre']) ?></span>
                 </td>
@@ -121,7 +121,7 @@
                 <td> Gs. <?= number_format((float)$p['tarifa_detalle'], 0, ',', '.') ?> </td>              
                 <!-- <td><?= htmlspecialchars($p['usuario_nombre']) ?></td> -->              
                 <td>
-                    <a href="/mercedes/produccion/delete?id=<?= $p['id'] ?>" 
+                    <a href="<?= BASE_PATH ?>/produccion/delete?id=<?= $p['id'] ?>"
                       onclick="return confirm('¿Eliminar producción?')"
                       class="btn btn-small btn-danger-outline">
                       Eliminar                   
@@ -144,7 +144,7 @@
     <h3>Registrar Producción</h3>
 
     <!-- Aquí va tu formulario -->
-    <form method="post" action="/mercedes/produccion/store">
+    <form method="post" action="<?= BASE_PATH ?>/produccion/store">
 
       <div class="form-group">
         <label for="rider">Rider:</label>                

@@ -8,7 +8,7 @@ class GrupoHelper {
             $grupoModel = new GruposModel();
             $grupo = $grupoModel->getById($_SESSION['grupo_id']);
             if (!empty($grupo['icono'])) {
-                return '/mercedes/public/uploads/grupos/' . $grupo['icono'];
+                return BASE_PATH . '/public/uploads/grupos/' . $grupo['icono'];
             }
         }
         return null;

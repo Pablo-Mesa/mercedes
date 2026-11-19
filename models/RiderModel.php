@@ -58,7 +58,7 @@ class RiderModel
             $grupoModel = new GruposModel();
             $grupo = $grupoModel->getById($grupoId);
             if (!empty($grupo['icono'])) {
-                $grupoIcono = '/mercedes/public/uploads/grupos/' . $grupo['icono'];
+                $grupoIcono = BASE_PATH . '/public/uploads/grupos/' . $grupo['icono'];
             }
         }
 

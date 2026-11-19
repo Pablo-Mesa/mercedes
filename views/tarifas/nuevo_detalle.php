@@ -6,7 +6,7 @@
 
   
 <div class="panel form-panel-medium">
-  <form class="" action="/mercedes/tarifas/nuevo_detalle?id_encabezado=<?= $encabezado['id_encabezado_tarifa'] ?>" method="POST">
+  <form class="" action="<?= BASE_PATH ?>/tarifas/nuevo_detalle?id_encabezado=<?= $encabezado['id_encabezado_tarifa'] ?>" method="POST">
     
     <div class="form-group">
       <label for="desde">Desde:</label>
@@ -30,7 +30,7 @@
 
     <div class="form-actions">
       <button type="submit">Guardar</button>
-      <a href="/mercedes/tarifas/detalles?id=<?= $encabezado['id_encabezado_tarifa'] ?>">Cancelar</a>
+      <a href="<?= BASE_PATH ?>/tarifas/detalles?id=<?= $encabezado['id_encabezado_tarifa'] ?>">Cancelar</a>
     </div>    
     
   </form>

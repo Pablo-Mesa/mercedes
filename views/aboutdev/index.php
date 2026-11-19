@@ -10,7 +10,7 @@
  * public/css/aboutdev.css
  */
 ?>
-<link rel="stylesheet" href="/mercedes/public/css/aboutdev.css">
+<link rel="stylesheet" href="<?= BASE_PATH ?>/public/css/aboutdev.css">
 <div class="aboutdev">
 
     <!-- 1. PRESENTACIÓN -->
@@ -198,7 +198,7 @@
                 
                 <figure class="aboutdev-screenshot">
                     <img
-                        src="/mercedes/public/images/aboutdev/cuaderno.webp"
+                        src="<?= BASE_PATH ?>/public/images/aboutdev/cuaderno.webp"
                         alt="Vista de la herramienta Cuaderno de Solver App"
                         loading="lazy"
                         decoding="async"
@@ -248,7 +248,7 @@
                 
                 <figure class="aboutdev-screenshot">
                     <img
-                        src="/mercedes/public/images/aboutdev/asistencia.webp"
+                        src="<?= BASE_PATH ?>/public/images/aboutdev/asistencia.webp"
                         alt="Interfaz de Control de Asistencias de Solver App"
                         loading="lazy"
                         decoding="async"
@@ -311,7 +311,7 @@
             
             <figure class="aboutdev-screenshot aboutdev-screenshot-wide">
                 <img
-                    src="/mercedes/public/images/aboutdev/dashboard.webp"
+                    src="<?= BASE_PATH ?>/public/images/aboutdev/dashboard.webp"
                     alt="Panel Dashboard de Solver App con indicadores de producción"
                     loading="lazy"
                     decoding="async"
@@ -571,7 +571,7 @@
 
             <!-- PENDIENTE: Sustituir el enlace cuando confirmemos la URL pública del repositorio. -->
             <div class="aboutdev-github-action">
-                <a href="https://github.com/Pablo-Mesa/mercedes.git" class="aboutdev-github-link" target="_blank" rel="noopener noreferrer">
+                <a href="https://github.com/Pablo-Mesa<?= BASE_PATH ?>.git" class="aboutdev-github-link" target="_blank" rel="noopener noreferrer">
                     <span class="github-icon-wrapper">
                         <?= render_icon('github', 'nav-icon') ?>
                     </span> 

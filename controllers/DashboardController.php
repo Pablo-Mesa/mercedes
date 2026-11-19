@@ -23,7 +23,7 @@ class DashboardController extends BaseController
     public function index(): void
     {
         if (!isset($_SESSION['user_id'])) {
-            $this->redirect('/mercedes/login');
+            $this->redirect(BASE_PATH . '/login');
         }
 
         $userModel = new User();

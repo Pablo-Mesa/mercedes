@@ -15,7 +15,7 @@ class RiderProduccionController extends BaseController {
     public function __construct() {
         $this->startSession();
         if (!isset($_SESSION['user_id'])) {
-            $this->redirect('/mercedes/login');
+            $this->redirect(BASE_PATH . '/login');
         }
 
         // Solo rol rider

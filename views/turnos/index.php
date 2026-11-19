@@ -9,7 +9,7 @@ $turnos = $turnos ?? [];
 </div>
 
 <div class="panel">
-    <a href="/mercedes/turnos/create?id_grupo=<?= htmlspecialchars((string) ($grupoId ?? '')) ?>" class="btn btn-primary mb-1">
+    <a href="<?= BASE_PATH ?>/turnos/create?id_grupo=<?= htmlspecialchars((string) ($grupoId ?? '')) ?>" class="btn btn-primary mb-1">
         Nuevo Turno
     </a>
 
@@ -36,8 +36,8 @@ $turnos = $turnos ?? [];
                             <?php endif; ?>
                         </td>
                         <td>
-                            <a href="/mercedes/turnos/edit?id=<?= $t['id'] ?>" class="btn btn-sm btn-warning">Editar</a>                                    
-                            <a href="/mercedes/turnos/toggleStatus?id=<?= (int)$t['id'] ?>"
+                            <a href="<?= BASE_PATH ?>/turnos/edit?id=<?= $t['id'] ?>" class="btn btn-sm btn-warning">Editar</a>
+                            <a href="<?= BASE_PATH ?>/turnos/toggleStatus?id=<?= (int)$t['id'] ?>"
                                class="btn btn-small <?= ((int)$t['is_active'] === 1) ? 'btn-danger-outline' : 'btn-success-outline' ?>">
                                 <?= ((int)$t['is_active'] === 1) ? 'Desactivar' : 'Activar' ?>
                             </a>

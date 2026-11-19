@@ -290,9 +290,11 @@ Base de datos	mercedes
 Usuario	root
 Contraseña	Vacía solo en el WAMP local; configurar credenciales seguras antes de desplegar
 Charset	utf8mb4
-El instalador automático se encuentra en `config/setup.php`. Si no existe `config/installed.txt`, `index.php` lo ejecuta. Una instalación nueva requiere configurar `MERCEDES_ADMIN_PASSWORD` en el entorno PHP/Apache (mínimo 12 caracteres). El administrador inicial usa `admin@correo.com`; no hay una contraseña compartida en el código.
+La aplicación no ejecuta el instalador automáticamente. `config/setup.php` se conserva como herramienta heredada y no debe invocarse desde un hosting público. Para un entorno nuevo, importa de forma controlada un esquema revisado y crea el usuario inicial por un procedimiento administrativo seguro.
 
-El esquema de referencia es `config/estructura_db_al_29-09-26`. Es un snapshot SQL que contiene sentencias `DROP TABLE`; sirve para consulta y no debe ejecutarse sobre una base con datos. La migración no destructiva está en `config/migrations/20260929_integridad_inicial.sql`; hacer backup y probarla en una copia antes de usarla.
+Los volcados SQL pueden contener sentencias destructivas y datos de usuarios o tokens. No los publiques ni los importes sin revisar su contenido y crear un respaldo independiente.
+
+La configuración privada puede guardarse en `config/local.php`, archivo excluido de Git. Usa `config/local.example.php` como plantilla y configura los datos reales del entorno antes de iniciar la aplicación. También se aceptan `MERCEDES_ENV=local`, `MERCEDES_DB_HOST`, `MERCEDES_DB_NAME`, `MERCEDES_DB_USER`, `MERCEDES_DB_PASSWORD`, `MERCEDES_DB_CHARSET`, `MERCEDES_APP_URL` y `MERCEDES_IP_HMAC_KEY`. `MERCEDES_APP_URL` debe ser el origen del sitio (sin ruta): localmente `http://localhost`; en el hosting `https://solverapp.solver-hub.com`. `ip_hmac_key` debe ser una clave hexadecimal minúscula de 64 caracteres; genera una distinta para cada entorno con `bin2hex(random_bytes(32))` en PHP y guárdala solo en `config/local.php` o en la variable de entorno, nunca en Git. La clave local existente en `C:/solver-private/config.php` debe copiarse manualmente a la configuración privada local; no compartas ni subas ese archivo. Configura otra clave privada en el hosting. Los valores locales predeterminados se limitan a CLI, entornos locales explícitos o WAMP escuchando en loopback; no se decide el entorno a partir del encabezado HTTP Host.
 
 Instalación Local
 Requisitos:
@@ -303,13 +305,18 @@ Apache o servidor PHP local.
 WAMP recomendado para el entorno actual.
 Pasos generales:
 
-Colocar el proyecto dentro del directorio público del servidor.
-Crear o iniciar la base de datos MySQL.
-Verificar las credenciales en Database.php.
-Configurar `MERCEDES_ADMIN_PASSWORD`, iniciar WAMP y acceder a `http://localhost/mercedes/`. Después de iniciar sesión, guardar la ubicación real del Punto de Control y activar desde Herramientas los módulos requeridos.
+Colocar el proyecto dentro del directorio público de WAMP.
+Iniciar la base de datos MySQL existente y revisar `config/local.php` si se usan credenciales distintas a las de desarrollo predeterminadas.
+Acceder a `http://localhost/mercedes/`. Las rutas de la aplicación y sus recursos mantienen automáticamente el prefijo local o usan la raíz cuando el proyecto se sirve desde un subdominio.
+Después de iniciar sesión, guardar la ubicación real del Punto de Control y activar desde Herramientas los módulos requeridos.
+
+Despliegue De Pruebas
+Para `solverapp.solver-hub.com`, configura `config/local.php` en el hosting con las credenciales entregadas por el panel y `app_url` con `https://solverapp.solver-hub.com`. No subas ese archivo al repositorio, no ejecutes el instalador y no sustituyas la base del servidor con un volcado que incluya `DROP TABLE` o datos locales. El archivo raíz `.htaccess` deniega el acceso web a las carpetas internas y archivos de desarrollo; `public/uploads/.htaccess` impide ejecutar scripts subidos.
+
+La API móvil usa el mismo enrutamiento de la aplicación: en WAMP conserva el prefijo `/mercedes`, y en el subdominio se sirve desde la raíz. Actualiza el URL de servidor en React Native por separado cuando vayas a probar contra el hosting.
 
 Refactor Incremental
-El refactor debe realizarse de forma gradual para proteger los módulos que ya funcionan.
+El refactor debe realizarse de forma gradual para proteger los módulos que ya funcionan. Los enlaces se construyen desde `BASE_PATH`; las rutas de la API deben conservar sus endpoints funcionales aunque el prefijo cambie según el entorno.
 
 Validators
 Las validaciones reutilizables deberían extraerse progresivamente a una capa como:
@@ -343,7 +350,7 @@ Filtros y búsquedas.
 Consultas de reportes.
 Acceso específico a una entidad o caso de uso.
 Reglas De Seguridad Para Refactor
-Mantener las rutas actuales.
+Mantener los endpoints y el comportamiento funcional.
 Mantener las claves de sesión existentes.
 No modificar payloads funcionales sin pruebas.
 No mezclar refactor técnico con cambios de negocio.

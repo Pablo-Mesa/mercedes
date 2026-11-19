@@ -10,7 +10,7 @@
     <div>
         <p>Administra las cuentas del sistema. Los cambios de estado son reversibles.</p>
     </div>
-    <a href="/mercedes/usuarios/crear" class="btn btn-primary btn-nuevo">+ Nuevo usuario</a>
+    <a href="<?= BASE_PATH ?>/usuarios/crear" class="btn btn-primary btn-nuevo">+ Nuevo usuario</a>
 </div>
 
 <div class="panel table-panel" tabindex="0" role="region" aria-label="Tabla de usuarios">
@@ -45,8 +45,8 @@
                             <?php endif; ?>
                         </td>
                         <td class="actions-cell">
-                            <a href="/mercedes/usuarios/editar?id=<?= (int)$u['id'] ?>" class="btn btn-small">Editar</a>
-                            <a href="/mercedes/usuarios/estado?id=<?= (int)$u['id'] ?>"
+                            <a href="<?= BASE_PATH ?>/usuarios/editar?id=<?= (int)$u['id'] ?>" class="btn btn-small">Editar</a>
+                            <a href="<?= BASE_PATH ?>/usuarios/estado?id=<?= (int)$u['id'] ?>"
                                class="btn btn-small <?= ((int)$u['is_active'] === 1) ? 'btn-danger-outline' : 'btn-success-outline' ?>">
                                 <?= ((int)$u['is_active'] === 1) ? 'Desactivar' : 'Activar' ?>
                             </a>

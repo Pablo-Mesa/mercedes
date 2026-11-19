@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", function () {
             e.preventDefault();
             const data = new FormData(form);
 
-            fetch("/mercedes/configuraciones/guardar_punto_control", {
+            fetch((window.APP_BASE_PATH || '') + "/configuraciones/guardar_punto_control", {
                 method: "POST",
                 body: data
             })

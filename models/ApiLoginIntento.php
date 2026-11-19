@@ -9,21 +9,7 @@ class ApiLoginIntento
     public function __construct()
     {
         $this->db = Database::getConnection();
-
-        $config = require 'C:/solver-private/config.php';
-
-        $clave = $config['ip_hmac_key'] ?? null;
-
-        if (
-            !is_string($clave) ||
-            !preg_match('/\A[a-f0-9]{64}\z/D', $clave)
-        ) {
-            throw new RuntimeException(
-                'La clave HMAC de IP no está configurada correctamente.'
-            );
-        }
-
-        $this->ipHmacKey = $clave;
+        $this->ipHmacKey = Database::getIpHmacKey();
     }
 
     public function estaBloqueado(

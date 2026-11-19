@@ -25,7 +25,7 @@ class ActivacionRiderController extends BaseController {
         // Validar formato del token
         if (!preg_match('/^[a-f0-9]{64}$/', $token)) {
             $_SESSION['error'] = 'Enlace de activación inválido.';
-            $this->redirect('/mercedes/login');
+            $this->redirect(BASE_PATH . '/login');
         }
 
         $tokenHash = hash('sha256', $token);
@@ -33,12 +33,12 @@ class ActivacionRiderController extends BaseController {
 
         if (!$usuario) {
             $_SESSION['error'] = 'Token inválido o usuario no encontrado.';
-            $this->redirect('/mercedes/login');
+            $this->redirect(BASE_PATH . '/login');
         }
 
         if (!empty($usuario['activated_at'])) {
             $_SESSION['error'] = 'La cuenta ya fue activada.';
-            $this->redirect('/mercedes/login');
+            $this->redirect(BASE_PATH . '/login');
         }
 
         if (
@@ -46,7 +46,7 @@ class ActivacionRiderController extends BaseController {
             strtotime($usuario['activation_expires_at']) < time()
         ) {
             $_SESSION['error'] = 'El enlace de activación ha expirado.';
-            $this->redirect('/mercedes/login');
+            $this->redirect(BASE_PATH . '/login');
         }
 
         // Mostrar vista de activación
@@ -63,7 +63,7 @@ class ActivacionRiderController extends BaseController {
 
         if (!preg_match('/^[a-f0-9]{64}$/', $token)) {
             $_SESSION['error'] = 'Petición inválida.';
-            $this->redirect('/mercedes/login');
+            $this->redirect(BASE_PATH . '/login');
         }
 
         $tokenHash = hash('sha256', $token);
@@ -71,12 +71,12 @@ class ActivacionRiderController extends BaseController {
 
         if (!$usuario) {
             $_SESSION['error'] = 'Token inválido.';
-            $this->redirect('/mercedes/login');
+            $this->redirect(BASE_PATH . '/login');
         }
 
         if (!empty($usuario['activated_at'])) {
             $_SESSION['error'] = 'La cuenta ya fue activada.';
-            $this->redirect('/mercedes/login');
+            $this->redirect(BASE_PATH . '/login');
         }
 
         if (
@@ -84,7 +84,7 @@ class ActivacionRiderController extends BaseController {
             strtotime($usuario['activation_expires_at']) < time()
         ) {
             $_SESSION['error'] = 'El enlace de activación ha expirado.';
-            $this->redirect('/mercedes/login');
+            $this->redirect(BASE_PATH . '/login');
         }
 
         // Validar contraseñas
@@ -101,7 +101,7 @@ class ActivacionRiderController extends BaseController {
 
         if (!empty($errors)) {
             $_SESSION['error'] = implode('<br>', $errors);
-            $this->redirect('/mercedes/activar-rider?token=' . $token);
+            $this->redirect(BASE_PATH . '/activar-rider?token=' . $token);
         }
 
         // Guardar contraseña segura y activar
@@ -115,6 +115,6 @@ class ActivacionRiderController extends BaseController {
         ]);
 
         $_SESSION['success'] = 'Cuenta activada correctamente. Ya puedes iniciar sesión.';
-        $this->redirect('/mercedes/login');
+        $this->redirect(BASE_PATH . '/login');
     }
 }

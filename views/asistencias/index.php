@@ -9,7 +9,7 @@
     <div>
         <p>Listado de llegadas y salidas de riders.</p>
     </div>
-    <form method="GET" action="/mercedes/asistencias" class="filter-form d-flex flex-row gap-2">
+    <form method="GET" action="<?= BASE_PATH ?>/asistencias" class="filter-form d-flex flex-row gap-2">
         <label for="fecha">Fecha:</label>
         <input type="date" name="fecha" id="fecha" value="<?= htmlspecialchars($fecha ?? '') ?>" class="form-control">
         <button type="submit" class="btn btn-primary">Filtrar</button>
@@ -18,7 +18,13 @@
 
 <div class="panel table-panel">
     <div class="panel table-panel" tabindex="0" role="region" aria-label="Tabla de asistencias">
-        <table class="data-table">
+        <table 
+            id="tabla-asistencias" 
+            data-ultimo-id="<?= $ultimoIdInicial ?? 0 ?>" 
+            data-fecha="<?= htmlspecialchars($fecha ?? date('Y-m-d')) ?>"
+            data-stream-url="<?= BASE_PATH ?>/asistencias/stream" 
+            class="data-table"
+        >
             <thead>
                 <tr>
                     <th>Fecha</th>
@@ -27,11 +33,10 @@
                     <th>Observaciones</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="tbody-asistencias">
                 <?php if (!empty($asistencias)): ?>
                     <?php foreach ($asistencias as $a): ?>                        
-                        <tr>
-                            <td><?= htmlspecialchars($a['empresa'] ?? '') ?></td>
+                        <tr id="asistencia-<?= (int)$a['id'] ?>">
                             <td><?= htmlspecialchars(isset($a['fecha']) && $a['fecha'] !== '' ? date('d-m-Y', strtotime($a['fecha'])) : '') ?></td>
                             <td><?= htmlspecialchars($a['rider_name'] ?? '') ?></td>
                             <td>                                
@@ -50,8 +55,8 @@
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
-                    <tr>
-                        <td class="text-center text-muted">
+                    <tr id="fila-sin-asistencias">
+                        <td colspan="4" class="text-center text-muted">
                             No se encontraron asistencias para la fecha seleccionada.
                         </td>
                     </tr>
@@ -60,3 +65,5 @@
         </table>
     </div>
 </div>
+
+<script src="<?= BASE_PATH ?>/public/js/asistencias-sse.js"></script>

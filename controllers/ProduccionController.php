@@ -20,7 +20,7 @@ class ProduccionController extends BaseController
         $this->startSession();
 
         if (!isset($_SESSION['user_id'])) {
-            $this->redirect('/mercedes/login');
+            $this->redirect(BASE_PATH . '/login');
         }
 
         $this->produccionModel = new ProduccionModel();
@@ -105,7 +105,7 @@ class ProduccionController extends BaseController
             $_SESSION['success'] = 'Producción eliminada.';
         }
 
-        $this->redirect('/mercedes/produccion?vista=tarjetas');
+        $this->redirect(BASE_PATH . '/produccion?vista=tarjetas');
     }
 
     public function getRidersByGrupoAjax(): void
@@ -235,7 +235,7 @@ class ProduccionController extends BaseController
             $grupo      = $grupoModel->getById($grupoId);
 
             if (!empty($grupo['icono'])) {
-                $data['grupoIcono'] = '/mercedes/public/uploads/grupos/' . $grupo['icono'];
+                $data['grupoIcono'] = BASE_PATH . '/public/uploads/grupos/' . $grupo['icono'];
             }
         }
 

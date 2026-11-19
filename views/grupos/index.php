@@ -9,7 +9,7 @@
     <div>
         <p>Administra las empresas asociadas al puntos de control.</p>
     </div>
-    <a href="/mercedes/grupos/crear" class="btn btn-primary btn-nuevo">+ Nueva Empresa</a>
+    <a href="<?= BASE_PATH ?>/grupos/crear" class="btn btn-primary btn-nuevo">+ Nueva Empresa</a>
 </div>
 
 <div class="panel table-panel" tabindex="0" role="region" aria-label="Tabla de empresas">
@@ -33,7 +33,7 @@
                         <td><?= htmlspecialchars($g['punto_titulo']); ?></td>
                         <td><?= htmlspecialchars($g['nombre']); ?></td>
                         <td>
-                            <img src="/mercedes/public/uploads/grupos/<?= !empty($g['icono']) 
+                            <img src="<?= BASE_PATH ?>/public/uploads/grupos/<?= !empty($g['icono'])
                                 ? htmlspecialchars($g['icono']) 
                                 : 'default.png' ?>" 
                                 alt="Icono grupo" class="avatar-sm">
@@ -45,20 +45,20 @@
                                 : '<span class="badge badge-danger">Inactivo</span>'; ?>
                         </td>                        
                         <td>
-                            <a href="/mercedes/grupos/editar?id=<?= (int)$g['id_grupo'] ?>" class="btn btn-small">Editar</a>
+                            <a href="<?= BASE_PATH ?>/grupos/editar?id=<?= (int)$g['id_grupo'] ?>" class="btn btn-small">Editar</a>
                             <!--
-                            <a href="/mercedes/grupos/eliminar?id=<?= (int)$g['id_grupo'] ?>" 
+                            <a href="<?= BASE_PATH ?>/grupos/eliminar?id=<?= (int)$g['id_grupo'] ?>"
                                class="btn btn-small btn-danger-outline"
                                onclick="return confirm('¿Seguro que deseas eliminar este grupo?');">
                                 Eliminar
                             </a>
                             -->
-                            <a href="/mercedes/grupos/asignar_tarifas?id=<?= $g['id_grupo'] ?>" 
+                            <a href="<?= BASE_PATH ?>/grupos/asignar_tarifas?id=<?= $g['id_grupo'] ?>"
                                 class="btn btn-small">
                                 Tarifas
                             </a>
 
-                            <a href="/mercedes/turnos?id=<?= $g['id_grupo'] ?>" class="btn btn-small mt-1">
+                            <a href="<?= BASE_PATH ?>/turnos?id=<?= $g['id_grupo'] ?>" class="btn btn-small mt-1">
                                 Gestionar Turnos
                             </a>
                             

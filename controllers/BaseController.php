@@ -20,7 +20,7 @@ abstract class BaseController
         $this->startSession();
 
         if (!isset($_SESSION['user_id'])) {
-            $this->redirect('/mercedes/login');
+            $this->redirect(BASE_PATH . '/login');
         }
     }
 
@@ -123,7 +123,7 @@ abstract class BaseController
             <div class="box">
                 <h1>403</h1>
                 <p>' . htmlspecialchars($message, ENT_QUOTES, 'UTF-8') . '</p>
-                <a href="/mercedes/login">Volver al login</a>
+                <a href="' . BASE_PATH . '/login">Volver al login</a>
             </div>
         </body>
         </html>';

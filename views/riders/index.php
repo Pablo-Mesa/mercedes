@@ -9,7 +9,7 @@
     <div>
         <p>Administra los riders del sistema. Los cambios en su estado son reversibles.</p>
     </div>
-    <a href="/mercedes/riders/crear" class="btn btn-primary btn-nuevo">+ Nuevo rider</a>
+    <a href="<?= BASE_PATH ?>/riders/crear" class="btn btn-primary btn-nuevo">+ Nuevo rider</a>
 </div>
 
 <section class="panel table-panel" aria-label="Tabla de riders">
@@ -33,7 +33,7 @@
                         <td><?= htmlspecialchars($r['name'] ?? '') ?></td>
                         <td><?= htmlspecialchars($r['phone'] ?? ''); ?></td>
                         <td>
-                            <img src="/mercedes/public/uploads/riders/<?= !empty($r['foto_perfil']) 
+                            <img src="<?= BASE_PATH ?>/public/uploads/riders/<?= !empty($r['foto_perfil'])
                                 ? htmlspecialchars($r['foto_perfil']) 
                                 : 'default.png' ?>" 
                                 alt="Foto de <?= htmlspecialchars($r['name']); ?>" 
@@ -52,7 +52,7 @@
                                     Activado
                                 </span>
                             <?php else: ?>
-                                <a href="/mercedes/riders/sendActivation?id=<?= (int)$r['id'] ?>"
+                                <a href="<?= BASE_PATH ?>/riders/sendActivation?id=<?= (int)$r['id'] ?>"
                                     class="btn btn-small btn-info-outline"
                                     target="_blank">
                                     Activar por WhatsApp
@@ -60,8 +60,8 @@
                             <?php endif; ?>
                         </td>
                         <td>
-                            <a href="/mercedes/riders/editar?id=<?= (int)$r['id'] ?>" class="btn btn-small">Editar</a>
-                            <a href="/mercedes/riders/toggleStatus?id=<?= (int)$r['id'] ?>"
+                            <a href="<?= BASE_PATH ?>/riders/editar?id=<?= (int)$r['id'] ?>" class="btn btn-small">Editar</a>
+                            <a href="<?= BASE_PATH ?>/riders/toggleStatus?id=<?= (int)$r['id'] ?>"
                                class="btn btn-small <?= ((int)$r['is_active'] === 1) ? 'btn-danger-outline' : 'btn-success-outline' ?>">
                                 <?= ((int)$r['is_active'] === 1) ? 'Desactivar' : 'Activar' ?>
                             </a>

@@ -21,7 +21,7 @@
       $grupoSeleccionado = $grupos[array_search($_GET['grupo_id'], array_column($grupos, 'id_grupo'))] ?? null;
     ?>
     <?php if (!empty($grupoSeleccionado['icono'])): ?>
-      <img src="/mercedes/public/uploads/grupos/<?= htmlspecialchars($grupoSeleccionado['icono']) ?>" 
+      <img src="<?= BASE_PATH ?>/public/uploads/grupos/<?= htmlspecialchars($grupoSeleccionado['icono']) ?>"
            alt="<?= htmlspecialchars($grupoSeleccionado['nombre']) ?>" 
            class="icono-grupo-seleccionado">
     <?php endif; ?>
@@ -56,7 +56,7 @@
               <!-- Icono del grupo -->
               <td>
                 <!-- <?= htmlspecialchars($p['grupo_nombre']) ?> -->
-                <img src="/mercedes/public/uploads/grupos/<?= htmlspecialchars($p['grupo_icono']) ?>" 
+                <img src="<?= BASE_PATH ?>/public/uploads/grupos/<?= htmlspecialchars($p['grupo_icono']) ?>"
                     alt="<?= htmlspecialchars($p['grupo_nombre']) ?>" 
                     class="icono-grupo">                 
               </td>
@@ -98,7 +98,7 @@
             <tr>
                 <td>
                     <div class="col-empresa">
-                        <img src="/mercedes/public/uploads/grupos/<?= htmlspecialchars($data['grupo_icono']) ?>" 
+                        <img src="<?= BASE_PATH ?>/public/uploads/grupos/<?= htmlspecialchars($data['grupo_icono']) ?>"
                             alt="<?= htmlspecialchars($data['grupo_nombre']) ?>">
                         <span><?= htmlspecialchars($data['grupo_nombre']) ?></span>
                     </div>

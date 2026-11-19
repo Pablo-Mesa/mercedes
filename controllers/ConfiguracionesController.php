@@ -13,7 +13,7 @@ class ConfiguracionesController extends BaseController {
     public function __construct() {
         $this->startSession();
         if (!isset($_SESSION['user_id'])) {
-            $this->redirect('/mercedes/login');
+            $this->redirect(BASE_PATH . '/login');
         }
         $this->puntoModel = new PuntoControlModel();
         $this->requireRole(['admin']);

@@ -1,21 +1,88 @@
 <?php
 /**
  * config/Database.php
- * Conexión robusta a MySQL mediante PDO.
- * Si la base de datos 'template_mvc' aún no existe, se mantiene abierta
- * la conexión al servidor (sin seleccionar BD) para permitir que
- * config/setup.php la cree de forma automatizada.
+ * Conexión MySQL mediante PDO, configurable por entorno.
  */
 
 class Database
 {
-    private static string $host = '127.0.0.1';
-    private static string $dbName = 'mercedes';
-    private static string $user = 'root';
-    private static string $pass = '';
-    private static string $charset = 'utf8mb4';
-
     private static ?PDO $connection = null;
+
+    private static function isLocalEnvironment(): bool
+    {
+        $environment = strtolower((string)(getenv('MERCEDES_ENV') ?: ''));
+        $serverAddress = (string)($_SERVER['SERVER_ADDR'] ?? '');
+        $serverName = strtolower((string)($_SERVER['SERVER_NAME'] ?? ''));
+        $documentRoot = strtolower(str_replace('\\', '/', (string)($_SERVER['DOCUMENT_ROOT'] ?? '')));
+        $scriptFilename = strtolower(str_replace('\\', '/', (string)($_SERVER['SCRIPT_FILENAME'] ?? '')));
+        $isWamp = PHP_OS_FAMILY === 'Windows'
+            && $serverName === 'localhost'
+            && str_ends_with($documentRoot, '/wamp64/www')
+            && str_starts_with($scriptFilename, $documentRoot . '/');
+
+        return PHP_SAPI === 'cli'
+            || $environment === 'local'
+            || $isWamp
+            || (PHP_OS_FAMILY === 'Windows' && in_array($serverAddress, ['127.0.0.1', '::1'], true));
+    }
+
+    /**
+     * Usa variables de entorno cuando existen y, en su defecto, configuración
+     * privada del servidor o valores locales seguros para el entorno de desarrollo.
+     */
+    private static function getConfig(): array
+    {
+        $localConfigPath = __DIR__ . '/local.php';
+        $localConfig = is_file($localConfigPath) ? require $localConfigPath : [];
+        if (!is_array($localConfig)) {
+            throw new RuntimeException('La configuración local de la base de datos debe devolver un arreglo.');
+        }
+
+        $isLocalHost = self::isLocalEnvironment();
+
+        $config = [
+            'host' => $isLocalHost ? '127.0.0.1' : '',
+            'dbname' => $isLocalHost ? 'mercedes' : '',
+            'user' => $isLocalHost ? 'root' : '',
+            'pass' => '',
+            'charset' => 'utf8mb4',
+            'app_url' => $isLocalHost ? 'http://localhost' : '',
+            'ip_hmac_key' => '',
+        ];
+
+        $environmentNames = [
+            'host' => 'MERCEDES_DB_HOST',
+            'dbname' => 'MERCEDES_DB_NAME',
+            'user' => 'MERCEDES_DB_USER',
+            'pass' => 'MERCEDES_DB_PASSWORD',
+            'charset' => 'MERCEDES_DB_CHARSET',
+            'app_url' => 'MERCEDES_APP_URL',
+            'ip_hmac_key' => 'MERCEDES_IP_HMAC_KEY',
+        ];
+
+        foreach ($environmentNames as $key => $environmentName) {
+            $environmentValue = getenv($environmentName);
+            if ($environmentValue !== false) {
+                $config[$key] = $environmentValue;
+            } elseif (array_key_exists($key, $localConfig)) {
+                $config[$key] = $localConfig[$key];
+            }
+        }
+
+        foreach (['host', 'dbname', 'user'] as $requiredKey) {
+            if (!is_string($config[$requiredKey]) || $config[$requiredKey] === '') {
+                throw new RuntimeException('Configura host, nombre de base de datos y usuario en config/local.php o en el entorno.');
+            }
+        }
+
+        foreach (['host', 'dbname', 'user', 'pass', 'charset', 'app_url', 'ip_hmac_key'] as $key) {
+            if (!is_string($config[$key])) {
+                throw new RuntimeException('Los valores de configuración deben ser cadenas de texto.');
+            }
+        }
+
+        return $config;
+    }
 
     /**
      * Devuelve una conexión PDO ya apuntando a la base de datos del proyecto.
@@ -26,32 +93,27 @@ class Database
             return self::$connection;
         }
 
+        $config = self::getConfig();
         $options = [
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES   => false,
         ];
 
+        $dsn = 'mysql:host=' . $config['host'] . ';dbname=' . $config['dbname'] . ';charset=' . $config['charset'];
         try {
-            $dsn = 'mysql:host=' . self::$host . ';dbname=' . self::$dbName . ';charset=' . self::$charset;
-            self::$connection = new PDO($dsn, self::$user, self::$pass, $options);
+            self::$connection = new PDO($dsn, $config['user'], $config['pass'], $options);
         } catch (PDOException $e) {
-            // La base de datos aún no existe: nos conectamos al servidor sin dbname
-            // para que el instalador (config/setup.php) pueda crearla.
-            try {
-                $dsnServer = 'mysql:host=' . self::$host . ';charset=' . self::$charset;
-                self::$connection = new PDO($dsnServer, self::$user, self::$pass, $options);
-            } catch (PDOException $e2) {
-                die('Error crítico de conexión con el servidor MySQL: ' . htmlspecialchars($e2->getMessage()));
-            }
+            error_log('[Mercedes DB] ' . $e->getMessage());
+            throw new RuntimeException('No se pudo conectar con la base de datos. Verifica la configuración de este entorno.', 0, $e);
         }
 
         return self::$connection;
     }
 
     /**
-     * Fuerza una conexión "sin base de datos" al servidor MySQL.
-     * Utilizada exclusivamente por el instalador para crear la BD desde cero.
+     * Devuelve una conexión al servidor MySQL sin seleccionar una base.
+     * Se conserva para herramientas de instalación ejecutadas manualmente.
      */
     public static function getServerConnection(): PDO
     {
@@ -61,8 +123,9 @@ class Database
             PDO::ATTR_EMULATE_PREPARES   => false,
         ];
 
-        $dsn = 'mysql:host=' . self::$host . ';charset=' . self::$charset;
-        return new PDO($dsn, self::$user, self::$pass, $options);
+        $config = self::getConfig();
+        $dsn = 'mysql:host=' . $config['host'] . ';charset=' . $config['charset'];
+        return new PDO($dsn, $config['user'], $config['pass'], $options);
     }
 
     /**
@@ -75,6 +138,43 @@ class Database
 
     public static function getDbName(): string
     {
-        return self::$dbName;
+        return self::getConfig()['dbname'];
+    }
+
+    public static function getIpHmacKey(): string
+    {
+        $key = self::getConfig()['ip_hmac_key'];
+        if (!preg_match('/\A[a-f0-9]{64}\z/D', $key)) {
+            throw new RuntimeException(
+                'La clave HMAC de IP no está configurada correctamente.'
+            );
+        }
+
+        return $key;
+    }
+
+    public static function getAppUrl(): string
+    {
+        $config = self::getConfig();
+        $appUrl = rtrim($config['app_url'], '/');
+        $parts = parse_url($appUrl);
+        $isLocalUrl = is_array($parts)
+            && in_array(strtolower($parts['host'] ?? ''), ['localhost', '127.0.0.1', '::1'], true);
+        $isLocalEnvironment = self::isLocalEnvironment();
+
+        if (!is_array($parts)
+            || !isset($parts['scheme'], $parts['host'])
+            || !in_array($parts['scheme'], ['http', 'https'], true)
+            || isset($parts['user'])
+            || isset($parts['pass'])
+            || isset($parts['query'])
+            || isset($parts['fragment'])
+            || (isset($parts['path']) && !in_array($parts['path'], ['', '/'], true))
+            || ($parts['scheme'] === 'http' && (!$isLocalUrl || !$isLocalEnvironment))
+            || (!$isLocalEnvironment && ($isLocalUrl || $parts['scheme'] !== 'https'))) {
+            throw new RuntimeException('Configura una URL HTTPS válida en MERCEDES_APP_URL o config/local.php.');
+        }
+
+        return $appUrl;
     }
 }

@@ -15,7 +15,7 @@
         <?php endif; ?>
     </div>
     <?php if ($encabezado['is_active']): ?>
-      <a href="/mercedes/tarifas/nuevo_detalle&id_encabezado=<?= $encabezado['id_encabezado_tarifa'] ?>" 
+      <a href="<?= BASE_PATH ?>/tarifas/nuevo_detalle&id_encabezado=<?= $encabezado['id_encabezado_tarifa'] ?>"
         class="btn btn-primary">
         + Agregar nuevo detalle
       </a>
@@ -50,7 +50,7 @@
           </td>
           <td>
             <?php if ($encabezado['is_active']): ?>
-              <a href="/mercedes/tarifas/detalle_estado?id=<?= (int)$detalle['id'] ?>&id_encabezado=<?= (int)$encabezado['id_encabezado_tarifa'] ?>"
+              <a href="<?= BASE_PATH ?>/tarifas/detalle_estado?id=<?= (int)$detalle['id'] ?>&id_encabezado=<?= (int)$encabezado['id_encabezado_tarifa'] ?>"
                 class="btn btn-small <?= ((int)$detalle['disponible'] === 1) ? 'btn-danger-outline' : 'btn-success-outline' ?>">
                 <?= ((int)$detalle['disponible'] === 1) ? 'Desactivar' : 'Activar' ?>
               </a>
@@ -65,5 +65,5 @@
 </div>
 
 <div class="form-actions">
-    <a href="/mercedes/tarifas" class="btn btn-small">Volver</a>
+    <a href="<?= BASE_PATH ?>/tarifas" class="btn btn-small">Volver</a>
 </div>

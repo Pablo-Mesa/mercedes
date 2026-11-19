@@ -86,7 +86,7 @@
       <?php foreach ($produccionesPorDia as $dia): ?>
         <tr>
           <td>
-           <img src="/mercedes/public/uploads/grupos/<?= htmlspecialchars($dia['grupo_icono']) ?>" 
+           <img src="<?= BASE_PATH ?>/public/uploads/grupos/<?= htmlspecialchars($dia['grupo_icono']) ?>"
                  alt="icono grupo" style="height:20px;vertical-align:middle;margin-right:5px;">            
             <?= htmlspecialchars($dia['grupo_nombre']) ?>            
           </td>
@@ -119,7 +119,7 @@
             $grupoData = array_filter($grupos, fn($g) => $g['id_grupo'] == $grupoSeleccionado);
             $grupoData = reset($grupoData);
           ?>
-          <img src="/mercedes/public/uploads/grupos/<?= htmlspecialchars($grupoData['icono']) ?>" 
+          <img src="<?= BASE_PATH ?>/public/uploads/grupos/<?= htmlspecialchars($grupoData['icono']) ?>"
               alt="icono grupo" class="badge-icon">
           <?= htmlspecialchars($grupoData['nombre']) ?>
         </span>

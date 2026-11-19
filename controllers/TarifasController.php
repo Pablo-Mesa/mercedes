@@ -15,7 +15,7 @@ class TarifasController extends BaseController
     public function __construct(){
         $this->startSession();
         if (!isset($_SESSION['user_id'])) {
-            $this->redirect('/mercedes/login');
+            $this->redirect(BASE_PATH . '/login');
         }
         $this->encabezadoModel = new EncabezadoTarifaModel();
         $this->detalleModel = new DetalleTarifaModel();
@@ -38,7 +38,7 @@ class TarifasController extends BaseController
         if ($id) {
             $encabezado = $this->encabezadoModel->findById($id);
         }
-        $formAction = '/mercedes/tarifas/crear';
+        $formAction = BASE_PATH . '/tarifas/crear';
         $view = 'tarifas/form';    
         require __DIR__ . '/../views/layouts/main.php';
     }
@@ -52,7 +52,7 @@ class TarifasController extends BaseController
         ];
         $this->encabezadoModel->create($data);
         $_SESSION['success'] = 'Tarifa creada correctamente.';
-        $this->redirect('/mercedes/tarifas');
+        $this->redirect(BASE_PATH . '/tarifas');
     }
 
     // Actualizar encabezado existente
@@ -67,7 +67,7 @@ class TarifasController extends BaseController
             $this->encabezadoModel->update($id, $data);
         }
         $_SESSION['success'] = 'Tarifa actualizada correctamente.';
-        $this->redirect('/mercedes/tarifas');
+        $this->redirect(BASE_PATH . '/tarifas');
     }
 
         // Toggle habilitar/deshabilitar encabezado
@@ -78,7 +78,7 @@ class TarifasController extends BaseController
             $this->encabezadoModel->setActiveEncabezado($id);
             $_SESSION['success'] = 'Estado de tarifa actualizado correctamente.';
         }
-        $this->redirect('/mercedes/tarifas');
+        $this->redirect(BASE_PATH . '/tarifas');
     }
 
     // Eliminar encabezado
@@ -89,7 +89,7 @@ class TarifasController extends BaseController
             $this->encabezadoModel->delete($id_encabezado);
             $_SESSION['success'] = 'Tarifa eliminada correctamente.';
         }
-        $this->redirect('/mercedes/tarifas');
+        $this->redirect(BASE_PATH . '/tarifas');
     }
 
     // Mostrar detalles asociados a un encabezado
@@ -99,7 +99,7 @@ class TarifasController extends BaseController
         $encabezado = $this->encabezadoModel->findById($id_encabezado);
         $detalles = $this->detalleModel->getByEncabezado($id_encabezado);     
         
-        $formAction = '/mercedes/tarifas/detalles&id=' . $id_encabezado;
+        $formAction = BASE_PATH . '/tarifas/detalles&id=' . $id_encabezado;
         $view = 'tarifas/detalles';   // este es el archivo físico dentro de views/tarifas
         
         require __DIR__ . '/../views/layouts/main.php';

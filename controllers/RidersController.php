@@ -15,7 +15,7 @@ class RidersController extends BaseController {
     public function __construct() {
         $this->startSession();
         if (!isset($_SESSION['user_id'])) {
-            $this->redirect('/mercedes/login');
+            $this->redirect(BASE_PATH . '/login');
         }
         $this->userModel = new User();
         $this->requireRole(['admin', 'operaciones']);
@@ -32,7 +32,7 @@ class RidersController extends BaseController {
     /** Formulario de creación */
     public function create(): void {
         $rider = null;
-        $formAction = '/mercedes/riders/crear';
+        $formAction = BASE_PATH . '/riders/crear';
         $grupos = (new GruposModel())->getAll();
         $gruposAsignados = [];
         $view = 'riders/form';
@@ -45,10 +45,10 @@ class RidersController extends BaseController {
         $rider = $this->userModel->getRiderById($id);
         if (!$rider) {
             $_SESSION['error'] = 'El rider solicitado no existe.';
-            header('Location: /mercedes/riders');
+            header('Location: ' . BASE_PATH . '/riders');
             exit;
         }
-        $formAction = '/mercedes/riders/editar?id=' . $id;
+        $formAction = BASE_PATH . '/riders/editar?id=' . $id;
         $grupos = (new GruposModel())->getAll();
         $gruposAsignados = $this->userModel->getGroupsByRider($id);
         $view = 'riders/form';
@@ -66,10 +66,10 @@ class RidersController extends BaseController {
             }
 
             $_SESSION['success'] = 'Rider creado correctamente.';
-            $this->redirect('/mercedes/riders');
+            $this->redirect(BASE_PATH . '/riders');
         } catch (Exception $e) {
             $_SESSION['error'] = $e->getMessage();
-            $this->redirect('/mercedes/riders/crear');
+            $this->redirect(BASE_PATH . '/riders/crear');
         }
     }
 
@@ -78,16 +78,22 @@ class RidersController extends BaseController {
         $id = (int)($_GET['id'] ?? $_POST['id'] ?? 0);
         if (!$id || !$this->userModel->getRiderById($id)) {
             $_SESSION['error'] = 'El rider solicitado no existe.';
-            header('Location: /mercedes/riders');
+            header('Location: ' . BASE_PATH . '/riders');
             exit;
         }
-        $data = $this->procesarDatos();
+        try {
+            $data = $this->procesarDatos();
+        } catch (InvalidArgumentException | RuntimeException $e) {
+            $_SESSION['error'] = $e->getMessage();
+            $this->redirect(BASE_PATH . '/riders/editar?id=' . $id);
+        }
+
         $this->userModel->updateRider($id, $data);
         if (!empty($_POST['grupos'])) {
             $this->userModel->assignRiderToGroups($id, $_POST['grupos']);
         }
         $_SESSION['success'] = 'Rider actualizado correctamente.';
-        header('Location: /mercedes/riders');
+        header('Location: ' . BASE_PATH . '/riders');
         exit;
     }
 
@@ -98,7 +104,7 @@ class RidersController extends BaseController {
             $this->userModel->toggleRiderStatus($id);
             $_SESSION['success'] = 'Estado de rider actualizado correctamente.';
         }
-        header('Location: /mercedes/riders');
+        header('Location: ' . BASE_PATH . '/riders');
         exit;
     }
 
@@ -107,7 +113,7 @@ class RidersController extends BaseController {
         $id = (int)($_GET['id'] ?? $_POST['id'] ?? 0);
         $this->userModel->deleteRider($id);
         $_SESSION['success'] = 'Rider eliminado correctamente.';
-        header('Location: /mercedes/riders');
+        header('Location: ' . BASE_PATH . '/riders');
         exit;
     }
 
@@ -139,20 +145,20 @@ class RidersController extends BaseController {
 
         if (!$rider) {
             $_SESSION['error'] = 'Rider no encontrado.';
-            $this->redirect('/mercedes/riders');
+            $this->redirect(BASE_PATH . '/riders');
             return;
         }
 
         if (empty($rider['phone'])) {
             $_SESSION['error'] = 'El rider no tiene teléfono registrado.';
-            $this->redirect('/mercedes/riders');
+            $this->redirect(BASE_PATH . '/riders');
             return;
         }
 
         // Impedir generar otro token si ya activó su cuenta
         if (!empty($rider['activated_at'])) {
             $_SESSION['error'] = 'Este Rider ya activó su cuenta. No necesita otro enlace.';
-            $this->redirect('/mercedes/riders');
+            $this->redirect(BASE_PATH . '/riders');
             return;
         }
 
@@ -162,7 +168,7 @@ class RidersController extends BaseController {
 
         $this->userModel->setActivationToken($id, $tokenHash, $expiresAt);
 
-        $activationLink = 'http://192.168.100.108/mercedes/activar-rider?token=' . urlencode($token);
+        $activationLink = Database::getAppUrl() . BASE_PATH . '/activar-rider?token=' . urlencode($token);
 
         // Define el mensaje con saltos de línea normales sin concatenar con puntos innecesarios
         $mensaje = "Hola {$rider['name']}.\n\n"

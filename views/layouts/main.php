@@ -39,10 +39,11 @@ $adminOrOperaciones = in_array($currentRole, ['admin', 'operaciones'], true);
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Panel Administrativo</title>
-        <link rel="icon" type="image/svg+xml" href="/mercedes/public/images/icono_solver_nobg.png">
-        <link rel="stylesheet" href="/mercedes/public/css/style.css">
-        <link rel="stylesheet" href="/mercedes/public/css/css_cubo.css">
-        <script src="/mercedes/public/js/tool-kit-v002.js"></script>                        
+        <link rel="icon" type="image/svg+xml" href="<?= BASE_PATH ?>/public/images/icono_solver_nobg.png">
+        <link rel="stylesheet" href="<?= BASE_PATH ?>/public/css/style.css">
+        <link rel="stylesheet" href="<?= BASE_PATH ?>/public/css/css_cubo.css">
+        <script>window.APP_BASE_PATH = <?= json_encode(BASE_PATH, JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;</script>
+        <script src="<?= BASE_PATH ?>/public/js/tool-kit-v002.js"></script>
         <!-- Copia esto dentro de tu <head> -->
         <link rel="stylesheet" href="https://cloudflare.com">                
     </head>
@@ -61,7 +62,7 @@ $adminOrOperaciones = in_array($currentRole, ['admin', 'operaciones'], true);
                 <nav class="sidebar-nav">                    
                     <!-- Dashboard: solo admin -->
                     <?php if ($cuadernoActivo && $esAdmin): ?>
-                        <a href="/mercedes/dashboard" class="nav-item ">
+                        <a href="<?= BASE_PATH ?>/dashboard" class="nav-item ">
                             <!-- <?= ($view === 'dashboard') ? 'active' : '' ?> --> 
                             <span class="img-nav-icon" >
                                 <?= render_icon('menu', 'nav-icon') ?>
@@ -74,7 +75,7 @@ $adminOrOperaciones = in_array($currentRole, ['admin', 'operaciones'], true);
                     <!-- Producción: Cuaderno para admin + operaciones -->
                     <?php if ($cuadernoActivo && $adminOrOperaciones): ?>
                         <?php $hoy = date('Y-m-d'); ?>
-                        <a href="/mercedes/produccion?fecha=<?= $hoy ?>" 
+                        <a href="<?= BASE_PATH ?>/produccion?fecha=<?= $hoy ?>"
                             class="nav-item <?= ($view === 'produccion') ? 'active' : '' ?>">
                             <span class="img-nav-icon" >
                                 <?= render_icon('produccion', 'nav-icon') ?>
@@ -84,7 +85,7 @@ $adminOrOperaciones = in_array($currentRole, ['admin', 'operaciones'], true);
 
                     <!-- Llegadas: Control de Asistencias para admin + operaciones -->
                     <?php if ($asistenciasActivas && $adminOrOperaciones): ?>
-                        <a href="/mercedes/asistencias" 
+                        <a href="<?= BASE_PATH ?>/asistencias"
                             class="nav-item <?= ($view === 'asistencias/index') ? 'active' : '' ?>">
                             <span class="img-nav-icon" >
                                 <?= render_icon('llegada', 'nav-icon') ?>
@@ -94,7 +95,7 @@ $adminOrOperaciones = in_array($currentRole, ['admin', 'operaciones'], true);
 
                     <!-- Riders: disponible desde cualquiera de los dos módulos -->
                     <?php if (($cuadernoActivo || $asistenciasActivas) && $adminOrOperaciones): ?>
-                        <a href="/mercedes/riders" 
+                        <a href="<?= BASE_PATH ?>/riders"
                             class="nav-item <?= ($view === 'riders/index' || $view === 'riders/form') ? 'active' : '' ?>">
                             <span class="img-nav-icon" >
                                 <?= render_icon('riders', 'nav-icon') ?>
@@ -105,7 +106,7 @@ $adminOrOperaciones = in_array($currentRole, ['admin', 'operaciones'], true);
 
                     <!-- Punto de Control: Control de Asistencias, solo admin -->
                     <?php if ($asistenciasActivas && $esAdmin): ?>
-                        <a href="/mercedes/punto-control" 
+                        <a href="<?= BASE_PATH ?>/punto-control"
                             class="nav-item <?= ($view === 'configuraciones/puntodecontrol') ? 'active' : '' ?>">
                             <span class="img-nav-icon" >
                                 <?= render_icon('puntodecontrol', 'nav-icon') ?>
@@ -115,19 +116,19 @@ $adminOrOperaciones = in_array($currentRole, ['admin', 'operaciones'], true);
 
                     <!-- Configuraciones de Cuaderno: solo admin -->
                     <?php if ($cuadernoActivo && $esAdmin): ?>
-                        <a href="/mercedes/grupos" 
+                        <a href="<?= BASE_PATH ?>/grupos"
                             class="nav-item <?= ($view === 'grupos/index' || $view === 'grupos/form') ? 'active' : '' ?>">
                             <span class="img-nav-icon" >
                                 <?= render_icon('empresas', 'nav-icon') ?>
                             </span> EMPRESAS
                         </a>
-                        <a href="/mercedes/turnos" 
+                        <a href="<?= BASE_PATH ?>/turnos"
                             class="nav-item <?= ($view === 'turnos/index' || $view === 'turnos/form') ? 'active' : '' ?>">
                             <span class="img-nav-icon" >
                                 <?= render_icon('turnos', 'nav-icon') ?>
                             </span> TURNOS
                         </a>
-                        <a href="/mercedes/tarifas" 
+                        <a href="<?= BASE_PATH ?>/tarifas"
                             class="nav-item <?= ($view === 'tarifas/index' || $view === 'tarifas/form') ? 'active' : '' ?>">
                             <span class="img-nav-icon" >
                                 <?= render_icon('tarifas', 'nav-icon') ?>
@@ -139,7 +140,7 @@ $adminOrOperaciones = in_array($currentRole, ['admin', 'operaciones'], true);
                     <?php if ($_SESSION['user_role'] === 'rider'): ?>
                         <?php $hoy = date('Y-m-d'); ?>
                         <?php if ($cuadernoActivo): ?>
-                        <a href="/mercedes/rider_produccion?fecha=<?= $hoy ?>" 
+                        <a href="<?= BASE_PATH ?>/rider_produccion?fecha=<?= $hoy ?>"
                             class="nav-item <?= ($view === 'rider_produccion/index' || $view === 'rider_produccion/detalle') ? 'active' : '' ?>">
                             <span class="img-nav-icon" >
                                 <?= render_icon('produccion', 'nav-icon') ?>
@@ -147,7 +148,7 @@ $adminOrOperaciones = in_array($currentRole, ['admin', 'operaciones'], true);
                         </a>
                         <?php endif; ?>
                         <?php if ($asistenciasActivas): ?>
-                        <a href="/mercedes/rider_asistencia?fecha=<?= $hoy ?>" 
+                        <a href="<?= BASE_PATH ?>/rider_asistencia?fecha=<?= $hoy ?>"
                             class="nav-item <?= ($view === 'rider_asistencia/index' || $view === 'rider_asistencia/form') ? 'active' : '' ?>">
                             <span class="img-nav-icon" >
                                 <?= render_icon('llegada', 'nav-icon') ?>
@@ -159,7 +160,7 @@ $adminOrOperaciones = in_array($currentRole, ['admin', 'operaciones'], true);
 
                     <!-- Producción de Riders: solo rol invitado -->
                     <?php if ($cuadernoActivo && $_SESSION['user_role'] === 'invitado'): ?>
-                        <a href="/mercedes/invitados" 
+                        <a href="<?= BASE_PATH ?>/invitados"
                             class="nav-item <?= ($view === 'invitados/index') ? 'active' : '' ?>">
                             <span class="img-nav-icon">
                                 <?= render_icon('produccion', 'nav-icon') ?>
@@ -180,17 +181,17 @@ $adminOrOperaciones = in_array($currentRole, ['admin', 'operaciones'], true);
                         <div class="config-dropdown" id="configDropdown">
                         <!-- Configuraciones y Usuarios: solo admin -->
                         <?php if ($_SESSION['user_role'] === 'admin'): ?>
-                            <a href="/mercedes/usuarios" class="value">
+                            <a href="<?= BASE_PATH ?>/usuarios" class="value">
                             <?= render_icon('user', 'nav-icon') ?> Usuarios
                             </a>
-                            <a href="/mercedes/herramientas" class="value">
+                            <a href="<?= BASE_PATH ?>/herramientas" class="value">
                             <?= render_icon('tools', 'nav-icon') ?> Herramientas
                             </a>
                         <?php endif; ?>                            
-                        <a href="/mercedes/aboutdev" class="value">
+                        <a href="<?= BASE_PATH ?>/aboutdev" class="value">
                             <?= render_icon('dev', 'nav-icon') ?> About Dev
                         </a>
-                        <a href="/mercedes/logout" class="value">
+                        <a href="<?= BASE_PATH ?>/logout" class="value">
                             <?= render_icon('logout', 'nav-icon') ?> Cerrar sesión
                         </a>
                         </div>
@@ -283,8 +284,8 @@ $adminOrOperaciones = in_array($currentRole, ['admin', 'operaciones'], true);
         <modal-confirmacion id="modal-global"></modal-confirmacion>
 
         <!-- llamar al javascript principal -->
-        <script src="/mercedes/public/js/main.js"></script>
-        <script src="/mercedes/public/js/loader.js"></script>
+        <script src="<?= BASE_PATH ?>/public/js/main.js"></script>
+        <script src="<?= BASE_PATH ?>/public/js/loader.js"></script>
         <!-- dibujar icono de la app -->
         <script>
             // Dibujar cubo en el layout principal
@@ -296,7 +297,7 @@ $adminOrOperaciones = in_array($currentRole, ['admin', 'operaciones'], true);
             <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
             <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
             <!-- JS específico de Punto de Control -->
-            <script src="/mercedes/public/js/puntodecontrol.js"></script>
+            <script src="<?= BASE_PATH ?>/public/js/puntodecontrol.js"></script>
         <?php endif; ?>
     </body>
 </html>

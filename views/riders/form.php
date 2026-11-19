@@ -57,7 +57,7 @@ $isEdit = !empty($rider);
             <label for="foto_perfil">Foto de perfil</label>
             <input type="file" name="foto_perfil" id="foto_perfil" class="form-control" accept="image/*">
             <img id="preview" 
-                 src="/mercedes/public/uploads/riders/<?= !empty($rider['foto_perfil'])
+                 src="<?= BASE_PATH ?>/public/uploads/riders/<?= !empty($rider['foto_perfil'])
                      ? htmlspecialchars($rider['foto_perfil'])
                      : 'default.png' ?>" 
                  alt="Vista previa" 
@@ -86,7 +86,7 @@ $isEdit = !empty($rider);
         </div>
 
         <div class="form-actions">
-            <a href="/mercedes/riders" class="btn btn-outline">Cancelar</a>
+            <a href="<?= BASE_PATH ?>/riders" class="btn btn-outline">Cancelar</a>
             <button type="submit" class="btn btn-primary"><?= $isEdit ? 'Guardar cambios' : 'Crear Rider' ?></button>
             <?php if ($isEdit): ?>
                 <button type="submit" name="reset_foto" value="1" class="btn btn-warning">

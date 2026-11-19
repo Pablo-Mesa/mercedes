@@ -14,7 +14,7 @@ class TurnosController extends BaseController
     public function __construct(){
         $this->startSession();
         if (!isset($_SESSION['user_id'])) {
-            $this->redirect('/mercedes/login');
+            $this->redirect(BASE_PATH . '/login');
         }
         $this->turnoModel = new TurnoModel();
         $this->grupoModel = new GruposModel();
@@ -82,7 +82,7 @@ class TurnosController extends BaseController
 
             if (move_uploaded_file($_FILES['icono']['tmp_name'], $targetPath)) {
                 // Guardar ruta pública en BD
-                $data['url_icono'] = '/mercedes/public/assets/icons/' . $fileName;
+                $data['url_icono'] = BASE_PATH . '/public/assets/icons/' . $fileName;
             }
         } else {
             // Si no se subió archivo, usar el valor del campo texto (opcional)
@@ -90,7 +90,7 @@ class TurnosController extends BaseController
         }
 
         $this->turnoModel->insert($data);
-        header("Location: /mercedes/turnos?id=" . $data['id_grupo']);
+        header("Location: " . BASE_PATH . "/turnos?id=" . $data['id_grupo']);
         exit;
     }
 
@@ -103,7 +103,7 @@ class TurnosController extends BaseController
         $turno = $this->turnoModel->getById($id);
 
         if (!$turno) {
-            $this->redirect('/mercedes/turnos');
+            $this->redirect(BASE_PATH . '/turnos');
             return;
         }
 
@@ -131,7 +131,7 @@ class TurnosController extends BaseController
             $targetPath = $uploadDir . $fileName;
 
             if (move_uploaded_file($_FILES['icono']['tmp_name'], $targetPath)) {
-                $data['url_icono'] = '/mercedes/public/assets/icons/' . $fileName;
+                $data['url_icono'] = BASE_PATH . '/public/assets/icons/' . $fileName;
             }
         } else {
             // Mantener el icono actual si no se subió uno nuevo
@@ -139,7 +139,7 @@ class TurnosController extends BaseController
         }
 
         $this->turnoModel->update($id, $data);
-        header("Location: /mercedes/turnos?id=" . $data['id_grupo']);
+        header("Location: " . BASE_PATH . "/turnos?id=" . $data['id_grupo']);
         exit;
     }
 
@@ -153,7 +153,7 @@ class TurnosController extends BaseController
 
         if ($turno) {
             $this->turnoModel->delete($id);
-            header("Location: /mercedes/turnos?id=" . $turno['id_grupo']);
+            header("Location: " . BASE_PATH . "/turnos?id=" . $turno['id_grupo']);
             exit;
         }
     }
@@ -167,7 +167,7 @@ class TurnosController extends BaseController
             $this->turnoModel->toggleTurnoStatus($id);
             $_SESSION['success'] = 'Estado de turno actualizado correctamente.';
         }
-        header("Location: /mercedes/turnos?id=" . $turno['id_grupo']);
+        header("Location: " . BASE_PATH . "/turnos?id=" . $turno['id_grupo']);
         exit;
     }
 

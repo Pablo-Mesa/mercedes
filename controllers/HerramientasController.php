@@ -16,7 +16,7 @@ class HerramientasController extends BaseController {
     public function __construct() {
         $this->startSession();
         if (!isset($_SESSION['user_id'])) {
-            $this->redirect('/mercedes/login');
+            $this->redirect(BASE_PATH . '/login');
         }
         // Solo admin puede acceder
         $this->requireRole(['admin']);
@@ -59,12 +59,12 @@ class HerramientasController extends BaseController {
                 $this->json([
                     'success' => false,
                     'message' => $message,
-                    'redirect' => '/mercedes/punto-control',
+                    'redirect' => BASE_PATH . '/punto-control',
                 ], 409);
             }
 
             $_SESSION['error'] = $message;
-            $this->redirect('/mercedes/punto-control');
+            $this->redirect(BASE_PATH . '/punto-control');
         }
 
         $this->settings->set(self::CUADERNO_KEY, $cuadernoActivo ? '1' : '0', 'Activa o desactiva globalmente la herramienta Cuaderno.');
@@ -82,7 +82,7 @@ class HerramientasController extends BaseController {
 
         // Flujo clásico (fallback)
         $_SESSION['success'] = 'Selección de herramientas actualizada.';
-        $this->redirect('/mercedes/herramientas');
+        $this->redirect(BASE_PATH . '/herramientas');
     }
 
 }

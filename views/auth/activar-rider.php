@@ -7,9 +7,9 @@
  * - $tokenOriginal (string con el token de activación)
  */
 ?>
-<link rel="stylesheet" href="/mercedes/public/css/style.css">
-<link rel="stylesheet" href="/mercedes/public/css/css_cubo.css">
-<script src="/mercedes/public/js/tool-kit-v002.js"></script>
+<link rel="stylesheet" href="<?= BASE_PATH ?>/public/css/style.css">
+<link rel="stylesheet" href="<?= BASE_PATH ?>/public/css/css_cubo.css">
+<script src="<?= BASE_PATH ?>/public/js/tool-kit-v002.js"></script>
 
 <div class="w-full align-start">
     <div id="contenedorCuboLogin"></div>
@@ -35,7 +35,7 @@
         </div>
     <?php endif; ?>
 
-    <form method="POST" action="/mercedes/activar-rider/store">
+    <form method="POST" action="<?= BASE_PATH ?>/activar-rider/store">
         <div class="form-group">
             <label>Nombre</label>
             <input type="text" value="<?= htmlspecialchars($usuario['name'] ?? ''); ?>" disabled class="form-control">

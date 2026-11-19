@@ -3,7 +3,7 @@
 </div>
 
 <div class="panel form-panel-medium">
-    <form action="/mercedes/grupos/guardar_tarifas?id=<?= $grupo['id_grupo'] ?>" method="post">
+    <form action="<?= BASE_PATH ?>/grupos/guardar_tarifas?id=<?= $grupo['id_grupo'] ?>" method="post">
         <?php foreach ($encabezados as $enc): ?>
             <div class="form-check custom-check">
                 <input type="checkbox" name="encabezados[]" value="<?= $enc['id_encabezado_tarifa'] ?>"
@@ -20,7 +20,7 @@
 
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">Guardar</button>
-            <a href="/mercedes/grupos" class="btn btn-secondary">Cancelar</a>
+            <a href="<?= BASE_PATH ?>/grupos" class="btn btn-secondary">Cancelar</a>
         </div>
     </form>
 </div>

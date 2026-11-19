@@ -11,7 +11,7 @@ class InvitadosController extends BaseController {
 
         // Validar login
         if (!isset($_SESSION['user_id'])) {
-            $this->redirect('/mercedes/login');
+            $this->redirect(BASE_PATH . '/login');
         }
 
         // Validar rol permitido

@@ -17,7 +17,7 @@ class UserController extends BaseController
         $this->startSession();
 
         if (!isset($_SESSION['user_id'])) {
-            $this->redirect('/mercedes/login');
+            $this->redirect(BASE_PATH . '/login');
         }
 
         $this->userModel = new User();
@@ -50,7 +50,7 @@ class UserController extends BaseController
         $grupoModel = new GruposModel();
         $grupos = $grupoModel->getAll();
 
-        $formAction = '/mercedes/usuarios/crear';
+        $formAction = BASE_PATH . '/usuarios/crear';
         $view = 'usuarios/form';    
         require __DIR__ . '/../views/layouts/main.php';
     }
@@ -64,23 +64,23 @@ class UserController extends BaseController
 
         if (empty($data['password'])) {
             $_SESSION['error'] = 'La contraseña es obligatoria al crear un usuario.';
-            $this->redirect('/mercedes/usuarios/crear');
+            $this->redirect(BASE_PATH . '/usuarios/crear');
         }
 
         if ($data['role_id'] == $operacionesRoleId && empty($data['grupo_id'])) {
             $_SESSION['error'] = 'Debe asignar un grupo al usuario de operaciones.';
-            $this->redirect('/mercedes/usuarios/crear');
+            $this->redirect(BASE_PATH . '/usuarios/crear');
         }
 
         $allowedRoles = [1,2,4];
         if (!in_array($data['role_id'], $allowedRoles, true)) {
             $_SESSION['error'] = 'Rol inválido. Solo se permiten Admin, Operaciones e Invitados.';
-            $this->redirect('/mercedes/usuarios/crear');
+            $this->redirect(BASE_PATH . '/usuarios/crear');
         }
 
         $this->userModel->create($data);
         $_SESSION['success'] = 'Usuario creado correctamente.';
-        $this->redirect('/mercedes/usuarios');
+        $this->redirect(BASE_PATH . '/usuarios');
     }
 
     /**
@@ -93,7 +93,7 @@ class UserController extends BaseController
 
         if (!$usuario) {
             $_SESSION['error'] = 'El usuario solicitado no existe.';
-            header('Location: /mercedes/usuarios');
+            header('Location: ' . BASE_PATH . '/usuarios');
             exit;
         }
 
@@ -104,7 +104,7 @@ class UserController extends BaseController
         $grupoModel = new GruposModel();
         $grupos = $grupoModel->getAll();
 
-        $formAction = '/mercedes/usuarios/editar?id=' . $id;
+        $formAction = BASE_PATH . '/usuarios/editar?id=' . $id;
         $view = 'usuarios/form';
         require __DIR__ . '/../views/layouts/main.php';
     }
@@ -118,26 +118,26 @@ class UserController extends BaseController
 
         if (!$id || !$this->userModel->findById($id)) {
             $_SESSION['error'] = 'El usuario solicitado no existe.';
-            header('Location: /mercedes/usuarios');
+            header('Location: ' . BASE_PATH . '/usuarios');
             exit;
         }
 
         if ($data['role_id'] === $operacionesRoleId && empty($data['grupo_id'])) {
             $_SESSION['error'] = 'Debe asignar un grupo al usuario de operaciones.';
-            $this->redirect('/mercedes/usuarios/crear');
+            $this->redirect(BASE_PATH . '/usuarios/crear');
         }
 
         $allowedRoles = [1,2,4];
         if (!in_array($data['role_id'], $allowedRoles, true)) {
             $_SESSION['error'] = 'Rol inválido. Solo se permiten Admin, Operaciones e Invitados.';
-            $this->redirect('/mercedes/usuarios/crear');
+            $this->redirect(BASE_PATH . '/usuarios/crear');
         }
 
         $data = $this->collectFormData();
         $this->userModel->update($id, $data);
 
         $_SESSION['success'] = 'Usuario actualizado correctamente.';
-        $this->redirect('/mercedes/usuarios');
+        $this->redirect(BASE_PATH . '/usuarios');
     }
 
     /**
@@ -152,7 +152,7 @@ class UserController extends BaseController
             $_SESSION['success'] = 'Estado del usuario actualizado correctamente.';
         }
 
-        header('Location: /mercedes/usuarios');
+        header('Location: ' . BASE_PATH . '/usuarios');
         exit;
     }
 

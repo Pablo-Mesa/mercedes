@@ -3,7 +3,7 @@
         
         <div class="panel-header d-flex align-bottom">
             <?php if (!empty($g['icono'])): ?>
-                <img src="/mercedes/public/uploads/grupos/<?= htmlspecialchars($g['icono']) ?>" 
+                <img src="<?= BASE_PATH ?>/public/uploads/grupos/<?= htmlspecialchars($g['icono']) ?>"
                      alt="Icono grupo" class="avatar-sm mr-2">
             <?php endif; ?>
             <h3><?= htmlspecialchars($g['nombre']) ?></h3>
