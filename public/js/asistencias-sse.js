@@ -5,6 +5,23 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (!tabla || !tbody) return;
 
+    const fechaTabla = tabla.dataset.fecha || '';
+
+     // Obtener fecha de hoy en formato YYYY-MM-DD (hora local)
+    const hoyObj = new Date();
+    const anio = hoyObj.getFullYear();
+    const mes = String(hoyObj.getMonth() + 1).padStart(2, '0');
+    const dia = String(hoyObj.getDate()).padStart(2, '0');
+    const fechaHoy = `${anio}-${mes}-${dia}`;
+
+    // Si el admin está viendo un historial de otro día, NO abrimos stream SSE
+    if (fechaTabla !== fechaHoy) {
+        return;
+    }
+
+    // Prepara el audio con el primer clic/tecla en la pantalla
+    NotificadorAudio.inicializar('alerta-audio-bloqueado');
+
     const ultimoId = tabla.dataset.ultimoId || 0;
     const fecha = tabla.dataset.fecha || '';
     const streamUrl = `${tabla.dataset.streamUrl}?ultimo_id=${ultimoId}&fecha=${encodeURIComponent(fecha)}`;
@@ -62,6 +79,8 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
 
         tbody.prepend(tr);
+        // Disparar el bip justo cuando se actualiza la tabla
+        NotificadorAudio.bip();
     });
 
     window.addEventListener('beforeunload', () => {

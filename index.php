@@ -327,6 +327,12 @@ switch ($url) {
         $produccionController->delete();
         break;
     
+    case 'produccion/pdf':
+        $produccionController = new ProduccionController();
+        $produccionController->exportarPdfDiario();
+        break;
+
+        
         case 'punto-control':
         $configController = new ConfiguracionesController();
         $configController->puntodecontrol();

@@ -16,12 +16,15 @@ class AsistenciaStreamService
      */
     public function escucharNuevasLlegadas(int $ultimoId, string $fecha): void
     {
-        while (true) {
+
+        $tiempoInicio = time();
+        $duracionMaxima = 25; // Segundos antes de cerrar limpiamente para que el navegador reconecte
+
+        while ((time() - $tiempoInicio) < $duracionMaxima) {
             if (connection_aborted()) {
                 break;
             }
 
-            // Asegúrate de pasar ambos parámetros aquí:
             $nuevasLlegadas = $this->repository->obtenerLlegadasPosterioresA($ultimoId, $fecha);
 
             if (!empty($nuevasLlegadas)) {

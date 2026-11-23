@@ -7,6 +7,7 @@ require_once __DIR__ . '/../models/GruposModel.php';
 require_once __DIR__ . '/BaseController.php';
 require_once __DIR__ . '/../helpers/TurnoHelper.php';
 require_once __DIR__ . '/../app/services/ProduccionService.php';
+require_once __DIR__ . '/../app/services/PdfService.php';
 
 class ProduccionController extends BaseController
 {
@@ -38,7 +39,7 @@ class ProduccionController extends BaseController
         $data = $this->buildIndexData();
         $this->renderLayout($data['view'], $data);
     }
-
+    
     public function store(): void
     {
         $payload = [
@@ -245,6 +246,39 @@ class ProduccionController extends BaseController
         $data['resumenPorGrupo'] = $resumenPorGrupo;
 
         return $data;
+    }
+
+    public function exportarPdfDiario(): void
+    {
+        $fecha = $_GET['fecha'] ?? date('Y-m-d');
+
+        // 1. Reutilizas el servicio que ya creaste en el __construct()
+        $producciones = $this->produccionService->getProduccionPorFecha($fecha);
+        $resumenGrupos = $this->produccionService->getResumenPorGrupo($producciones);
+
+        // 2. Preparas los datos y el logo
+        $pdfService = new PdfService();
+
+        $datos = [
+            'fecha'         => $fecha,
+            'logoBase64'    => $pdfService->convertirImagenABase64('images/logo.png'), // Ajusta el nombre si tu logo se llama distinto en public/images/
+            'resumenGrupos' => $resumenGrupos,
+            'producciones'  => $producciones
+        ];
+
+        $nombreArchivo = 'produccion_' . $fecha . '.pdf';
+
+        // 3. Generas el PDF en el navegador
+        $resultado = $pdfService->generarParaNavegador(
+            'pdfs/produccion_diaria',
+            $datos,
+            $nombreArchivo,
+            false
+        );
+
+        if (!$resultado['success']) {
+            echo htmlspecialchars($resultado['message']);
+        }
     }
 
     private function renderLayout(string $view, array $data): void

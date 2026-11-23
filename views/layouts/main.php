@@ -122,18 +122,18 @@ $adminOrOperaciones = in_array($currentRole, ['admin', 'operaciones'], true);
                                 <?= render_icon('empresas', 'nav-icon') ?>
                             </span> EMPRESAS
                         </a>
-                        <a href="<?= BASE_PATH ?>/turnos"
-                            class="nav-item <?= ($view === 'turnos/index' || $view === 'turnos/form') ? 'active' : '' ?>">
-                            <span class="img-nav-icon" >
-                                <?= render_icon('turnos', 'nav-icon') ?>
-                            </span> TURNOS
-                        </a>
                         <a href="<?= BASE_PATH ?>/tarifas"
                             class="nav-item <?= ($view === 'tarifas/index' || $view === 'tarifas/form') ? 'active' : '' ?>">
                             <span class="img-nav-icon" >
                                 <?= render_icon('tarifas', 'nav-icon') ?>
                             </span> TARIFAS
                         </a>
+                        <a href="<?= BASE_PATH ?>/turnos"
+                            class="nav-item <?= ($view === 'turnos/index' || $view === 'turnos/form') ? 'active' : '' ?>">
+                            <span class="img-nav-icon" >
+                                <?= render_icon('turnos', 'nav-icon') ?>
+                            </span> TURNOS
+                        </a>                        
                     <?php endif; ?>
                     
                     <!-- Producción del Rider: solo rol rider -->

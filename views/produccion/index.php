@@ -61,7 +61,7 @@
         <div class="form-actions">
           <button type="submit" class="btn-filtrar">Filtrar</button>
           <a href="<?= BASE_PATH ?>/produccion" class="btn-reset">Ver todas</a>
-          <a href="#" class="btn btn-primary btn-nuevo" id="btnAbrirModal" >+ Agregar produccion</a>          
+          <a href="#" class="btn btn-primary btn-nuevo" id="btnAbrirModal" >+ Agregar produccion</a>
         </div>
 
         <div class="view-switch">

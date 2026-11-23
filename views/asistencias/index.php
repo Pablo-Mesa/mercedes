@@ -16,6 +16,12 @@
     </form>
 </div>
 
+<div id="alerta-audio-bloqueado" 
+     class="alert alert-warning py-2 px-3 mb-3" 
+     style="display: none; cursor: pointer;"
+     onclick="NotificadorAudio.bip()">
+    🔇 <strong>Alerta sonora en pausa:</strong> Haz clic en cualquier parte de la pantalla para activar el sonido de nuevas llegadas.
+</div>
 <div class="panel table-panel">
     <div class="panel table-panel" tabindex="0" role="region" aria-label="Tabla de asistencias">
         <table 
@@ -66,4 +72,5 @@
     </div>
 </div>
 
+<script src="<?= BASE_PATH ?>/public/js/notificaciones-audio.js"></script>
 <script src="<?= BASE_PATH ?>/public/js/asistencias-sse.js"></script>

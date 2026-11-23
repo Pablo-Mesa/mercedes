@@ -3,6 +3,12 @@ RewriteEngine On
 
 SetEnvIfNoCase Authorization "^(.+)$" HTTP_AUTHORIZATION=$1
 
+# Desactivar compresión GZIP/Brotli para el flujo en tiempo real (SSE)
+#<IfModule mod_setenvif.c>
+#    SetEnvIfNoCase Request_URI "asistencias/stream" no-gzip=1
+#    SetEnvIfNoCase Request_URI "asistencias/stream" dont-vary=1
+#</IfModule>
+
 # Evitar el acceso directo a código, configuración, pruebas y documentación interna.
 RewriteRule ^(?:config|controllers|models|views|app|helpers|test|node_modules)(?:/|$) - [F,NC,L]
 RewriteRule (^|/)\.(?!well-known(?:/|$)) - [F,NC,L]

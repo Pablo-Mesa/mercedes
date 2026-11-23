@@ -60,6 +60,12 @@ $suma_total_tarifa = 0;
           <span class="btn-icon">📊</span>
         </button>
       </div>
+      <!-- NUEVO BOTÓN GENERAR PDF -->
+      <a href="<?= BASE_PATH ?>/produccion/pdf?fecha=<?= htmlspecialchars($_GET['fecha'] ?? date('Y-m-d')) ?>" 
+          target="_blank" 
+          class="btn btn-danger">
+          📄 Generar PDF
+      </a>
     </div>
   </form>
 </div>
