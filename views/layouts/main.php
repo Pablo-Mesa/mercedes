@@ -223,6 +223,7 @@ $adminOrOperaciones = in_array($currentRole, ['admin', 'operaciones'], true);
                             'riders/form' => '<span class="img-nav-icon">' . render_icon('riders', 'nav-icon') . '</span> Gestión de riders',                           
                             'produccion/index' => '<span class="img-nav-icon">' . render_icon('produccion', 'nav-icon') . '</span> Gestión de produccion',
                             'produccion/cards' => '<span class="img-nav-icon">' . render_icon('produccion', 'nav-icon') . '</span> Gestión de produccion',
+                            'produccion/board_populating_machine' => 'Máquina Pobladora',
                             'configuraciones/puntodecontrol' => '<span class="img-nav-icon">' . render_icon('puntodecontrol', 'nav-icon') . '</span> Punto de control',
                             'grupos/index' => '<span class="img-nav-icon">' . render_icon('empresas', 'nav-icon') . '</span> Gestión de empresas',
                             'grupos/form' => '<span class="img-nav-icon">' . render_icon('empresas', 'nav-icon') . '</span> Gestión de empresas',

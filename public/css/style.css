@@ -2946,6 +2946,25 @@ facturas-table[type="date"]::-webkit-calendar-picker-indicator {
     line-height: 1;
 }
 
+/* Aplicamos la animación a la clase */
+.fila-nueva {
+  animation: resaltarFila 5s ease-out forwards;
+}
+
+
+/* Definimos la animación de resaltado */
+@keyframes resaltarFila {
+  0% {
+        background-color: #0fdb00; /* Amarillo alerta al llegar */
+    }
+    70% {
+        background-color: #42f54e;
+    }
+    100% {
+        background-color: transparent;
+    }
+}
+
 /* Adaptación móvil */
 @media (max-width: 768px) {
   .hamburger {

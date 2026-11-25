@@ -1,4 +1,6 @@
 <?php
+// Establecer zona horaria de Paraguay antes de cualquier función date()
+date_default_timezone_set('America/Asuncion');
 /**
  * index.php
  * Front Controller - Punto de entrada único de la aplicación.
@@ -298,6 +300,11 @@ switch ($url) {
     case 'produccion':
         $produccionController = new ProduccionController();
         $produccionController->index();
+        break;
+
+    case 'produccion/board-populating-machine':
+        $produccionController = new ProduccionController();
+        $produccionController->boardPopulatingMachine();
         break;
 
     case 'produccion/store':

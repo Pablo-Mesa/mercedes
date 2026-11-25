@@ -39,6 +39,54 @@ class ProduccionController extends BaseController
         $data = $this->buildIndexData();
         $this->renderLayout($data['view'], $data);
     }
+
+    public function boardPopulatingMachine(): void
+    {
+        $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+        if (!in_array($method, ['GET', 'POST'], true)) {
+            http_response_code(405);
+            header('Allow: GET, POST');
+            echo 'Método no permitido.';
+            return;
+        }
+
+        $fecha = date('Y-m-d');
+        $resultado = null;
+        $error = null;
+
+        if ($method === 'POST') {
+            $fecha = trim((string) ($_POST['fecha'] ?? ''));
+            $grupoId = null;
+
+            if (($_SESSION['user_role'] ?? null) === 'operaciones') {
+                $grupoId = (int) ($_SESSION['grupo_id'] ?? 0);
+                if ($grupoId <= 0) {
+                    $error = 'Tu sesión no tiene un grupo válido para poblar producción.';
+                }
+            }
+
+            if ($error === null) {
+                try {
+                    $resultado = $this->produccionService->poblarProduccion(
+                        $fecha,
+                        (int) $_SESSION['user_id'],
+                        $grupoId
+                    );
+                } catch (DomainException $exception) {
+                    $error = $exception->getMessage();
+                } catch (PDOException $exception) {
+                    error_log('[ProduccionController::boardPopulatingMachine] ' . $exception->getMessage());
+                    $error = 'No se pudo completar el poblado. Se revirtió la operación.';
+                }
+            }
+        }
+
+        $this->renderLayout('produccion/board_populating_machine', [
+            'fechaMaquina' => $fecha,
+            'resultadoMaquina' => $resultado,
+            'errorMaquina' => $error,
+        ]);
+    }
     
     public function store(): void
     {
@@ -250,30 +298,30 @@ class ProduccionController extends BaseController
 
     public function exportarPdfDiario(): void
     {
-        $fecha = $_GET['fecha'] ?? date('Y-m-d');
-
-        // 1. Reutilizas el servicio que ya creaste en el __construct()
-        $producciones = $this->produccionService->getProduccionPorFecha($fecha);
-        $resumenGrupos = $this->produccionService->getResumenPorGrupo($producciones);
-
-        // 2. Preparas los datos y el logo
+        $data = $this->buildIndexData();
         $pdfService = new PdfService();
 
-        $datos = [
-            'fecha'         => $fecha,
-            'logoBase64'    => $pdfService->convertirImagenABase64('images/logo.png'), // Ajusta el nombre si tu logo se llama distinto en public/images/
-            'resumenGrupos' => $resumenGrupos,
-            'producciones'  => $producciones
-        ];
+        $data['logoBase64'] = $pdfService->convertirImagenABase64('images/icono_solver_nobg.png');
 
-        $nombreArchivo = 'produccion_' . $fecha . '.pdf';
+        // Convertimos los íconos de cada grupo a Base64 para que Dompdf los muestre sin problemas
+        foreach ($data['produccionesResumen'] as &$grupo) {
+            if (!empty($grupo['grupo_icono'])) {
+                $grupo['grupo_icono_base64'] = $pdfService->convertirImagenABase64('uploads/grupos/' . $grupo['grupo_icono']);
+            } else {
+                $grupo['grupo_icono_base64'] = '';
+            }
+        }
+        unset($grupo);
 
-        // 3. Generas el PDF en el navegador
+        // Usamos orientación 'landscape' (horizontal) para que entren cómodas las columnas de los riders
+        $nombreArchivo = 'detalle_produccion_' . $data['fecha'] . '.pdf';
+
         $resultado = $pdfService->generarParaNavegador(
             'pdfs/produccion_diaria',
-            $datos,
+            $data,
             $nombreArchivo,
-            false
+            false,
+            'landscape'
         );
 
         if (!$resultado['success']) {

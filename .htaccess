@@ -1,6 +1,8 @@
 Options -MultiViews
 RewriteEngine On
 
+RewriteRule ^favicon\.ico$ public/images/icono_solver_nobg.png [L]
+
 SetEnvIfNoCase Authorization "^(.+)$" HTTP_AUTHORIZATION=$1
 
 # Desactivar compresión GZIP/Brotli para el flujo en tiempo real (SSE)

@@ -82,6 +82,49 @@ class ProduccionModel {
         ]);
     }
 
+    public function getRidersActivosConGrupos(?int $grupoId = null): array
+    {
+        $sql = "
+            SELECT u.id AS id_rider, g.id_grupo AS grupo_id
+            FROM usuarios u
+            LEFT JOIN rider_grupo rg ON rg.rider_id = u.id
+            LEFT JOIN grupos g ON g.id_grupo = rg.grupo_id AND g.activo = 1
+            WHERE u.role_id = 3
+            AND u.is_active = 1
+        ";
+
+        if ($grupoId !== null) {
+            $sql .= " AND g.id_grupo = :grupo_id";
+        }
+
+        $sql .= " ORDER BY u.id ASC, g.id_grupo ASC";
+
+        $stmt = $this->db->prepare($sql);
+        if ($grupoId !== null) {
+            $stmt->bindValue(':grupo_id', $grupoId, PDO::PARAM_INT);
+        }
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function startTransaction(): void
+    {
+        $this->db->beginTransaction();
+    }
+
+    public function commitTransaction(): void
+    {
+        $this->db->commit();
+    }
+
+    public function rollbackTransaction(): void
+    {
+        if ($this->db->inTransaction()) {
+            $this->db->rollBack();
+        }
+    }
+
     /** 
      * Elimina producción por id.
      */

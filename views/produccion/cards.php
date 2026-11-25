@@ -61,10 +61,18 @@ $suma_total_tarifa = 0;
         </button>
       </div>
       <!-- NUEVO BOTÓN GENERAR PDF -->
-      <a href="<?= BASE_PATH ?>/produccion/pdf?fecha=<?= htmlspecialchars($_GET['fecha'] ?? date('Y-m-d')) ?>" 
-          target="_blank" 
-          class="btn btn-danger">
-          📄 Generar PDF
+      <?php
+          $queryParams = http_build_query([
+              'fecha'  => $_GET['fecha'] ?? date('Y-m-d'),
+              'turno'  => $_GET['turno'] ?? '',
+              'rider'  => $_GET['rider'] ?? '',
+              'accion' => $_GET['accion'] ?? '',
+          ]);
+      ?>
+      <a href="<?= BASE_PATH ?>/produccion/pdf?<?= $queryParams ?>" 
+        target="_blank" 
+        class="btn btn-danger">
+        📄 Generar PDF
       </a>
     </div>
   </form>
