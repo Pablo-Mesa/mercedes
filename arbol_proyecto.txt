@@ -1,12 +1,17 @@
-﻿estructura_mercedes
+﻿Estructura
+
+mercedes
 ├── app/
 │   │   └── repositories/
 │   │   └── services/
+├── cli/
 ├── config/
 │   │   └── documentacion/
 │   │   └── migrations/
 ├── controllers/
 ├── helpers/
+├── libs/
+│        └── dompdf/
 ├── models/
 ├── public/
 │   │   └── assets/
@@ -19,6 +24,7 @@
 │   │   │   └── components/
 │   │   │   └── grupos/
 │   │   │   └── riders/
+├── storage/
 ├── test/
 ├── views/
 │   │   └── aboutdev/
@@ -41,7 +47,8 @@
 └── .gitignore
 └── .htaccess
 └── estructura_mercedes.txt
-└── index.php
+└── index.ph
+└── login.php
 └── package.json
 └── pnpm-lock.yaml
 └── README.md
